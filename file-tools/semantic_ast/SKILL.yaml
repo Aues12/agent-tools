@@ -1,0 +1,22 @@
+name: semantic_ast
+type: tool
+capability: localization
+purpose: Parse Python source into a compact semantic AST for navigation and analysis.
+status: experimental
+interfaces:
+  - name: parse_source
+    description: Parse Python source text into a normalized semantic AST.
+  - name: parse_file
+    description: Read a Python file and parse it into a normalized semantic AST.
+  - name: run
+    description: Execute the tool using the canonical operation and params envelope.
+side_effects:
+  reads:
+    - parse_source reads provided source text only.
+    - parse_file reads the provided file path.
+  writes: []
+line_numbers:
+  base: 1
+  ranges: inclusive
+validation:
+  - python3 -m unittest discover -s file-tools/semantic_ast/tests

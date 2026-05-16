@@ -34,6 +34,23 @@
       "interfaces": [
         "rename_files"
       ]
+    },
+    {
+      "name": "semantic_ast",
+      "capability": "localization",
+      "path": "file-tools/semantic_ast",
+      "entrypoint": "semantic_ast.py",
+      "transport": "stdin_json",
+      "status": "experimental",
+      "operations": [
+        "parse_source",
+        "parse_file"
+      ],
+      "interfaces": [
+        "parse_source",
+        "parse_file",
+        "run"
+      ]
     }
   ]
 }
