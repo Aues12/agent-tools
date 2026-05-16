@@ -1,0 +1,5 @@
+name: example_workflow
+inputs:
+  example_input: value
+expected_outputs:
+  - example_result

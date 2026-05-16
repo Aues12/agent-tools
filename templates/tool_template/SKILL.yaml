@@ -1,0 +1,14 @@
+name: example_tool
+type: tool
+capability: example
+purpose: Replace this with a one-sentence capability description.
+status: draft
+interfaces:
+  - name: run
+    description: Replace this with the exported function contract.
+side_effects:
+  reads: []
+  writes: []
+validation:
+  - add tests under tests/
+  - add examples under examples/

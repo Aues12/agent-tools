@@ -1,0 +1,28 @@
+name: create_tool
+type: skill
+purpose: Create a new tool directory that follows the repository tool contract.
+status: draft
+inputs:
+  required:
+    - tool_name
+    - capability
+    - purpose
+  optional:
+    - interfaces
+    - examples
+outputs:
+  - tool_directory
+  - registry_update
+tools: []
+steps:
+  - validate the tool name against standards/naming.yaml
+  - copy the tool template into the target category directory
+  - replace placeholder metadata in SKILL.yaml
+  - implement the narrow public interface in tool.py
+  - add tests for normal, invalid, and boundary behavior
+  - add at least one example
+  - update registry/tool_registry.json
+validation:
+  - tool metadata is complete
+  - tests pass
+  - registry entry exists

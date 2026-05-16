@@ -1,0 +1,26 @@
+name: copy_paste
+type: tool
+capability: transfer
+purpose: Safely read, locate, extract, and insert text blocks in files.
+status: experimental
+interfaces:
+  - name: read_file
+    description: Read a text file and return its contents.
+  - name: find_text
+    description: Find exact text occurrences and return 1-based line and column positions.
+  - name: extract_range
+    description: Extract an inclusive 1-based line range from a text file.
+  - name: insert_text
+    description: Insert text before a 1-based line number, or append at line_count + 1.
+side_effects:
+  reads:
+    - read_file
+    - find_text
+    - extract_range
+  writes:
+    - insert_text writes only to the target file path
+line_numbers:
+  base: 1
+  ranges: inclusive
+validation:
+  - python -m unittest discover -s file-tools/copy_paste/tests

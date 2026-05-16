@@ -1,0 +1,13 @@
+name: example_skill
+type: skill
+purpose: Replace this with a one-sentence workflow description.
+status: draft
+inputs:
+  required: []
+  optional: []
+outputs: []
+tools: []
+steps:
+  - replace this with the first concrete workflow step
+validation:
+  - replace this with a success check

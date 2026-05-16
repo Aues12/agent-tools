@@ -1,0 +1,17 @@
+{
+  "version": "0.1.0",
+  "tools": [
+    {
+      "name": "copy_paste",
+      "capability": "transfer",
+      "path": "file-tools/copy_paste",
+      "status": "experimental",
+      "interfaces": [
+        "read_file",
+        "find_text",
+        "extract_range",
+        "insert_text"
+      ]
+    }
+  ]
+}

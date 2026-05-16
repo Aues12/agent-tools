@@ -1,0 +1,31 @@
+version: 0.1.0
+
+naming:
+  tools:
+    pattern: "^[a-z][a-z0-9_]*$"
+    style: "snake_case"
+    examples:
+      - copy_paste
+      - rename_files
+      - find_block
+  skills:
+    pattern: "^[a-z][a-z0-9_]*$"
+    style: "snake_case"
+    examples:
+      - create_tool
+      - create_skill
+      - move_function
+  files:
+    python: "snake_case.py"
+    markdown: "UPPERCASE_FOR_AGENT_FILES.md or kebab-case.md"
+    yaml: "snake_case.yaml"
+
+capabilities:
+  transfer:
+    description: "Move or duplicate content between locations."
+  localization:
+    description: "Find the relevant target for later action."
+  organization:
+    description: "Rename, sort, group, or structure artifacts."
+  comparison:
+    description: "Compare artifacts or states and report differences."

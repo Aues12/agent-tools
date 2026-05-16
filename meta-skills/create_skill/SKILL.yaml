@@ -1,0 +1,27 @@
+name: create_skill
+type: skill
+purpose: Create a reusable workflow definition that orchestrates tools and agent actions.
+status: draft
+inputs:
+  required:
+    - skill_name
+    - purpose
+    - steps
+  optional:
+    - tools
+    - validation
+outputs:
+  - skill_directory
+  - registry_update
+tools: []
+steps:
+  - validate the skill name against standards/naming.yaml
+  - copy the skill template into the target skill directory
+  - replace placeholder metadata in SKILL.yaml
+  - make each workflow step concrete and inspectable
+  - document required tools and validation checks
+  - update registry/skill_registry.json
+validation:
+  - skill metadata is complete
+  - workflow steps are actionable
+  - registry entry exists

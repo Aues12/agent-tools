@@ -1,0 +1,15 @@
+{
+  "version": "0.1.0",
+  "skills": [
+    {
+      "name": "create_tool",
+      "path": "meta-skills/create_tool",
+      "status": "draft"
+    },
+    {
+      "name": "create_skill",
+      "path": "meta-skills/create_skill",
+      "status": "draft"
+    }
+  ]
+}
