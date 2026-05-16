@@ -5,7 +5,15 @@
       "name": "copy_paste",
       "capability": "transfer",
       "path": "file-tools/copy_paste",
+      "entrypoint": "copy_paste.py",
+      "transport": "stdin_json",
       "status": "experimental",
+      "operations": [
+        "read_file",
+        "find_text",
+        "extract_range",
+        "insert_text"
+      ],
       "interfaces": [
         "read_file",
         "find_text",
@@ -17,7 +25,12 @@
       "name": "rename_files",
       "capability": "organization",
       "path": "file-tools/rename_files",
+      "entrypoint": "rename_files.py",
+      "transport": "stdin_json",
       "status": "experimental",
+      "operations": [
+        "rename_files"
+      ],
       "interfaces": [
         "rename_files"
       ]

@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import json
 import sys
 import tempfile
+import subprocess
 import unittest
 from pathlib import Path
 
@@ -9,7 +11,7 @@ from pathlib import Path
 TOOL_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(TOOL_DIR))
 
-from tool import extract_range, find_text, insert_text, read_file  # noqa: E402
+from tool import extract_range, find_text, insert_text, read_file, run  # noqa: E402
 
 
 class CopyPasteToolTests(unittest.TestCase):
@@ -93,6 +95,50 @@ class CopyPasteToolTests(unittest.TestCase):
 
             with self.assertRaises(ValueError):
                 insert_text(path, 3, "two\n")
+
+    def test_run_read_file_operation(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "sample.txt"
+            path.write_text("alpha\nbeta\n", encoding="utf-8")
+
+            result = run(
+                {
+                    "operation": "read_file",
+                    "params": {
+                        "path": path,
+                    },
+                }
+            )
+
+            self.assertTrue(result["success"])
+            self.assertEqual(result["result"]["content"], "alpha\nbeta\n")
+
+    def test_entrypoint_reads_stdin_json(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "sample.txt"
+            path.write_text("alpha\nbeta\n", encoding="utf-8")
+
+            payload = {
+                "operation": "extract_range",
+                "params": {
+                    "file": str(path),
+                    "start": 1,
+                    "end": 1,
+                },
+            }
+
+            completed = subprocess.run(
+                [sys.executable, str(TOOL_DIR / "copy_paste.py")],
+                input=json.dumps(payload).encode("utf-8"),
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=False,
+            )
+
+            self.assertEqual(completed.returncode, 0)
+            response = json.loads(completed.stdout.decode("utf-8"))
+            self.assertTrue(response["success"])
+            self.assertEqual(response["result"]["content"], "alpha\n")
 
 
 if __name__ == "__main__":

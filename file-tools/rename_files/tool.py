@@ -11,7 +11,7 @@ from typing import Any
 def make_result(**overrides: Any) -> dict[str, Any]:
     """Return a stable result shape for dry runs and applied renames."""
     base: dict[str, Any] = {
-        "ok": True,
+        "success": True,
         "message": "",
         "directory": "",
         "dry_run": True,
@@ -92,6 +92,21 @@ def rename_files(
     )
 
 
+def run(input_data: dict[str, Any]) -> dict[str, Any]:
+    """Execute the rename_files tool from a structured request payload."""
+    try:
+        params = _parse_request(input_data)
+        result = rename_files(**params)
+        return {
+            "success": True,
+            "message": result["message"],
+            "result": result,
+            "meta": {"operation": "rename_files"},
+        }
+    except Exception as exc:
+        return _error_envelope(exc)
+
+
 def main() -> None:
     """Read a JSON payload from stdin and print a JSON result."""
     try:
@@ -99,21 +114,14 @@ def main() -> None:
         if not raw:
             raise ValueError("No input received")
         payload = json.loads(raw)
-        result = rename_files(
-            directory=payload.get("directory"),
-            find_text=payload.get("find_text"),
-            replace_text=payload.get("replace_text", ""),
-            recursive=bool(payload.get("recursive", False)),
-            dry_run=bool(payload.get("dry_run", True)),
-            extensions=payload.get("extensions") or [],
-            targets=payload.get("targets") or [],
-        )
     except Exception as exc:
-        result = make_result(ok=False, message=str(exc))
+        result = _error_envelope(exc)
         print(json.dumps(result, ensure_ascii=False, indent=2))
-        sys.exit(1)
+        sys.exit(_exit_code(result))
 
+    result = run(payload)
     print(json.dumps(result, ensure_ascii=False, indent=2))
+    sys.exit(_exit_code(result))
 
 
 def _as_directory_path(path: str | Path) -> Path:
@@ -145,9 +153,58 @@ def _validate_rename_inputs(
         raise TypeError("targets must be a list when provided")
 
 
+def _parse_request(input_data: Any) -> dict[str, Any]:
+    if not isinstance(input_data, dict):
+        raise TypeError("input_data must be a dictionary")
+
+    operation = input_data.get("operation", "rename_files")
+    if not isinstance(operation, str) or not operation:
+        raise ValueError("operation must be a non-empty string")
+    if operation != "rename_files":
+        raise ValueError(f"unknown operation: {operation}")
+
+    params = input_data.get("params")
+    if params is None:
+        params = {
+            key: value
+            for key, value in input_data.items()
+            if key not in {"operation", "params", "meta"}
+        }
+    if not isinstance(params, dict):
+        raise TypeError("params must be a dictionary")
+
+    return params
+
+
+def _error_envelope(exc: Exception) -> dict[str, Any]:
+    return {
+        "success": False,
+        "message": str(exc),
+        "error": {
+            "type": exc.__class__.__name__,
+            "message": str(exc),
+        },
+    }
+
+
+def _exit_code(response: dict[str, Any]) -> int:
+    if response.get("success") is True:
+        return 0
+
+    error = response.get("error") or {}
+    if error.get("type") in {
+        "TypeError",
+        "ValueError",
+        "FileNotFoundError",
+        "NotADirectoryError",
+    }:
+        return 2
+    return 3
+
+
 def _collect_files(directory: Path, recursive: bool) -> list[Path]:
     iterator = directory.rglob("*") if recursive else directory.iterdir()
-    return [path.resolve() for path in iterator if path.is_file()]
+    return sorted(path.resolve() for path in iterator if path.is_file())
 
 
 def _resolve_targets(directory: Path, targets: list[str]) -> list[Path]:
@@ -168,7 +225,7 @@ def _resolve_targets(directory: Path, targets: list[str]) -> list[Path]:
         if not candidate.is_file():
             raise ValueError(f"Target is not a file: {raw_target}")
         resolved.append(candidate)
-    return resolved
+    return sorted(resolved)
 
 
 def _build_candidates(
@@ -245,8 +302,40 @@ def _plan_renames(
 
 
 def _apply_renames(renamed: list[dict[str, str]]) -> None:
-    for item in renamed:
-        Path(item["old_path"]).rename(Path(item["new_path"]))
+    staged: list[tuple[Path, Path, Path]] = []
+
+    try:
+        for index, item in enumerate(renamed):
+            source = Path(item["old_path"])
+            target = Path(item["new_path"])
+            temp_path = _temporary_rename_path(source, index)
+            source.rename(temp_path)
+            staged.append((temp_path, source, target))
+
+        for temp_path, _source, target in staged:
+            temp_path.rename(target)
+    except Exception:
+        _rollback_staged_renames(staged)
+        raise
+
+
+def _temporary_rename_path(source: Path, index: int) -> Path:
+    """Return a non-existing sibling path for two-phase rename application."""
+    base_name = f".{source.name}.rename_files_tmp_{index}"
+    candidate = source.with_name(base_name)
+    attempt = 1
+    while candidate.exists():
+        candidate = source.with_name(f"{base_name}_{attempt}")
+        attempt += 1
+    return candidate
+
+
+def _rollback_staged_renames(staged: list[tuple[Path, Path, Path]]) -> None:
+    for temp_path, source, target in reversed(staged):
+        if temp_path.exists() and not source.exists():
+            temp_path.rename(source)
+        elif target.exists() and not source.exists():
+            target.rename(source)
 
 
 if __name__ == "__main__":

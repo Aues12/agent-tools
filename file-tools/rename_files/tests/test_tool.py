@@ -9,7 +9,7 @@ from pathlib import Path
 TOOL_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(TOOL_DIR))
 
-from tool import rename_files  # noqa: E402
+from tool import rename_files, run  # noqa: E402
 
 
 class RenameFilesToolTests(unittest.TestCase):
@@ -21,7 +21,7 @@ class RenameFilesToolTests(unittest.TestCase):
 
             result = rename_files(root, "draft", "final", dry_run=True)
 
-            self.assertTrue(result["ok"])
+            self.assertTrue(result["success"])
             self.assertEqual(result["renamed_count"], 1)
             self.assertEqual(result["matched_count"], 1)
             self.assertEqual(source.exists(), True)
@@ -41,6 +41,21 @@ class RenameFilesToolTests(unittest.TestCase):
             self.assertEqual(result["renamed_count"], 1)
             self.assertFalse(source.exists())
             self.assertTrue((root / "final_notes.txt").exists())
+
+    def test_apply_rename_handles_target_that_is_another_source(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            first = root / "a.txt"
+            second = root / "aa.txt"
+            first.write_text("first", encoding="utf-8")
+            second.write_text("second", encoding="utf-8")
+
+            result = rename_files(root, "a", "aa", dry_run=False)
+
+            self.assertEqual(result["renamed_count"], 2)
+            self.assertFalse(first.exists())
+            self.assertEqual((root / "aa.txt").read_text(encoding="utf-8"), "first")
+            self.assertEqual((root / "aaaa.txt").read_text(encoding="utf-8"), "second")
 
     def test_extension_filter_skips_non_matching_suffixes(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -108,6 +123,28 @@ class RenameFilesToolTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             with self.assertRaises(ValueError):
                 rename_files(tmp, "", "final")
+
+    def test_run_accepts_canonical_envelope(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "draft_notes.txt"
+            source.write_text("hello", encoding="utf-8")
+
+            result = run(
+                {
+                    "operation": "rename_files",
+                    "params": {
+                        "directory": root,
+                        "find_text": "draft",
+                        "replace_text": "final",
+                        "dry_run": True,
+                    },
+                }
+            )
+
+            self.assertTrue(result["success"])
+            self.assertEqual(result["result"]["renamed_count"], 1)
+            self.assertEqual(result["meta"]["operation"], "rename_files")
 
 
 if __name__ == "__main__":
