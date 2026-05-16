@@ -59,6 +59,26 @@ class SemanticAstToolTests(unittest.TestCase):
         self.assertEqual(result["source"], source)
         self.assertEqual(result["body"][0]["source"], "VALUE = 1 + 2")
 
+    def test_parse_source_preserves_string_expression_inside_control_block(self) -> None:
+        source = dedent(
+            '''
+            def run():
+                """Function doc"""
+                if True:
+                    "marker"
+                    return 1
+            '''
+        ).strip() + "\n"
+
+        result = parse_source(source)
+
+        function_body = result["body"][0]["body"]
+        self.assertEqual(function_body[0]["type"], "if")
+        if_body = function_body[0]["body"]
+        self.assertEqual(if_body[0]["type"], "expression_statement")
+        self.assertEqual(if_body[0]["value"]["value"], "marker")
+        self.assertEqual(if_body[1]["type"], "return")
+
     def test_parse_file_reads_from_path(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "sample.py"

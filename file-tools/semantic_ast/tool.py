@@ -125,7 +125,7 @@ def _normalize_module(
     path: Path | None,
     include_source: bool,
 ) -> dict[str, Any]:
-    body = _normalize_body(tree.body, source, include_source)
+    body = _normalize_body(tree.body, source, include_source, strip_docstring=True)
     line_count = len(source.splitlines())
     end_line = max(_max_end_line(body), line_count or 1)
 
@@ -151,9 +151,11 @@ def _normalize_body(
     statements: list[ast.stmt],
     source: str,
     include_source: bool,
+    *,
+    strip_docstring: bool = False,
 ) -> list[dict[str, Any]]:
     items = list(statements)
-    if items and _is_docstring_statement(items[0]):
+    if strip_docstring and items and _is_docstring_statement(items[0]):
         items = items[1:]
     return [_normalize_statement(node, source, include_source) for node in items]
 
@@ -396,7 +398,7 @@ def _normalize_function(
         "args": _normalize_arguments(node.args, source, include_source),
         "returns": _normalize_value(node.returns, source, include_source),
         "docstring": ast.get_docstring(node),
-        "body": _normalize_body(node.body, source, include_source),
+        "body": _normalize_body(node.body, source, include_source, strip_docstring=True),
     }
     return _attach_source(result, node, source, include_source)
 
@@ -417,7 +419,7 @@ def _normalize_class(
         "bases": [_normalize_value(base, source, include_source) for base in node.bases],
         "keywords": [_normalize_keyword(keyword, source, include_source) for keyword in node.keywords],
         "docstring": ast.get_docstring(node),
-        "body": _normalize_body(node.body, source, include_source),
+        "body": _normalize_body(node.body, source, include_source, strip_docstring=True),
     }
     return _attach_source(result, node, source, include_source)
 
