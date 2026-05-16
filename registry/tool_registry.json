@@ -12,6 +12,15 @@
         "extract_range",
         "insert_text"
       ]
+    },
+    {
+      "name": "rename_files",
+      "capability": "organization",
+      "path": "file-tools/rename_files",
+      "status": "experimental",
+      "interfaces": [
+        "rename_files"
+      ]
     }
   ]
 }

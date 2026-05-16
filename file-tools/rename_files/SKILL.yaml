@@ -1,0 +1,15 @@
+name: rename_files
+type: tool
+capability: organization
+purpose: Safely plan or apply deterministic filename replacements inside a directory.
+status: experimental
+interfaces:
+  - name: rename_files
+    description: Rename files by replacing exact text in filenames, with dry-run and conflict reporting support.
+side_effects:
+  reads:
+    - scans the provided directory or explicit target files
+  writes:
+    - renames matched files only when dry_run is false
+validation:
+  - python3 -m unittest discover -s file-tools/rename_files/tests
