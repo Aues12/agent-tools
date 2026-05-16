@@ -9,6 +9,7 @@ TOOL_TEST_DIRS = [
     "file-tools/copy_paste/tests",
     "file-tools/rename_files/tests",
     "file-tools/semantic_ast/tests",
+    "runtime/tests",
 ]
 
 

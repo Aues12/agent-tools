@@ -13,3 +13,13 @@ Initial responsibilities:
 
 Permission systems are intentionally deferred until the runtime shape is more
 stable.
+
+Current modules:
+
+* `planner.py` normalizes explicit tool-call tasks into ordered steps.
+* `executor.py` dispatches registry-backed tools through stdin/stdout JSON.
+* `engine.py` coordinates planning and step execution.
+
+The runtime intentionally does not implement tool-specific behavior. Tool
+capabilities stay inside `file-tools/`; the runtime only discovers and invokes
+them through the registry contract.
