@@ -1,14 +1,3 @@
-Bence `runtime/AGENTS.md`, fazla teorik değil; pratik mimari prensipleri anlatan kısa ama yön verici bir belge olmalı. Özellikle:
-
-* sorumluluk ayrımı,
-* minimalizm,
-* orchestration mantığı,
-* tool bağımsızlığı
-
-vurgulanmalı.
-
----
-
 # Runtime Layer
 
 The `runtime/` directory contains the execution core of the agent system.
@@ -36,7 +25,7 @@ The runtime should coordinate capabilities.
 
 ---
 
-# Current Components
+# Planned Components
 
 ## engine.py
 
@@ -82,6 +71,11 @@ The executor should not contain planning logic.
 
 ---
 
+These files may not exist yet. Add them only when the runtime needs executable
+behavior beyond documentation and registry loading.
+
+---
+
 # Architectural Principles
 
 ## 1. Separation of Concerns
@@ -115,7 +109,7 @@ Recommended minimal interface:
 ```python
 def run(input_data: dict) -> dict:
     pass
-````
+```
 
 This allows:
 

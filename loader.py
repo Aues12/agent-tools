@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any
 
 
-REGISTRY_DIR = Path(__file__).resolve().parent
+REGISTRY_DIR = Path(__file__).resolve().parent / "registry"
 
 
 def load_registry(name: str) -> dict[str, Any]:

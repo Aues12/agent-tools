@@ -126,7 +126,8 @@ def insert_text(
     _validate_insert_line(line, len(lines))
 
     if line == len(lines) + 1:
-        updated = original + content
+        separator = "" if original == "" or original.endswith(("\n", "\r")) else "\n"
+        updated = original + separator + content
     else:
         lines.insert(line - 1, content)
         updated = "".join(lines)

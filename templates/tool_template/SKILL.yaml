@@ -5,7 +5,7 @@ purpose: Replace this with a one-sentence capability description.
 status: draft
 interfaces:
   - name: run
-    description: Replace this with the exported function contract.
+    description: Accept a structured operation/params payload and return a success/error envelope.
 side_effects:
   reads: []
   writes: []

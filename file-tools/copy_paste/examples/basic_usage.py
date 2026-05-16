@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import sys
+import tempfile
 from pathlib import Path
 
 
@@ -13,16 +14,18 @@ from tool import extract_range, find_text, insert_text  # noqa: E402
 
 
 def main() -> None:
-    source = Path("source.txt")
-    target = Path("target.txt")
+    with tempfile.TemporaryDirectory(prefix="copy_paste_example_") as tmp:
+        workspace = Path(tmp)
+        source = workspace / "source.txt"
+        target = workspace / "target.txt"
 
-    source.write_text("alpha\nbeta\ngamma\n", encoding="utf-8")
-    target.write_text("header\nfooter\n", encoding="utf-8")
+        source.write_text("alpha\nbeta\ngamma\n", encoding="utf-8")
+        target.write_text("header\nfooter\n", encoding="utf-8")
 
-    print(find_text(source, "beta"))
-    block = extract_range(source, 2, 2)
-    insert_text(target, 2, block)
-    print(target.read_text(encoding="utf-8"))
+        print(find_text(source, "beta"))
+        block = extract_range(source, 2, 2)
+        insert_text(target, 2, block)
+        print(target.read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":
