@@ -1,0 +1,112 @@
+{
+  "type": "call_graph",
+  "path": "/workspace/agent-tools/runtime/executor.py",
+  "nodes": [
+    {
+      "id": "execute_tool",
+      "name": "execute_tool",
+      "qualified_name": "execute_tool",
+      "path": "/workspace/agent-tools/runtime/executor.py",
+      "line": 17,
+      "end_line": 63,
+      "calls": [
+        "_entrypoint_path",
+        "_parse_response",
+        "_resolve_tool"
+      ],
+      "external_calls": [
+        "TypeError",
+        "ValueError",
+        "completed.stderr.decode",
+        "encode",
+        "isinstance",
+        "json.dumps",
+        "response.get",
+        "response.setdefault",
+        "step.get",
+        "str",
+        "subprocess.run",
+        "tool_entry.get",
+        "update"
+      ]
+    },
+    {
+      "id": "_resolve_tool",
+      "name": "_resolve_tool",
+      "qualified_name": "_resolve_tool",
+      "path": "/workspace/agent-tools/runtime/executor.py",
+      "line": 66,
+      "end_line": 74,
+      "external_calls": [
+        "ValueError",
+        "isinstance",
+        "load_registry",
+        "registry.get",
+        "tool.get"
+      ]
+    },
+    {
+      "id": "_entrypoint_path",
+      "name": "_entrypoint_path",
+      "qualified_name": "_entrypoint_path",
+      "path": "/workspace/agent-tools/runtime/executor.py",
+      "line": 77,
+      "end_line": 90,
+      "external_calls": [
+        "FileNotFoundError",
+        "ValueError",
+        "isinstance",
+        "resolve",
+        "resolved.exists",
+        "resolved.relative_to",
+        "tool_entry.get"
+      ]
+    },
+    {
+      "id": "_parse_response",
+      "name": "_parse_response",
+      "qualified_name": "_parse_response",
+      "path": "/workspace/agent-tools/runtime/executor.py",
+      "line": 93,
+      "end_line": 117,
+      "external_calls": [
+        "TypeError",
+        "isinstance",
+        "json.loads",
+        "stdout.decode"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "caller": "execute_tool",
+      "callee": "_entrypoint_path",
+      "call": "_entrypoint_path"
+    },
+    {
+      "caller": "execute_tool",
+      "callee": "_parse_response",
+      "call": "_parse_response"
+    },
+    {
+      "caller": "execute_tool",
+      "callee": "_resolve_tool",
+      "call": "_resolve_tool"
+    }
+  ],
+  "roots": [
+    "execute_tool"
+  ],
+  "leaves": [
+    "_entrypoint_path",
+    "_parse_response",
+    "_resolve_tool"
+  ],
+  "tree": "execute_tool\n├── _entrypoint_path\n├── _parse_response\n└── _resolve_tool",
+  "stats": {
+    "functions": 4,
+    "edges": 3,
+    "roots": 1,
+    "leaves": 3
+  }
+}
