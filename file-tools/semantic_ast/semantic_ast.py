@@ -1,4 +1,4 @@
-"""Compatibility entrypoint for the semantic_ast tool."""
+"""Executable entrypoint for the semantic_ast dispatcher."""
 
 from tool import main
 

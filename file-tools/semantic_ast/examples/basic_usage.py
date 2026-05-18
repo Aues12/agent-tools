@@ -1,4 +1,4 @@
-"""Basic semantic_ast usage example."""
+"""Basic semantic_ast dispatcher usage example."""
 
 from __future__ import annotations
 
@@ -10,21 +10,25 @@ from pathlib import Path
 TOOL_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(TOOL_DIR))
 
-from tool import parse_source  # noqa: E402
+from tool import run  # noqa: E402
 
 
 def main() -> None:
     source = """
-import ast
+def helper():
+    return 1
 
-VALUE = 1 + 2
-
-def run(input_data):
-    return VALUE
+def main():
+    return helper()
 """
 
-    result = parse_source(source, path="example.py")
-    print(json.dumps(result, ensure_ascii=False, indent=2))
+    response = run(
+        {
+            "operation": "parse_and_build_call_graph",
+            "params": {"source": source, "path": "example.py"},
+        }
+    )
+    print(json.dumps(response, ensure_ascii=False, indent=2))
 
 
 if __name__ == "__main__":

@@ -37,9 +37,34 @@
     },
     {
       "name": "semantic_ast",
-      "capability": "localization",
+      "capability": "semantic_code_analysis",
       "path": "file-tools/semantic_ast",
       "entrypoint": "semantic_ast.py",
+      "transport": "stdin_json",
+      "status": "experimental",
+      "operations": [
+        "parse_source",
+        "parse_file",
+        "compress_ast",
+        "build_call_graph",
+        "parse_and_compress",
+        "parse_and_build_call_graph"
+      ],
+      "interfaces": [
+        "parse_source",
+        "parse_file",
+        "compress_ast",
+        "build_call_graph",
+        "parse_and_compress",
+        "parse_and_build_call_graph",
+        "run"
+      ]
+    },
+    {
+      "name": "ast_parsing",
+      "capability": "ast_parsing",
+      "path": "file-tools/semantic_ast/ast_parsing",
+      "entrypoint": "ast_parser.py",
       "transport": "stdin_json",
       "status": "experimental",
       "operations": [

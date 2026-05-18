@@ -12,7 +12,7 @@ from textwrap import dedent
 TOOL_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(TOOL_DIR))
 
-from tool import parse_file, parse_source, run  # noqa: E402
+from ast_parser import parse_file, parse_source, run  # noqa: E402
 
 
 class SemanticAstToolTests(unittest.TestCase):
@@ -126,7 +126,7 @@ class SemanticAstToolTests(unittest.TestCase):
         }
 
         completed = subprocess.run(
-            [sys.executable, str(TOOL_DIR / "semantic_ast.py")],
+            [sys.executable, str(TOOL_DIR / "ast_parser.py")],
             input=json.dumps(payload).encode("utf-8"),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,

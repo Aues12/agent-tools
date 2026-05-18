@@ -1,22 +1,33 @@
 name: semantic_ast
 type: tool
-capability: localization
-purpose: Parse Python source into a compact semantic AST for navigation and analysis.
+capability: semantic_code_analysis
+purpose: Dispatch semantic AST parsing, compression, and call graph sub-tools through one interface.
 status: experimental
 interfaces:
   - name: parse_source
-    description: Parse Python source text into a normalized semantic AST.
+    description: Delegate Python source parsing to the ast_parsing sub-tool.
   - name: parse_file
-    description: Read a Python file and parse it into a normalized semantic AST.
+    description: Delegate Python file parsing to the ast_parsing sub-tool.
+  - name: compress_ast
+    description: Delegate semantic AST reduction to the compression sub-tool.
+  - name: build_call_graph
+    description: Delegate call graph extraction to the call_graph sub-tool.
+  - name: parse_and_compress
+    description: Parse source or a file, then compress the semantic AST result.
+  - name: parse_and_build_call_graph
+    description: Parse source or a file, then build a call graph from the semantic AST result.
   - name: run
-    description: Execute the tool using the canonical operation and params envelope.
+    description: Execute the parent dispatcher using the canonical operation and params envelope.
 side_effects:
   reads:
     - parse_source reads provided source text only.
     - parse_file reads the provided file path.
+    - parse_and_compress reads a file only when path is provided instead of source.
+    - parse_and_build_call_graph reads a file only when path is provided instead of source.
   writes: []
 line_numbers:
   base: 1
   ranges: inclusive
 validation:
   - python3 -m unittest discover -s file-tools/semantic_ast/tests
+  - python3 -m unittest discover -s file-tools/semantic_ast/ast_parsing/tests
