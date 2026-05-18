@@ -1,0 +1,179 @@
+{
+  "type": "module",
+  "body": [
+    {
+      "type": "import_from",
+      "module": "__future__",
+      "names": [
+        "annotations"
+      ]
+    },
+    {
+      "type": "import",
+      "modules": [
+        "json"
+      ]
+    },
+    {
+      "type": "import",
+      "modules": [
+        "subprocess"
+      ]
+    },
+    {
+      "type": "import",
+      "modules": [
+        "sys"
+      ]
+    },
+    {
+      "type": "import_from",
+      "module": "pathlib",
+      "names": [
+        "Path"
+      ]
+    },
+    {
+      "type": "import_from",
+      "module": "typing",
+      "names": [
+        "Any"
+      ]
+    },
+    {
+      "type": "import_from",
+      "module": "registry.loader",
+      "names": [
+        "load_registry"
+      ]
+    },
+    {
+      "type": "assignment",
+      "targets": [
+        "REPO_ROOT"
+      ],
+      "value": {
+        "type": "subscript",
+        "value": {
+          "type": "attribute",
+          "value": {
+            "type": "call",
+            "function": {
+              "type": "attribute",
+              "value": {
+                "type": "call",
+                "function": "Path",
+                "args": [
+                  "__file__"
+                ]
+              },
+              "line": 14,
+              "end_line": 14
+            }
+          },
+          "line": 14,
+          "end_line": 14
+        },
+        "line": 14,
+        "end_line": 14
+      }
+    },
+    {
+      "type": "function",
+      "name": "execute_tool",
+      "args": [
+        "step"
+      ],
+      "calls": [
+        "TypeError",
+        "ValueError",
+        "_entrypoint_path",
+        "_parse_response",
+        "_resolve_tool",
+        "completed.stderr.decode",
+        "encode",
+        "isinstance",
+        "json.dumps",
+        "response.get",
+        "response.setdefault",
+        "step.get",
+        "str",
+        "subprocess.run",
+        "tool_entry.get",
+        "update"
+      ],
+      "returns": {
+        "type": "subscript",
+        "value": "dict",
+        "line": 17,
+        "end_line": 17
+      },
+      "line": 17,
+      "end_line": 63
+    },
+    {
+      "type": "function",
+      "name": "_resolve_tool",
+      "args": [
+        "name"
+      ],
+      "calls": [
+        "ValueError",
+        "isinstance",
+        "load_registry",
+        "registry.get",
+        "tool.get"
+      ],
+      "returns": {
+        "type": "subscript",
+        "value": "dict",
+        "line": 66,
+        "end_line": 66
+      },
+      "line": 66,
+      "end_line": 74
+    },
+    {
+      "type": "function",
+      "name": "_entrypoint_path",
+      "args": [
+        "tool_entry"
+      ],
+      "calls": [
+        "FileNotFoundError",
+        "ValueError",
+        "isinstance",
+        "resolve",
+        "resolved.exists",
+        "resolved.relative_to",
+        "tool_entry.get"
+      ],
+      "returns": "Path",
+      "line": 77,
+      "end_line": 90
+    },
+    {
+      "type": "function",
+      "name": "_parse_response",
+      "args": [
+        "stdout"
+      ],
+      "calls": [
+        "TypeError",
+        "isinstance",
+        "json.loads",
+        "stdout.decode"
+      ],
+      "returns": {
+        "type": "subscript",
+        "value": "dict",
+        "line": 93,
+        "end_line": 93
+      },
+      "line": 93,
+      "end_line": 117
+    }
+  ],
+  "line": 1,
+  "end_line": 117
+}
