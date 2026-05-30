@@ -1,0 +1,19 @@
+name: ast_dump
+type: tool
+capability: ast_introspection
+purpose: Produce canonical Python ast.dump output from source text or files.
+status: experimental
+interfaces:
+  - name: dump_source
+    description: Parse Python source text and return ast.dump output.
+  - name: dump_file
+    description: Read a Python file, parse it, and return ast.dump output.
+  - name: run
+    description: Execute a structured operation/params request and return a success/error envelope.
+side_effects:
+  reads:
+    - dump_source reads provided source text only.
+    - dump_file reads the provided file path.
+  writes: []
+validation:
+  - python3 -m unittest discover -s file-tools/ast_dump/tests

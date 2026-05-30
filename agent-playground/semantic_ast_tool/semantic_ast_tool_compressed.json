@@ -1,0 +1,413 @@
+{
+  "success": true,
+  "message": "Compressed semantic AST",
+  "result": {
+    "type": "module",
+    "body": [
+      {
+        "type": "import_from",
+        "module": "__future__",
+        "names": [
+          "annotations"
+        ]
+      },
+      {
+        "type": "import",
+        "modules": [
+          "importlib.util"
+        ]
+      },
+      {
+        "type": "import",
+        "modules": [
+          "json"
+        ]
+      },
+      {
+        "type": "import",
+        "modules": [
+          "sys"
+        ]
+      },
+      {
+        "type": "import_from",
+        "module": "pathlib",
+        "names": [
+          "Path"
+        ]
+      },
+      {
+        "type": "import_from",
+        "module": "types",
+        "names": [
+          "ModuleType"
+        ]
+      },
+      {
+        "type": "import_from",
+        "module": "typing",
+        "names": [
+          "Any"
+        ]
+      },
+      {
+        "type": "assignment",
+        "targets": [
+          "_TOOL_DIR"
+        ],
+        "value": {
+          "type": "attribute",
+          "value": {
+            "type": "call",
+            "function": {
+              "type": "attribute",
+              "value": {
+                "type": "call",
+                "function": "Path",
+                "args": [
+                  "__file__"
+                ]
+              },
+              "line": 16,
+              "end_line": 16
+            }
+          },
+          "line": 16,
+          "end_line": 16
+        }
+      },
+      {
+        "type": "function",
+        "name": "_load_module",
+        "args": [
+          "module_name",
+          "path"
+        ],
+        "calls": [
+          "ImportError",
+          "importlib.util.module_from_spec",
+          "importlib.util.spec_from_file_location",
+          "spec.loader.exec_module"
+        ],
+        "returns": "ModuleType",
+        "line": 19,
+        "end_line": 25
+      },
+      {
+        "type": "assignment",
+        "targets": [
+          "_ast_parsing"
+        ],
+        "value": {
+          "type": "call",
+          "function": "_load_module",
+          "args": [
+            "semantic_ast_ast_parser",
+            {
+              "type": "binop",
+              "operator": "Div",
+              "left": {
+                "type": "binop",
+                "operator": "Div",
+                "left": "_TOOL_DIR",
+                "right": "ast_parsing"
+              },
+              "right": "ast_parser.py"
+            }
+          ]
+        }
+      },
+      {
+        "type": "assignment",
+        "targets": [
+          "_compression"
+        ],
+        "value": {
+          "type": "call",
+          "function": "_load_module",
+          "args": [
+            "semantic_ast_compression_tool",
+            {
+              "type": "binop",
+              "operator": "Div",
+              "left": {
+                "type": "binop",
+                "operator": "Div",
+                "left": "_TOOL_DIR",
+                "right": "compression"
+              },
+              "right": "compression.py"
+            }
+          ]
+        }
+      },
+      {
+        "type": "assignment",
+        "targets": [
+          "_call_graph"
+        ],
+        "value": {
+          "type": "call",
+          "function": "_load_module",
+          "args": [
+            "semantic_ast_call_graph_tool",
+            {
+              "type": "binop",
+              "operator": "Div",
+              "left": {
+                "type": "binop",
+                "operator": "Div",
+                "left": "_TOOL_DIR",
+                "right": "call_graph"
+              },
+              "right": "call_graph.py"
+            }
+          ]
+        }
+      },
+      {
+        "type": "assignment",
+        "targets": [
+          "parse_file"
+        ],
+        "value": {
+          "type": "attribute",
+          "value": "_ast_parsing",
+          "line": 41,
+          "end_line": 41
+        }
+      },
+      {
+        "type": "assignment",
+        "targets": [
+          "parse_source"
+        ],
+        "value": {
+          "type": "attribute",
+          "value": "_ast_parsing",
+          "line": 42,
+          "end_line": 42
+        }
+      },
+      {
+        "type": "assignment",
+        "targets": [
+          "compress_ast"
+        ],
+        "value": {
+          "type": "attribute",
+          "value": "_compression",
+          "line": 43,
+          "end_line": 43
+        }
+      },
+      {
+        "type": "assignment",
+        "targets": [
+          "build_call_graph"
+        ],
+        "value": {
+          "type": "attribute",
+          "value": "_call_graph",
+          "line": 44,
+          "end_line": 44
+        }
+      },
+      {
+        "type": "assignment",
+        "targets": [
+          "_OPERATIONS"
+        ],
+        "value": {
+          "type": "set",
+          "line": 47,
+          "end_line": 58
+        }
+      },
+      {
+        "type": "function",
+        "name": "run",
+        "args": [
+          "input_data"
+        ],
+        "calls": [
+          "ValueError",
+          "_error_envelope",
+          "_normalize_operation",
+          "_parse_request",
+          "_parse_tree_from_params",
+          "_subtool_for",
+          "bool",
+          "build_call_graph",
+          "compress_ast",
+          "len",
+          "params.get",
+          "parse_file",
+          "parse_source"
+        ],
+        "returns": {
+          "type": "subscript",
+          "value": "dict",
+          "line": 61,
+          "end_line": 61
+        },
+        "line": 61,
+        "end_line": 109
+      },
+      {
+        "type": "function",
+        "name": "main",
+        "calls": [
+          "ValueError",
+          "_error_envelope",
+          "_exit_code",
+          "json.dumps",
+          "json.loads",
+          "print",
+          "run",
+          "strip",
+          "sys.exit",
+          "sys.stdin.read"
+        ],
+        "line": 112,
+        "end_line": 129
+      },
+      {
+        "type": "function",
+        "name": "_parse_request",
+        "args": [
+          "input_data"
+        ],
+        "calls": [
+          "TypeError",
+          "ValueError",
+          "_normalize_operation",
+          "_validate_params",
+          "input_data.get",
+          "input_data.items",
+          "isinstance"
+        ],
+        "returns": {
+          "type": "subscript",
+          "value": "tuple",
+          "line": 132,
+          "end_line": 132
+        },
+        "line": 132,
+        "end_line": 154
+      },
+      {
+        "type": "function",
+        "name": "_normalize_operation",
+        "args": [
+          "operation"
+        ],
+        "calls": [
+          "operation.rsplit"
+        ],
+        "returns": "str",
+        "line": 157,
+        "end_line": 158
+      },
+      {
+        "type": "function",
+        "name": "_validate_params",
+        "args": [
+          "operation",
+          "params"
+        ],
+        "calls": [
+          "ValueError"
+        ],
+        "line": 161,
+        "end_line": 170
+      },
+      {
+        "type": "function",
+        "name": "_parse_tree_from_params",
+        "args": [
+          "params"
+        ],
+        "calls": [
+          "bool",
+          "params.get",
+          "parse_file",
+          "parse_source"
+        ],
+        "returns": {
+          "type": "subscript",
+          "value": "dict",
+          "line": 173,
+          "end_line": 173
+        },
+        "line": 173,
+        "end_line": 185
+      },
+      {
+        "type": "function",
+        "name": "_subtool_for",
+        "args": [
+          "operation"
+        ],
+        "returns": "str",
+        "line": 188,
+        "end_line": 195
+      },
+      {
+        "type": "function",
+        "name": "_error_envelope",
+        "args": [
+          "exc"
+        ],
+        "calls": [
+          "str"
+        ],
+        "returns": {
+          "type": "subscript",
+          "value": "dict",
+          "line": 198,
+          "end_line": 198
+        },
+        "line": 198,
+        "end_line": 207
+      },
+      {
+        "type": "function",
+        "name": "_exit_code",
+        "args": [
+          "response"
+        ],
+        "calls": [
+          "error.get",
+          "response.get"
+        ],
+        "returns": "int",
+        "line": 210,
+        "end_line": 225
+      },
+      {
+        "type": "if",
+        "body": [
+          {
+            "type": "expression_statement",
+            "value": {
+              "type": "call",
+              "function": "main"
+            },
+            "line": 229,
+            "end_line": 229
+          }
+        ],
+        "line": 228,
+        "end_line": 229
+      }
+    ],
+    "line": 1,
+    "end_line": 229
+  },
+  "meta": {
+    "operation": "compress_ast",
+    "normalized_operation": "compress_ast",
+    "subtool": "compression"
+  }
+}

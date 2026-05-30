@@ -4,26 +4,44 @@
 
 This repository is an experimental agent-tools development environment.
 
-The long-term goal is to build a modular AI-oriented orchestration system where:
+The goal is to build a modular capability layer where:
 
 * LLMs focus on reasoning, planning, and parameter generation.
-* Tools provide reusable capabilities.
+* Tools provide reusable, bounded capabilities.
 * Skills provide reusable workflows.
-* The runtime coordinates execution.
-* Behavior becomes modular, inspectable, and composable.
+* A runtime coordinates execution.
 
-The system should support both:
+The system is designed to support both:
 
 * large reasoning models
 * smaller local models
 
-by externalizing procedural behavior into tools and skills.
+---
+
+# Quick Navigation
+
+Read in this order when onboarding:
+
+1. `AGENTS.md` (this file): architecture and contracts
+2. `USE_TOOL.md`: standard tool usage contract
+3. `registry/tool_registry.json`: discoverable tool map
+4. `standards/`: formal specs (`TOOL_SPEC.md`, `SKILL_SPEC.md`, `AGENT_SPEC.md`)
+
+---
+
+# USE_TOOL
+
+For standard tool invocation, request/response envelope, and CLI examples, see:
+
+* `USE_TOOL.md`
+
+This file stays architecture-focused and tool-agnostic.
 
 ---
 
 # Core Philosophy
 
-The model should not rewrite every workflow from scratch.
+Models should not rewrite every procedure from scratch.
 
 Instead:
 
@@ -31,22 +49,13 @@ Instead:
 * reusable procedures should exist as skills
 * the model should orchestrate and parameterize them
 
-This repository treats tools as "capabilities" or "faculties" (Turkish: "kuvvet" veya "meleke") rather than simple helper functions.
-
-Examples:
-
-| Tool         | Capability   |
-| ------------ | ------------ |
-| rename_files | organization |
-| copy_paste   | transfer     |
-| find_block   | localization |
-| compare      | comparison   |
+Tools are treated as capabilities/faculties (Turkish: "Meleke, Kuvvet") rather than generic helper code.
 
 ---
 
 # Architectural Direction
 
-The intended architecture is:
+Intended flow:
 
 ```text
 LLM
@@ -58,59 +67,29 @@ Skills or Tools
 Execution Runtime
 ```
 
-The runtime may later include:
+The architecture is intentionally:
 
-* state tracking
-* procedural memory
-* permission systems
-* logging
-* tool registries
-* skill registries
-* multi-agent orchestration
+* modular
+* inspectable
+* composable
+* agent-agnostic
 
 ---
 
 # Repository Structure
 
 ```text
-agent-tools-dev/
+agent-tools/
 │
-├── standards/
-│   ├── TOOL_SPEC.md
-│   ├── SKILL_SPEC.md
-│   ├── AGENT_SPEC.md
-│   └── naming.yaml
-│
-├── templates/
-│   ├── tool_template/
-│   └── skill_template/
-│
-├── meta-skills/
-│   ├── create_tool/
-│   └── create_skill/
-│
-├── file-tools/
-│   ├── copy_paste/
-│   │   ├── AGENTS.md
-│   │   ├── SKILL.yaml
-│   │   ├── tool.py
-│   │   ├── tests/
-│   │   └── examples/
-│   │
-│   └── rename_files/
-│       ├── AGENTS.md
-│       ├── SKILL.yaml
-│       ├── tool.py
-│       ├── tests/
-│       └── examples/
-│
-├── runtime/
-│
-├── registry/
-│
-├── memory/
-│
-└── state/
+├── standards/          # specs and naming rules
+├── templates/          # starter templates for tools/skills
+├── meta-skills/        # skills that create/maintain ecosystem assets
+├── file-tools/         # deterministic tool implementations
+├── runtime/            # orchestration runtime (current + future)
+├── registry/           # discoverability and metadata registries
+├── memory/             # long-lived memory categories
+├── agent-playground/   # analysis outputs and experiment artifacts
+└── test-data/          # test fixtures/sample inputs
 ```
 
 ---
@@ -123,66 +102,35 @@ Tools should:
 * remain deterministic where possible
 * expose narrow interfaces
 * avoid hidden side effects
-* be composable
-* remain testable
+* remain composable and testable
 
-Preferred approach:
+Preferred implementation approach:
 
-* Python-first implementation
-* shell usage only when necessary
+* Python-first
+* shell only when necessary
 
-Tool execution should ideally remain:
-
-* cross-platform
-* inspectable
-* versionable
-* safe to orchestrate
-
-Tool functions should also include short explanatory comments/docstrings.
-
-Reasoning:
-
-* improves readability
-* helps small models understand intent
-* improves maintainability
-* supports automated tooling and parsing
-* reduces ambiguity during orchestration
+Tool functions should include concise docstrings/comments where they improve clarity.
 
 ---
 
 # Skill Philosophy
 
-Skills are reusable workflows.
+Skills are reusable workflows, not low-level capabilities.
 
-A skill is not a tool.
+A skill orchestrates tools and agent actions, and should declare:
 
-A skill orchestrates tools and Agent tasks.
+* inputs
+* outputs
+* steps
+* validation checks
 
-Example:
-
-```yaml
-name: move_function
-
-steps:
-  - tool: find_block
-  - tool: extract_block
-  - tool: insert_text
-```
-
-Skills may later support:
-
-* branching
-* retries
-* validation
-* memory access
-* permissions
-* state awareness
+Skills should be concrete enough for smaller models to execute reliably.
 
 ---
 
 # Meta-Skills
 
-Meta-skills are skills that create or organize the skill ecosystem itself.
+Meta-skills maintain and grow the ecosystem itself.
 
 Examples:
 
@@ -191,96 +139,43 @@ Examples:
 * update_registry
 * generate_tests
 
-These meta-skills are intended to help the ecosystem grow consistently.
+Long-term expectation:
 
----
-
-# Initial Tool: copy_paste
-
-The first major tool will be:
-
-```text
-copy_paste
-```
-
-Purpose:
-
-Safely move or duplicate text blocks between files.
-
-Initial capabilities:
-
-```python
-read_file(path)
-find_text(file, text)
-extract_range(file, start, end)
-insert_text(file, line, content)
-```
-
-Future planned capabilities:
-
-* semantic block finding
-* indentation preservation
-* duplicate prevention
-* structural insertion
-* AST-aware operations
-* multi-file workflows
+* meta-skills become executable pipelines, not only documentation.
 
 ---
 
 # Selection Problem
 
-One important architectural goal is solving the:
+A key design target is reducing manual line-number reasoning.
 
-```text
-selection problem
-```
+Instead of selecting text by fragile offsets, prefer semantic locators/selectors
+that narrow targets before mutation.
 
-Meaning:
+This improves:
 
-The model should not need to manually reason about exact line numbers whenever possible.
-
-Instead:
-
-* helper tools
-* locators
-* semantic selectors
-
-should narrow the execution target.
-
-Example:
-
-```python
-find_block(
-    file="app.py",
-    query="def main"
-)
-```
-
-This design helps:
-
-* small models
-* orchestration reliability
-* deterministic execution
+* reliability
+* determinism
 * token efficiency
+* small-model usability
 
 ---
 
-# Runtime, Registry, Memory, and State
+# Future Architecture
+
+This section consolidates long-term runtime direction.
 
 ## Runtime
 
-The runtime acts as the orchestration kernel of the ecosystem.
-
-Responsibilities may include:
+The runtime is the orchestration kernel. Expected responsibilities:
 
 * skill execution
 * tool dispatching
 * executor management
-* workflow orchestration
-* task lifecycle management
+* task lifecycle handling
 * event processing
 
-Possible future runtime structure:
+Possible structure:
 
 ```text
 runtime/
@@ -294,36 +189,16 @@ runtime/
 └── memory_manager.py
 ```
 
-The runtime should eventually support event-driven orchestration.
-
-Example flow:
-
-```text
-↓
-Event
-↓
-Runtime
-↓
-State Update
-↓
-Memory Update
-Tool
-```
-
----
-
 ## Registry
 
-The registry acts as the capability map of the ecosystem.
+The registry is the capability map. It should track:
 
-It tracks:
-
-* available tools
-* available skills
-* available executors
+* tools
+* skills
+* executors
 * metadata and versions
 
-Possible future structure:
+Possible structure:
 
 ```text
 registry/
@@ -333,13 +208,11 @@ registry/
 └── loader.py
 ```
 
----
-
 ## Memory
 
-Memory is intended for longer-lived information.
+Memory stores longer-lived information (distinct from runtime state).
 
-Potential memory categories:
+Potential categories:
 
 ```text
 memory/
@@ -350,72 +223,26 @@ memory/
 └── preferences/
 ```
 
-Important distinction:
+Focus area:
 
-* memory stores long-term information
-* state stores current runtime conditions
-
-The system is especially interested in:
-
-```text
-procedural memory
-```
-
-Meaning:
-
-Reusable knowledge about how tasks are commonly performed.
-
-Examples:
-
-* preferred project structures
-* preferred package managers
-* recurring workflows
-* coding conventions
-
----
+* procedural memory (reusable know-how about how work is performed)
 
 ## State
 
-State represents the current condition of the running system.
+State represents current runtime conditions.
 
 Examples:
 
-* active project
-* active branch
+* active project/branch/task
 * active skill
-* last modified files
 * recent tool usage
-* running tasks
+* last modified files
 
-Possible future structure:
+Preferred direction:
 
-```text
-state/
-├── session_state.json
-├── runtime_state.json
-├── active_tasks.json
-└── context_cache/
-```
+* event-driven state updates from tool/runtime events
 
-State should eventually update automatically.
-
-Preferred long-term approach:
-
-```text
-event-driven state updates
-```
-
-Meaning:
-
-Tools emit events.
-
-The runtime processes those events and updates:
-
-* state
-* memory
-* execution history
-
-Example:
+Example event:
 
 ```json
 {
@@ -424,71 +251,33 @@ Example:
 }
 ```
 
-This separation allows:
+## Executors and Model Coordination
 
-* deterministic tools
-* centralized state handling
-* cleaner orchestration
-* improved scalability
+Potential executor families:
 
----
-
-# Runtime Direction
+* Python
+* Bash
+* Git
+* Codex
+* Local model runtimes
 
 Long-term runtime goals:
 
 * stateful orchestration
-* tool registries
-* skill registries
-* memory systems
+* registry-backed discoverability
+* memory integration
 * execution history
 * permission systems
 * multi-model coordination
 
-Possible future executor structure:
-
-```text
-Executors/
-├── Python
-├── Bash
-├── Git
-├── Codex
-└── Local Models
-```
-
 ---
 
-# Agent-Agnostic Philosophy
+# Agent-Agnostic Principle
 
-This ecosystem is intended to remain:
+This ecosystem should not depend on a single agent framework or model vendor.
 
-```text
-agent-agnostic
-```
-
-Meaning:
-
-The tool and skill system should not depend on a single agent framework, model provider, or orchestration runtime.
-
-The architecture should remain portable and reusable across different systems.
-
-Possible integrations may include:
-
-* Pi Agent
-* Codex
-* local LLM runtimes
-* future orchestration frameworks
-* custom runtimes
-
-The repository therefore focuses on:
-
-* reusable capabilities
-* modular workflows
-* standardized interfaces
-* inspectable execution
-* portable orchestration patterns
-
-The long-term goal is to build a flexible capability layer that can operate independently from any single agent implementation.
+It is a portable capability layer intended to integrate with multiple
+orchestration environments.
 
 ---
 
@@ -499,24 +288,21 @@ Current implementation priorities:
 1. standards/
 2. template system
 3. meta-skill system
-4. create_tool meta-skill
-5. copy_paste tool
-6. registry system
-7. tool chaining
+4. create_tool/create_skill execution workflows
+5. registry maturity
+6. tool chaining/orchestration
 
-Permission systems are intentionally postponed until the runtime architecture stabilizes.
+Permission systems remain intentionally postponed until runtime contracts
+stabilize.
 
 ---
 
 # Implementation Contracts
 
-The initial repository implementation should convert the philosophy above into
-small, inspectable contracts.
-
 New tools should include:
 
 * local `AGENTS.md`
-* `SKILL.yaml` metadata
+* `SKILL.yaml`
 * `tool.py`
 * tests
 * examples
@@ -524,26 +310,26 @@ New tools should include:
 
 New skills should include:
 
-* `SKILL.yaml` metadata
+* `SKILL.yaml`
 * concrete workflow steps
-* required inputs and outputs
+* required inputs/outputs
 * validation checks
 * registry entry
 
-When adding or modifying capabilities:
+When adding/modifying capabilities:
 
-* keep public interfaces narrow
+* keep interfaces narrow
 * document side effects explicitly
+* validate before mutation
+* update registries for discoverability
+* add tests before considering a capability usable
 * prefer 1-based line numbers for user-facing text selection APIs
-* validate before mutating files
-* update registry files when adding discoverable tools or skills
-* add tests before considering a tool usable
 
 ---
 
 # Design Principles
 
-The ecosystem should aim for:
+The ecosystem should optimize for:
 
 * modularity
 * inspectability
@@ -551,8 +337,8 @@ The ecosystem should aim for:
 * low-context execution
 * deterministic tooling
 * reusable procedural memory
-* compatibility with both large and small models
+* compatibility across model sizes
 
-The long-term goal is not merely code generation.
+The goal is not only code generation.
 
-The long-term goal is orchestrated, reusable, inspectable intelligent behavior.
+The goal is orchestrated, reusable, inspectable intelligent behavior.

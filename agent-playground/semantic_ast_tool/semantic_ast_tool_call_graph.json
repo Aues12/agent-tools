@@ -1,0 +1,225 @@
+{
+  "type": "call_graph",
+  "path": "/workspace/agent-tools/file-tools/semantic_ast/tool.py",
+  "nodes": [
+    {
+      "id": "_load_module",
+      "name": "_load_module",
+      "qualified_name": "_load_module",
+      "path": "/workspace/agent-tools/file-tools/semantic_ast/tool.py",
+      "line": 19,
+      "end_line": 25,
+      "external_calls": [
+        "ImportError",
+        "importlib.util.module_from_spec",
+        "importlib.util.spec_from_file_location",
+        "spec.loader.exec_module"
+      ]
+    },
+    {
+      "id": "run",
+      "name": "run",
+      "qualified_name": "run",
+      "path": "/workspace/agent-tools/file-tools/semantic_ast/tool.py",
+      "line": 61,
+      "end_line": 109,
+      "calls": [
+        "_error_envelope",
+        "_normalize_operation",
+        "_parse_request",
+        "_parse_tree_from_params",
+        "_subtool_for"
+      ],
+      "external_calls": [
+        "ValueError",
+        "bool",
+        "build_call_graph",
+        "compress_ast",
+        "len",
+        "params.get",
+        "parse_file",
+        "parse_source"
+      ]
+    },
+    {
+      "id": "main",
+      "name": "main",
+      "qualified_name": "main",
+      "path": "/workspace/agent-tools/file-tools/semantic_ast/tool.py",
+      "line": 112,
+      "end_line": 129,
+      "calls": [
+        "_error_envelope",
+        "_exit_code",
+        "run"
+      ],
+      "external_calls": [
+        "ValueError",
+        "json.dumps",
+        "json.loads",
+        "print",
+        "strip",
+        "sys.exit",
+        "sys.stdin.read"
+      ]
+    },
+    {
+      "id": "_parse_request",
+      "name": "_parse_request",
+      "qualified_name": "_parse_request",
+      "path": "/workspace/agent-tools/file-tools/semantic_ast/tool.py",
+      "line": 132,
+      "end_line": 154,
+      "calls": [
+        "_normalize_operation",
+        "_validate_params"
+      ],
+      "external_calls": [
+        "TypeError",
+        "ValueError",
+        "input_data.get",
+        "input_data.items",
+        "isinstance"
+      ]
+    },
+    {
+      "id": "_normalize_operation",
+      "name": "_normalize_operation",
+      "qualified_name": "_normalize_operation",
+      "path": "/workspace/agent-tools/file-tools/semantic_ast/tool.py",
+      "line": 157,
+      "end_line": 158,
+      "external_calls": [
+        "operation.rsplit"
+      ]
+    },
+    {
+      "id": "_validate_params",
+      "name": "_validate_params",
+      "qualified_name": "_validate_params",
+      "path": "/workspace/agent-tools/file-tools/semantic_ast/tool.py",
+      "line": 161,
+      "end_line": 170,
+      "external_calls": [
+        "ValueError"
+      ]
+    },
+    {
+      "id": "_parse_tree_from_params",
+      "name": "_parse_tree_from_params",
+      "qualified_name": "_parse_tree_from_params",
+      "path": "/workspace/agent-tools/file-tools/semantic_ast/tool.py",
+      "line": 173,
+      "end_line": 185,
+      "external_calls": [
+        "bool",
+        "params.get",
+        "parse_file",
+        "parse_source"
+      ]
+    },
+    {
+      "id": "_subtool_for",
+      "name": "_subtool_for",
+      "qualified_name": "_subtool_for",
+      "path": "/workspace/agent-tools/file-tools/semantic_ast/tool.py",
+      "line": 188,
+      "end_line": 195
+    },
+    {
+      "id": "_error_envelope",
+      "name": "_error_envelope",
+      "qualified_name": "_error_envelope",
+      "path": "/workspace/agent-tools/file-tools/semantic_ast/tool.py",
+      "line": 198,
+      "end_line": 207,
+      "external_calls": [
+        "str"
+      ]
+    },
+    {
+      "id": "_exit_code",
+      "name": "_exit_code",
+      "qualified_name": "_exit_code",
+      "path": "/workspace/agent-tools/file-tools/semantic_ast/tool.py",
+      "line": 210,
+      "end_line": 225,
+      "external_calls": [
+        "error.get",
+        "response.get"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "caller": "_parse_request",
+      "callee": "_normalize_operation",
+      "call": "_normalize_operation"
+    },
+    {
+      "caller": "_parse_request",
+      "callee": "_validate_params",
+      "call": "_validate_params"
+    },
+    {
+      "caller": "main",
+      "callee": "_error_envelope",
+      "call": "_error_envelope"
+    },
+    {
+      "caller": "main",
+      "callee": "_exit_code",
+      "call": "_exit_code"
+    },
+    {
+      "caller": "main",
+      "callee": "run",
+      "call": "run"
+    },
+    {
+      "caller": "run",
+      "callee": "_error_envelope",
+      "call": "_error_envelope"
+    },
+    {
+      "caller": "run",
+      "callee": "_normalize_operation",
+      "call": "_normalize_operation"
+    },
+    {
+      "caller": "run",
+      "callee": "_parse_request",
+      "call": "_parse_request"
+    },
+    {
+      "caller": "run",
+      "callee": "_parse_tree_from_params",
+      "call": "_parse_tree_from_params"
+    },
+    {
+      "caller": "run",
+      "callee": "_subtool_for",
+      "call": "_subtool_for"
+    }
+  ],
+  "roots": [
+    "_load_module",
+    "main"
+  ],
+  "leaves": [
+    "_error_envelope",
+    "_exit_code",
+    "_load_module",
+    "_normalize_operation",
+    "_parse_tree_from_params",
+    "_subtool_for",
+    "_validate_params"
+  ],
+  "tree": "_load_module\nmain\n├── _error_envelope\n├── _exit_code\n└── run\n    ├── _error_envelope\n    ├── _normalize_operation\n    ├── _parse_request\n    │   ├── _normalize_operation\n    │   └── _validate_params\n    ├── _parse_tree_from_params\n    └── _subtool_for",
+  "stats": {
+    "functions": 10,
+    "edges": 10,
+    "roots": 2,
+    "leaves": 7
+  }
+}

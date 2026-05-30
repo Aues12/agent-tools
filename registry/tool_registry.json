@@ -76,6 +76,23 @@
         "parse_file",
         "run"
       ]
+    },
+    {
+      "name": "ast_dump",
+      "capability": "ast_introspection",
+      "path": "file-tools/ast_dump",
+      "entrypoint": "ast_dump.py",
+      "transport": "stdin_json",
+      "status": "experimental",
+      "operations": [
+        "dump_source",
+        "dump_file"
+      ],
+      "interfaces": [
+        "dump_source",
+        "dump_file",
+        "run"
+      ]
     }
   ]
 }
