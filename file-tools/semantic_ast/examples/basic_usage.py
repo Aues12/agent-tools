@@ -10,7 +10,7 @@ from pathlib import Path
 TOOL_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(TOOL_DIR))
 
-from tool import run  # noqa: E402
+from tool import run
 
 
 def main() -> None:
@@ -25,7 +25,8 @@ def main():
     response = run(
         {
             "operation": "parse_and_build_call_graph",
-            "params": {"source": source, "path": "example.py"},
+            "params": {"source": source, 
+                       "path": "example.py"},
         }
     )
     print(json.dumps(response, ensure_ascii=False, indent=2))

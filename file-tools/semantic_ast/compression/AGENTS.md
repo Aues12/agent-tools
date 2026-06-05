@@ -173,20 +173,3 @@ Preserve metadata only when it meaningfully improves:
 - code extraction
 
 Prefer minimal useful metadata.
-
----
-
-# Long-Term Direction
-
-Possible future extensions:
-- repository memory generation
-- semantic embeddings
-- dependency summarization
-- call graph compression
-- semantic chunking
-- retrieval-oriented indexing
-- multi-resolution AST views
-
-The long-term goal is:
-compact semantic representations optimized for intelligent systems.
-```

@@ -10,5 +10,3 @@ Local rules:
 * Keep file writes limited to the target path passed by the caller.
 * Do not update registry, memory, or state from this tool.
 * Prefer explicit text matching over implicit semantic selection.
-
-Future semantic selection should live in a locator tool such as `find_block`.

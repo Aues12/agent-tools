@@ -1,3 +1,3 @@
 # Preferences
 
-Use this directory for durable preferences that affect future orchestration.
+Use this directory for durable preferences that affect orchestration behavior.

@@ -25,7 +25,8 @@ Read in this order when onboarding:
 1. `AGENTS.md` (this file): architecture and contracts
 2. `USE_TOOL.md`: standard tool usage contract
 3. `registry/tool_registry.json`: discoverable tool map
-4. `standards/`: formal specs (`TOOL_SPEC.md`, `SKILL_SPEC.md`, `AGENT_SPEC.md`)
+4. `FUTURE_IMPROVEMENTS.md`: roadmap and deferred work
+5. `standards/`: formal specs (`TOOL_SPEC.md`, `SKILL_SPEC.md`, `AGENT_SPEC.md`)
 
 ---
 
@@ -85,7 +86,7 @@ agent-tools/
 ├── templates/          # starter templates for tools/skills
 ├── meta-skills/        # skills that create/maintain ecosystem assets
 ├── file-tools/         # deterministic tool implementations
-├── runtime/            # orchestration runtime (current + future)
+├── runtime/            # orchestration runtime
 ├── registry/           # discoverability and metadata registries
 ├── memory/             # long-lived memory categories
 ├── agent-playground/   # analysis outputs and experiment artifacts
@@ -139,137 +140,6 @@ Examples:
 * update_registry
 * generate_tests
 
-Long-term expectation:
-
-* meta-skills become executable pipelines, not only documentation.
-
----
-
-# Selection Problem
-
-A key design target is reducing manual line-number reasoning.
-
-Instead of selecting text by fragile offsets, prefer semantic locators/selectors
-that narrow targets before mutation.
-
-This improves:
-
-* reliability
-* determinism
-* token efficiency
-* small-model usability
-
----
-
-# Future Architecture
-
-This section consolidates long-term runtime direction.
-
-## Runtime
-
-The runtime is the orchestration kernel. Expected responsibilities:
-
-* skill execution
-* tool dispatching
-* executor management
-* task lifecycle handling
-* event processing
-
-Possible structure:
-
-```text
-runtime/
-├── engine.py
-├── planner.py
-├── dispatcher.py
-├── executor_manager.py
-├── task_queue.py
-├── event_bus.py
-├── state_manager.py
-└── memory_manager.py
-```
-
-## Registry
-
-The registry is the capability map. It should track:
-
-* tools
-* skills
-* executors
-* metadata and versions
-
-Possible structure:
-
-```text
-registry/
-├── tool_registry.json
-├── skill_registry.json
-├── executor_registry.json
-└── loader.py
-```
-
-## Memory
-
-Memory stores longer-lived information (distinct from runtime state).
-
-Potential categories:
-
-```text
-memory/
-├── procedural/
-├── semantic/
-├── task_history/
-├── project_memory/
-└── preferences/
-```
-
-Focus area:
-
-* procedural memory (reusable know-how about how work is performed)
-
-## State
-
-State represents current runtime conditions.
-
-Examples:
-
-* active project/branch/task
-* active skill
-* recent tool usage
-* last modified files
-
-Preferred direction:
-
-* event-driven state updates from tool/runtime events
-
-Example event:
-
-```json
-{
-  "event": "file_modified",
-  "file": "app.py"
-}
-```
-
-## Executors and Model Coordination
-
-Potential executor families:
-
-* Python
-* Bash
-* Git
-* Codex
-* Local model runtimes
-
-Long-term runtime goals:
-
-* stateful orchestration
-* registry-backed discoverability
-* memory integration
-* execution history
-* permission systems
-* multi-model coordination
-
 ---
 
 # Agent-Agnostic Principle
@@ -278,22 +148,6 @@ This ecosystem should not depend on a single agent framework or model vendor.
 
 It is a portable capability layer intended to integrate with multiple
 orchestration environments.
-
----
-
-# Current Priorities
-
-Current implementation priorities:
-
-1. standards/
-2. template system
-3. meta-skill system
-4. create_tool/create_skill execution workflows
-5. registry maturity
-6. tool chaining/orchestration
-
-Permission systems remain intentionally postponed until runtime contracts
-stabilize.
 
 ---
 

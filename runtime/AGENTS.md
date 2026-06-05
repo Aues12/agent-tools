@@ -25,57 +25,6 @@ The runtime should coordinate capabilities.
 
 ---
 
-# Planned Components
-
-## engine.py
-
-Main orchestration entrypoint.
-
-Responsibilities:
-- receive goals/tasks
-- request plans from planner
-- coordinate execution
-- return results
-
-The engine should remain lightweight.
-
----
-
-## planner.py
-
-Responsible for generating execution plans.
-
-Input:
-- user goal
-- task description
-
-Output:
-- ordered execution steps
-
-The planner may initially use simple rule-based logic,
-and later evolve into an LLM-assisted planner.
-
----
-
-## executor.py
-
-Responsible for executing tools safely and consistently.
-
-Responsibilities:
-- load tools
-- execute tool interfaces
-- collect results
-- handle execution errors
-
-The executor should not contain planning logic.
-
----
-
-These files may not exist yet. Add them only when the runtime needs executable
-behavior beyond documentation and registry loading.
-
----
-
 # Architectural Principles
 
 ## 1. Separation of Concerns
@@ -131,17 +80,5 @@ Runtime should coordinate tools,
 not replace them.
 
 ---
-
-# Long-Term Direction
-
-This layer may later evolve into:
-
-* workflow orchestration
-* autonomous execution
-* memory-aware planning
-* multi-step reasoning pipelines
-
-However:
-simplicity takes priority over premature complexity.
 
 Build the smallest system that works well.
