@@ -1,0 +1,7 @@
+"""Executable entrypoint for the semantic_cards tool."""
+
+from tool import main
+
+
+if __name__ == "__main__":
+    main()

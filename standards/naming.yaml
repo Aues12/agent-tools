@@ -29,3 +29,11 @@ capabilities:
     description: "Rename, sort, group, or structure artifacts."
   comparison:
     description: "Compare artifacts or states and report differences."
+  ast_introspection:
+    description: "Inspect native AST structures for low-level syntax fidelity."
+  ast_parsing:
+    description: "Parse source code into structured AST representations."
+  semantic_code_analysis:
+    description: "Analyze source code semantics, structure, and relationships."
+  semantic_code_navigation:
+    description: "Build navigable semantic code views and relation records."

@@ -1,0 +1,28 @@
+name: semantic_cards
+type: tool
+capability: semantic_code_navigation
+purpose: Build deterministic semantic cards and relations from Python semantic AST trees.
+status: experimental
+interfaces:
+  - name: build_cards
+    description: Convert an existing semantic_ast module tree into cards and relations.
+  - name: cards_from_source
+    description: Parse Python source text and build semantic cards.
+  - name: cards_from_file
+    description: Read a Python file, parse it, and build semantic cards.
+  - name: run
+    description: Execute a structured operation/params request and return a success/error envelope.
+side_effects:
+  reads:
+    - build_cards reads provided semantic AST data only.
+    - cards_from_source reads provided source text only.
+    - cards_from_file reads the provided file path.
+  writes: []
+line_numbers:
+  base: 1
+  ranges: inclusive
+id_standard:
+  format: "{kind}:{qualified_name}"
+  source_trace: trace.path, trace.line, trace.end_line
+validation:
+  - python3 -m unittest discover -s file-tools/semantic_cards/tests

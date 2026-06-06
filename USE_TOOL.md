@@ -95,6 +95,15 @@ printf '%s' '{
 }' | python3 file-tools/semantic_ast/semantic_ast.py
 ```
 
+### `semantic_cards` — cards and relations
+
+```bash
+printf '%s' '{
+  "operation":"cards_from_file",
+  "params":{"path":"file-tools/semantic_ast/tool.py"}
+}' | python3 file-tools/semantic_cards/semantic_cards.py
+```
+
 ### `ast_dump` — canonical Python ast.dump
 
 ```bash
@@ -116,6 +125,7 @@ python3 -m unittest discover -s file-tools/<tool_name>/tests
 
 - Use `copy_paste` for deterministic text operations (read/find/extract/insert).
 - Use `semantic_ast` for semantic JSON tree, compression, and call-graph analysis.
+- Use `semantic_cards` for semantic navigation cards and separate relations.
 - Use `ast_dump` for Python-native AST fidelity (`ast.dump`) and low-level AST checks.
 
 ## 7) Notes

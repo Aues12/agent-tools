@@ -11,6 +11,7 @@ TOOL_TEST_DIRS = [
     "file-tools/semantic_ast/tests",
     "file-tools/semantic_ast/ast_parsing/tests",
     "file-tools/semantic_ast/call_graph/tests",
+    "file-tools/semantic_cards/tests",
 ]
 
 
