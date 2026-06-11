@@ -15,10 +15,22 @@
         "insert_text"
       ],
       "interfaces": [
-        "read_file",
-        "find_text",
-        "extract_range",
-        "insert_text"
+        {
+          "name": "stdin_json",
+          "entrypoint": "copy_paste.py",
+          "transport": "stdin_json"
+        },
+        {
+          "name": "python_api",
+          "entrypoint": "tool.py",
+          "callables": [
+            "read_file",
+            "find_text",
+            "extract_range",
+            "insert_text",
+            "run"
+          ]
+        }
       ]
     },
     {
@@ -32,7 +44,19 @@
         "rename_files"
       ],
       "interfaces": [
-        "rename_files"
+        {
+          "name": "stdin_json",
+          "entrypoint": "rename_files.py",
+          "transport": "stdin_json"
+        },
+        {
+          "name": "python_api",
+          "entrypoint": "tool.py",
+          "callables": [
+            "rename_files",
+            "run"
+          ]
+        }
       ]
     },
     {
@@ -51,13 +75,22 @@
         "parse_and_build_call_graph"
       ],
       "interfaces": [
-        "parse_source",
-        "parse_file",
-        "compress_ast",
-        "build_call_graph",
-        "parse_and_compress",
-        "parse_and_build_call_graph",
-        "run"
+        {
+          "name": "stdin_json",
+          "entrypoint": "semantic_ast.py",
+          "transport": "stdin_json"
+        },
+        {
+          "name": "python_api",
+          "entrypoint": "tool.py",
+          "callables": [
+            "parse_source",
+            "parse_file",
+            "compress_ast",
+            "build_call_graph",
+            "run"
+          ]
+        }
       ]
     },
     {
@@ -73,10 +106,21 @@
         "cards_from_file"
       ],
       "interfaces": [
-        "build_cards",
-        "cards_from_source",
-        "cards_from_file",
-        "run"
+        {
+          "name": "stdin_json",
+          "entrypoint": "semantic_cards.py",
+          "transport": "stdin_json"
+        },
+        {
+          "name": "python_api",
+          "entrypoint": "tool.py",
+          "callables": [
+            "build_cards",
+            "cards_from_source",
+            "cards_from_file",
+            "run"
+          ]
+        }
       ]
     },
     {
@@ -91,9 +135,73 @@
         "parse_file"
       ],
       "interfaces": [
-        "parse_source",
-        "parse_file",
-        "run"
+        {
+          "name": "stdin_json",
+          "entrypoint": "ast_parser.py",
+          "transport": "stdin_json"
+        },
+        {
+          "name": "python_api",
+          "entrypoint": "ast_parser.py",
+          "callables": [
+            "parse_source",
+            "parse_file",
+            "run"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "compression",
+      "capability": "semantic_code_analysis",
+      "path": "file-tools/semantic_ast/compression",
+      "entrypoint": "../semantic_ast.py",
+      "transport": "stdin_json",
+      "status": "experimental",
+      "operations": [
+        "compress_ast",
+        "parse_and_compress"
+      ],
+      "interfaces": [
+        {
+          "name": "parent_stdin_json",
+          "entrypoint": "../semantic_ast.py",
+          "transport": "stdin_json"
+        },
+        {
+          "name": "python_api",
+          "entrypoint": "compression.py",
+          "callables": [
+            "compress_ast"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "call_graph",
+      "capability": "semantic_code_analysis",
+      "path": "file-tools/semantic_ast/call_graph",
+      "entrypoint": "../semantic_ast.py",
+      "transport": "stdin_json",
+      "status": "experimental",
+      "operations": [
+        "build_call_graph",
+        "parse_and_build_call_graph"
+      ],
+      "interfaces": [
+        {
+          "name": "parent_stdin_json",
+          "entrypoint": "../semantic_ast.py",
+          "transport": "stdin_json"
+        },
+        {
+          "name": "python_api",
+          "entrypoint": "call_graph.py",
+          "callables": [
+            "build_call_graph",
+            "render_call_tree"
+          ]
+        }
       ]
     },
     {
@@ -108,9 +216,20 @@
         "dump_file"
       ],
       "interfaces": [
-        "dump_source",
-        "dump_file",
-        "run"
+        {
+          "name": "stdin_json",
+          "entrypoint": "ast_dump.py",
+          "transport": "stdin_json"
+        },
+        {
+          "name": "python_api",
+          "entrypoint": "tool.py",
+          "callables": [
+            "dump_source",
+            "dump_file",
+            "run"
+          ]
+        }
       ]
     }
   ]

@@ -3,13 +3,55 @@ type: tool
 capability: ast_parsing
 purpose: Parse Python source into a compact semantic AST for navigation and analysis.
 status: experimental
+deterministic: true
 interfaces:
+  - name: stdin_json
+    entrypoint: ast_parser.py
+    transport: stdin_json
+  - name: python_api
+    entrypoint: ast_parser.py
+    callables:
+      - parse_source
+      - parse_file
+      - run
+operations:
   - name: parse_source
-    description: Parse Python source text into a normalized semantic AST.
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      source:
+        type: string
+        required: true
+      path:
+        type: string
+        required: false
+      include_source:
+        type: boolean
+        required: false
+        default: false
+    returns:
+      type: object
+      description: Normalized semantic AST module tree.
   - name: parse_file
-    description: Read a Python file and parse it into a normalized semantic AST.
-  - name: run
-    description: Execute the sub-tool using the canonical operation and params envelope.
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      path:
+        type: string
+        required: true
+      encoding:
+        type: string
+        required: false
+        default: utf-8
+      include_source:
+        type: boolean
+        required: false
+        default: false
+    returns:
+      type: object
+      description: Normalized semantic AST module tree.
 side_effects:
   reads:
     - parse_source reads provided source text only.
@@ -18,5 +60,8 @@ side_effects:
 line_numbers:
   base: 1
   ranges: inclusive
+failure_modes:
+  - invalid source raises SyntaxError or IndentationError in the structured error envelope.
+  - missing files raise FileNotFoundError.
 validation:
   - python3 -m unittest discover -s file-tools/semantic_ast/ast_parsing/tests

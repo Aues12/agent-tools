@@ -1,0 +1,67 @@
+name: compression
+type: tool
+capability: semantic_code_analysis
+purpose: Compress verbose semantic AST structures into compact deterministic representations.
+status: experimental
+deterministic: true
+interfaces:
+  - name: parent_stdin_json
+    entrypoint: ../semantic_ast.py
+    transport: stdin_json
+    operations:
+      - compress_ast
+      - parse_and_compress
+  - name: python_api
+    entrypoint: compression.py
+    callables:
+      - compress_ast
+operations:
+  - name: compress_ast
+    available_via:
+      - parent_stdin_json
+      - python_api
+    params:
+      tree:
+        type: object|array|scalar
+        required: true
+    returns:
+      type: object|array|scalar
+      description: Compressed semantic AST structure.
+  - name: parse_and_compress
+    available_via:
+      - parent_stdin_json
+    params:
+      source:
+        type: string
+        required: false
+      path:
+        type: string
+        required: false
+      encoding:
+        type: string
+        required: false
+        default: utf-8
+      include_source:
+        type: boolean
+        required: false
+        default: false
+    requires_one_of:
+      - source
+      - path
+    returns:
+      type: object|array|scalar
+      description: Parsed and compressed semantic AST structure.
+side_effects:
+  reads:
+    - compress_ast reads provided semantic AST data only.
+    - parse_and_compress reads a file only when path is provided instead of source.
+  writes: []
+line_numbers:
+  base: 1
+  ranges: inclusive
+limits:
+  - preserves selected semantic fields rather than full parser detail.
+failure_modes:
+  - unknown node types use generic compression.
+validation:
+  - python3 -m unittest discover -s file-tools/semantic_ast/compression/tests

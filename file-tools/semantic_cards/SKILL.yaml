@@ -3,15 +3,71 @@ type: tool
 capability: semantic_code_navigation
 purpose: Build deterministic semantic cards and relations from Python semantic AST trees.
 status: experimental
+deterministic: true
 interfaces:
+  - name: stdin_json
+    entrypoint: semantic_cards.py
+    transport: stdin_json
+  - name: python_api
+    entrypoint: tool.py
+    callables:
+      - build_cards
+      - cards_from_source
+      - cards_from_file
+      - run
+operations:
   - name: build_cards
-    description: Convert an existing semantic_ast module tree into cards and relations.
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      tree:
+        type: object
+        required: true
+      include_statements:
+        type: boolean
+        required: false
+        default: true
+    returns:
+      type: object
+      description: Semantic cards, relations, root ids, and stats.
   - name: cards_from_source
-    description: Parse Python source text and build semantic cards.
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      source:
+        type: string
+        required: true
+      path:
+        type: string
+        required: false
+      include_statements:
+        type: boolean
+        required: false
+        default: true
+    returns:
+      type: object
+      description: Parsed semantic cards result.
   - name: cards_from_file
-    description: Read a Python file, parse it, and build semantic cards.
-  - name: run
-    description: Execute a structured operation/params request and return a success/error envelope.
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      path:
+        type: string
+        required: true
+      encoding:
+        type: string
+        required: false
+        default: utf-8
+      include_statements:
+        type: boolean
+        required: false
+        default: true
+    returns:
+      type: object
+      description: Parsed semantic cards result.
 side_effects:
   reads:
     - build_cards reads provided semantic AST data only.
@@ -24,5 +80,10 @@ line_numbers:
 id_standard:
   format: "{kind}:{qualified_name}"
   source_trace: trace.path, trace.line, trace.end_line
+limits:
+  - expression-level cards are intentionally excluded from the first version.
+  - LLM annotation and semantic similarity are intentionally out of scope.
+failure_modes:
+  - non-module trees return a structured ValueError envelope.
 validation:
   - python3 -m unittest discover -s file-tools/semantic_cards/tests

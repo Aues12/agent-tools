@@ -27,9 +27,80 @@ primary source of truth. It should include:
 * `type`: `tool`.
 * `capability`: short capability label.
 * `purpose`: one sentence describing the tool.
-* `interfaces`: exported callable functions.
+* `interfaces`: access surfaces such as `stdin_json` or `python_api`.
+* `operations`: bounded actions available through one or more interfaces.
 * `side_effects`: explicit description of reads and writes.
 * `status`: `draft`, `experimental`, or `stable`.
+
+## Interface and Operation Model
+
+Tools should distinguish access surfaces from executable actions.
+
+An `interface` answers:
+
+```text
+How can a runtime or agent access this tool?
+```
+
+Examples:
+
+```yaml
+interfaces:
+  - name: stdin_json
+    entrypoint: semantic_cards.py
+    transport: stdin_json
+  - name: python_api
+    entrypoint: tool.py
+    callables:
+      - cards_from_file
+      - cards_from_source
+      - build_cards
+      - run
+```
+
+An `operation` answers:
+
+```text
+What bounded action can the tool perform?
+```
+
+Examples:
+
+```yaml
+operations:
+  - name: cards_from_file
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      path:
+        type: string
+        required: true
+      encoding:
+        type: string
+        required: false
+        default: utf-8
+      include_statements:
+        type: boolean
+        required: false
+        default: true
+    returns:
+      type: object
+      description: Semantic cards result.
+```
+
+This separation keeps invocation unambiguous:
+
+```text
+interface = how to call
+operation = what to do
+params = operation inputs
+returns = operation output
+```
+
+Do not use `interfaces` as a plain list of function or operation names.
+Function names belong under `python_api.callables`; action names belong under
+`operations`.
 
 ## Interface Rules
 

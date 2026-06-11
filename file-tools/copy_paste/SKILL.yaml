@@ -3,24 +3,111 @@ type: tool
 capability: transfer
 purpose: Safely read, locate, extract, and insert text blocks in files.
 status: experimental
+deterministic: true
 interfaces:
+  - name: stdin_json
+    entrypoint: copy_paste.py
+    transport: stdin_json
+  - name: python_api
+    entrypoint: tool.py
+    callables:
+      - read_file
+      - find_text
+      - extract_range
+      - insert_text
+      - run
+operations:
   - name: read_file
-    description: Read a text file and return its contents.
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      path:
+        type: string
+        required: true
+      encoding:
+        type: string
+        required: false
+        default: utf-8
+    returns:
+      type: object
+      description: File path, encoding, and content.
   - name: find_text
-    description: Find exact text occurrences and return 1-based line and column positions.
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      file:
+        type: string
+        required: true
+      text:
+        type: string
+        required: true
+      encoding:
+        type: string
+        required: false
+        default: utf-8
+      allow_overlap:
+        type: boolean
+        required: false
+        default: false
+    returns:
+      type: object
+      description: Match count and 1-based match positions.
   - name: extract_range
-    description: Extract an inclusive 1-based line range from a text file.
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      file:
+        type: string
+        required: true
+      start:
+        type: integer
+        required: true
+      end:
+        type: integer
+        required: true
+      encoding:
+        type: string
+        required: false
+        default: utf-8
+    returns:
+      type: object
+      description: Extracted inclusive line range content.
   - name: insert_text
-    description: Insert text before a 1-based line number, or append at line_count + 1.
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      file:
+        type: string
+        required: true
+      line:
+        type: integer
+        required: true
+      content:
+        type: string
+        required: true
+      encoding:
+        type: string
+        required: false
+        default: utf-8
+    returns:
+      type: object
+      description: Write confirmation and target location.
 side_effects:
   reads:
-    - read_file
-    - find_text
-    - extract_range
+    - read_file reads the provided path.
+    - find_text reads the provided file.
+    - extract_range reads the provided file.
   writes:
-    - insert_text writes only to the target file path
+    - insert_text writes only to the target file path.
 line_numbers:
   base: 1
   ranges: inclusive
+failure_modes:
+  - invalid input returns a structured error envelope.
+  - missing files raise FileNotFoundError.
 validation:
-  - python -m unittest discover -s file-tools/copy_paste/tests
+  - python3 -m unittest discover -s file-tools/copy_paste/tests

@@ -3,13 +3,56 @@ type: tool
 capability: organization
 purpose: Safely plan or apply deterministic filename replacements inside a directory.
 status: experimental
+deterministic: true
 interfaces:
+  - name: stdin_json
+    entrypoint: rename_files.py
+    transport: stdin_json
+  - name: python_api
+    entrypoint: tool.py
+    callables:
+      - rename_files
+      - run
+operations:
   - name: rename_files
-    description: Rename files by replacing exact text in filenames, with dry-run and conflict reporting support.
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      directory:
+        type: string
+        required: true
+      find_text:
+        type: string
+        required: true
+      replace_text:
+        type: string
+        required: false
+        default: ""
+      recursive:
+        type: boolean
+        required: false
+        default: false
+      dry_run:
+        type: boolean
+        required: false
+        default: true
+      extensions:
+        type: array[string]
+        required: false
+      targets:
+        type: array[string]
+        required: false
+    returns:
+      type: object
+      description: Rename plan or applied rename result with skipped and conflict entries.
 side_effects:
   reads:
-    - scans the provided directory or explicit target files
+    - scans the provided directory or explicit target files.
   writes:
-    - renames matched files only when dry_run is false
+    - renames matched files only when dry_run is false.
+failure_modes:
+  - invalid input returns a structured error envelope.
+  - rename conflicts are reported before mutation.
 validation:
   - python3 -m unittest discover -s file-tools/rename_files/tests

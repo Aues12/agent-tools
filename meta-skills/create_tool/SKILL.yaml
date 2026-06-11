@@ -9,6 +9,7 @@ inputs:
     - purpose
   optional:
     - interfaces
+    - operations
     - examples
 outputs:
   - tool_directory
@@ -18,11 +19,15 @@ steps:
   - validate the tool name against standards/naming.yaml
   - copy the tool template into the target category directory
   - replace placeholder metadata in SKILL.yaml
+  - define interfaces as access surfaces such as stdin_json and python_api
+  - define operations as bounded actions with params, returns, and available_via
   - implement the narrow public interface in tool.py
   - add tests for normal, invalid, and boundary behavior
   - add at least one example
-  - update registry/tool_registry.json
+  - update registry/tool_registry.json using the same operations/interfaces separation
 validation:
   - tool metadata is complete
+  - interfaces describe access surfaces rather than operation names
+  - operations define invocation params and returns
   - tests pass
   - registry entry exists

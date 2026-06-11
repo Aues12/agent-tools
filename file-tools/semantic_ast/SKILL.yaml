@@ -3,21 +3,127 @@ type: tool
 capability: semantic_code_analysis
 purpose: Dispatch semantic AST parsing, compression, and call graph sub-tools through one interface.
 status: experimental
+deterministic: true
 interfaces:
+  - name: stdin_json
+    entrypoint: semantic_ast.py
+    transport: stdin_json
+  - name: python_api
+    entrypoint: tool.py
+    callables:
+      - parse_source
+      - parse_file
+      - compress_ast
+      - build_call_graph
+      - run
+operations:
   - name: parse_source
-    description: Delegate Python source parsing to the ast_parsing sub-tool.
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      source:
+        type: string
+        required: true
+      path:
+        type: string
+        required: false
+      include_source:
+        type: boolean
+        required: false
+        default: false
+    returns:
+      type: object
+      description: Normalized semantic AST module tree.
   - name: parse_file
-    description: Delegate Python file parsing to the ast_parsing sub-tool.
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      path:
+        type: string
+        required: true
+      encoding:
+        type: string
+        required: false
+        default: utf-8
+      include_source:
+        type: boolean
+        required: false
+        default: false
+    returns:
+      type: object
+      description: Normalized semantic AST module tree.
   - name: compress_ast
-    description: Delegate semantic AST reduction to the compression sub-tool.
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      tree:
+        type: object
+        required: true
+    returns:
+      type: object
+      description: Compressed semantic AST structure.
   - name: build_call_graph
-    description: Delegate call graph extraction to the call_graph sub-tool.
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      tree:
+        type: object
+        required: true
+    returns:
+      type: object
+      description: Direct local function call graph.
   - name: parse_and_compress
-    description: Parse source or a file, then compress the semantic AST result.
+    available_via:
+      - stdin_json
+    params:
+      source:
+        type: string
+        required: false
+      path:
+        type: string
+        required: false
+      encoding:
+        type: string
+        required: false
+        default: utf-8
+      include_source:
+        type: boolean
+        required: false
+        default: false
+    requires_one_of:
+      - source
+      - path
+    returns:
+      type: object
+      description: Parsed and compressed semantic AST structure.
   - name: parse_and_build_call_graph
-    description: Parse source or a file, then build a call graph from the semantic AST result.
-  - name: run
-    description: Execute the parent dispatcher using the canonical operation and params envelope.
+    available_via:
+      - stdin_json
+    params:
+      source:
+        type: string
+        required: false
+      path:
+        type: string
+        required: false
+      encoding:
+        type: string
+        required: false
+        default: utf-8
+      include_source:
+        type: boolean
+        required: false
+        default: false
+    requires_one_of:
+      - source
+      - path
+    returns:
+      type: object
+      description: Parsed semantic AST call graph.
 side_effects:
   reads:
     - parse_source reads provided source text only.
@@ -28,6 +134,11 @@ side_effects:
 line_numbers:
   base: 1
   ranges: inclusive
+failure_modes:
+  - invalid source raises SyntaxError or IndentationError in the structured error envelope.
+  - missing files raise FileNotFoundError.
 validation:
   - python3 -m unittest discover -s file-tools/semantic_ast/tests
   - python3 -m unittest discover -s file-tools/semantic_ast/ast_parsing/tests
+  - python3 -m unittest discover -s file-tools/semantic_ast/compression/tests
+  - python3 -m unittest discover -s file-tools/semantic_ast/call_graph/tests

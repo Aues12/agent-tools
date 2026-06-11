@@ -3,17 +3,70 @@ type: tool
 capability: ast_introspection
 purpose: Produce canonical Python ast.dump output from source text or files.
 status: experimental
+deterministic: true
 interfaces:
+  - name: stdin_json
+    entrypoint: ast_dump.py
+    transport: stdin_json
+  - name: python_api
+    entrypoint: tool.py
+    callables:
+      - dump_source
+      - dump_file
+      - run
+operations:
   - name: dump_source
-    description: Parse Python source text and return ast.dump output.
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      source:
+        type: string
+        required: true
+      path:
+        type: string
+        required: false
+      include_attributes:
+        type: boolean
+        required: false
+        default: false
+      indent:
+        type: integer|null
+        required: false
+        default: 2
+    returns:
+      type: object
+      description: Canonical ast.dump output for provided source.
   - name: dump_file
-    description: Read a Python file, parse it, and return ast.dump output.
-  - name: run
-    description: Execute a structured operation/params request and return a success/error envelope.
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      path:
+        type: string
+        required: true
+      encoding:
+        type: string
+        required: false
+        default: utf-8
+      include_attributes:
+        type: boolean
+        required: false
+        default: false
+      indent:
+        type: integer|null
+        required: false
+        default: 2
+    returns:
+      type: object
+      description: Canonical ast.dump output for a Python file.
 side_effects:
   reads:
     - dump_source reads provided source text only.
     - dump_file reads the provided file path.
   writes: []
+failure_modes:
+  - invalid Python source raises SyntaxError in the structured error envelope.
+  - missing files raise FileNotFoundError.
 validation:
   - python3 -m unittest discover -s file-tools/ast_dump/tests
