@@ -20,7 +20,14 @@ from typing import Any
 
 _TOOL_DIR = Path(__file__).resolve().parent
 _REPO_ROOT = _TOOL_DIR.parents[1]
-_OPS = {"build_cards", "cards_from_source", "cards_from_file"}
+_OPS = {
+    "build_cards",
+    "cards_from_source",
+    "cards_from_file",
+    "summary_view",
+    "tree_view",
+    "card_view",
+}
 _BLOCK_TYPES = {
     "if",
     "for",
@@ -47,6 +54,14 @@ _semantic_ast = _load_module(
     "semantic_cards_semantic_ast",
     _TOOL_DIR.parent / "semantic_ast" / "tool.py",
 )
+_semantic_view = _load_module(
+    "semantic_cards_semantic_view",
+    _TOOL_DIR / "semantic_view.py",
+)
+
+summary_view = _semantic_view.summary_view
+tree_view = _semantic_view.tree_view
+card_view = _semantic_view.card_view
 
 
 def cards_from_source(
@@ -108,6 +123,25 @@ def run(input_data: dict[str, Any]) -> dict[str, Any]:
                 include_statements=bool(params.get("include_statements", True)),
             )
             message = "Parsed Python file and built semantic cards"
+        elif operation == "summary_view":
+            result = summary_view(
+                params["cards"],
+                max_relations=int(params.get("max_relations", 10)),
+            )
+            message = "Built semantic summary view"
+        elif operation == "tree_view":
+            result = tree_view(
+                params["cards"],
+                max_depth=int(params.get("max_depth", 3)),
+                include_statements=bool(params.get("include_statements", False)),
+            )
+            message = "Built semantic tree view"
+        elif operation == "card_view":
+            result = card_view(
+                params["cards"],
+                card_id=params["card_id"],
+            )
+            message = "Built semantic card view"
         else:
             raise ValueError(f"unknown operation: {operation}")
 
@@ -522,6 +556,10 @@ def _parse_request(input_data: Any) -> tuple[str, dict[str, Any]]:
         raise ValueError("cards_from_source requires source")
     if operation == "cards_from_file" and "path" not in params:
         raise ValueError("cards_from_file requires path")
+    if operation in {"summary_view", "tree_view", "card_view"} and "cards" not in params:
+        raise ValueError(f"{operation} requires cards")
+    if operation == "card_view" and "card_id" not in params:
+        raise ValueError("card_view requires card_id")
 
     return operation, params
 

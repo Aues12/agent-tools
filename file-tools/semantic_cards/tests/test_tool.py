@@ -152,6 +152,23 @@ class SemanticCardsToolTests(unittest.TestCase):
         self.assertEqual(result["root_ids"], ["module:example"])
         self.assertEqual(result["stats"]["cards"], 1)
 
+    def test_run_summary_view_operation(self) -> None:
+        cards = cards_from_source(
+            "def main():\n    return 1\n",
+            path="sample.py",
+        )
+
+        response = run(
+            {
+                "operation": "summary_view",
+                "params": {"cards": cards},
+            }
+        )
+
+        self.assertTrue(response["success"])
+        self.assertEqual(response["meta"]["operation"], "summary_view")
+        self.assertEqual(response["result"]["type"], "semantic_summary_view")
+
     def _card(self, result: dict[str, object], card_id: str) -> dict[str, object]:
         cards = result["cards"]
         assert isinstance(cards, list)

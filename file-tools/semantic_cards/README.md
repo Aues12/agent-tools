@@ -10,6 +10,7 @@ Build deterministic semantic cards from Python semantic AST trees.
 - Adds deterministic `imports`, `inherits`, and local `calls` relations
 - Keeps source audit data in `trace` instead of embedding source text
 - Avoids expression-level cards in the first version
+- Provides compact semantic views over existing card output
 
 ## ID Standard
 
@@ -87,6 +88,49 @@ Source location lives in `trace`:
       "end_line": 1,
       "body": []
     }
+  }
+}
+```
+
+### `summary_view`
+
+Build a compact overview from an existing semantic card result.
+
+```json
+{
+  "operation": "summary_view",
+  "params": {
+    "cards": { "... semantic_cards result ..." },
+    "max_relations": 10
+  }
+}
+```
+
+### `tree_view`
+
+Build a compact text containment tree from an existing semantic card result.
+
+```json
+{
+  "operation": "tree_view",
+  "params": {
+    "cards": { "... semantic_cards result ..." },
+    "max_depth": 3,
+    "include_statements": false
+  }
+}
+```
+
+### `card_view`
+
+Build a compact view for one card from an existing semantic card result.
+
+```json
+{
+  "operation": "card_view",
+  "params": {
+    "cards": { "... semantic_cards result ..." },
+    "card_id": "function:sample.main"
   }
 }
 ```

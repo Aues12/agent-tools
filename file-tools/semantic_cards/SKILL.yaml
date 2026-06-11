@@ -14,6 +14,9 @@ interfaces:
       - build_cards
       - cards_from_source
       - cards_from_file
+      - summary_view
+      - tree_view
+      - card_view
       - run
 operations:
   - name: build_cards
@@ -68,11 +71,62 @@ operations:
     returns:
       type: object
       description: Parsed semantic cards result.
+  - name: summary_view
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      cards:
+        type: object
+        required: true
+      max_relations:
+        type: integer
+        required: false
+        default: 10
+    returns:
+      type: object
+      description: Compact summary view over existing semantic card output.
+  - name: tree_view
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      cards:
+        type: object
+        required: true
+      max_depth:
+        type: integer
+        required: false
+        default: 3
+      include_statements:
+        type: boolean
+        required: false
+        default: false
+    returns:
+      type: object
+      description: Compact text containment tree over existing semantic card output.
+  - name: card_view
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      cards:
+        type: object
+        required: true
+      card_id:
+        type: string
+        required: true
+    returns:
+      type: object
+      description: Compact view of one semantic card and its relations.
 side_effects:
   reads:
     - build_cards reads provided semantic AST data only.
     - cards_from_source reads provided source text only.
     - cards_from_file reads the provided file path.
+    - summary_view reads provided semantic card data only.
+    - tree_view reads provided semantic card data only.
+    - card_view reads provided semantic card data only.
   writes: []
 line_numbers:
   base: 1
@@ -83,7 +137,10 @@ id_standard:
 limits:
   - expression-level cards are intentionally excluded from the first version.
   - LLM annotation and semantic similarity are intentionally out of scope.
+  - semantic_view operations accept ready-made semantic card output only.
 failure_modes:
   - non-module trees return a structured ValueError envelope.
+  - missing cards input returns a structured ValueError envelope.
+  - missing card ids return a structured ValueError envelope.
 validation:
   - python3 -m unittest discover -s file-tools/semantic_cards/tests

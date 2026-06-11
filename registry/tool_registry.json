@@ -103,7 +103,10 @@
       "operations": [
         "build_cards",
         "cards_from_source",
-        "cards_from_file"
+        "cards_from_file",
+        "summary_view",
+        "tree_view",
+        "card_view"
       ],
       "interfaces": [
         {
@@ -118,6 +121,9 @@
             "build_cards",
             "cards_from_source",
             "cards_from_file",
+            "summary_view",
+            "tree_view",
+            "card_view",
             "run"
           ]
         }
