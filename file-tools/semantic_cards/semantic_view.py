@@ -157,6 +157,7 @@ def card_view(cards: Mapping[str, Any], card_id: str) -> dict[str, Any]:
 
 
 def _validate_cards(cards: Mapping[str, Any]) -> None:
+    """Ensure the value looks like a semantic_cards result."""
     if not isinstance(cards, Mapping):
         raise TypeError("cards must be a dictionary")
     if "cards" not in cards:
@@ -168,16 +169,19 @@ def _validate_cards(cards: Mapping[str, Any]) -> None:
 
 
 def _card_list(cards: Mapping[str, Any]) -> list[dict[str, Any]]:
+    """Return normalized card dictionaries from the payload."""
     items = cards.get("cards", [])
     return [dict(item) for item in items if isinstance(item, Mapping)]
 
 
 def _relation_list(cards: Mapping[str, Any]) -> list[dict[str, Any]]:
+    """Return normalized relation dictionaries from the payload."""
     items = cards.get("relations", [])
     return [dict(item) for item in items if isinstance(item, Mapping)]
 
 
 def _root_id(cards: Mapping[str, Any]) -> str | None:
+    """Return the first root card id when available."""
     root_ids = cards.get("root_ids")
     if isinstance(root_ids, list) and root_ids and isinstance(root_ids[0], str):
         return root_ids[0]
@@ -189,6 +193,7 @@ def _root_cards(
     card_index: Mapping[str, dict[str, Any]],
     children_index: Mapping[str | None, list[dict[str, Any]]],
 ) -> list[dict[str, Any]]:
+    """Resolve root cards from root_ids or top-level children."""
     root_id = _root_id(cards)
     if root_id and root_id in card_index:
         return [card_index[root_id]]
@@ -207,6 +212,7 @@ def _render_tree_card(
     include_statements: bool,
     is_root: bool = False,
 ) -> None:
+    """Append one card and its visible children to text tree lines."""
     if not include_statements and _card_kind(card) == "statement":
         return
 
@@ -237,14 +243,17 @@ def _render_tree_card(
 
 
 def _display_card(card: Mapping[str, Any]) -> str:
+    """Format one card as kind:title."""
     return f"{_card_kind(card)}:{_card_title(card)}"
 
 
 def _tree_label(card: Mapping[str, Any]) -> str:
+    """Format one card label for the tree view."""
     return f"{_card_kind(card)}: {_card_title(card)}"
 
 
 def _display_relation(relation: Mapping[str, Any]) -> str:
+    """Format one relation for the summary view."""
     source = relation.get("source_id")
     target = _relation_target(relation)
     if source and target:
@@ -253,6 +262,7 @@ def _display_relation(relation: Mapping[str, Any]) -> str:
 
 
 def _relation_target(relation: Mapping[str, Any]) -> str | None:
+    """Return the target id or external target name."""
     target_id = relation.get("target_id")
     if isinstance(target_id, str):
         return target_id
@@ -261,16 +271,19 @@ def _relation_target(relation: Mapping[str, Any]) -> str | None:
 
 
 def _relation_kind(relation: Mapping[str, Any]) -> str:
+    """Return a relation kind with a safe fallback."""
     kind = relation.get("kind")
     return kind if isinstance(kind, str) and kind else "related"
 
 
 def _card_kind(card: Mapping[str, Any]) -> str:
+    """Return a card kind with a safe fallback."""
     kind = card.get("kind")
     return kind if isinstance(kind, str) and kind else "card"
 
 
 def _card_title(card: Mapping[str, Any]) -> str:
+    """Return a readable card title."""
     title = card.get("title")
     if isinstance(title, str) and title:
         return title
@@ -279,6 +292,7 @@ def _card_title(card: Mapping[str, Any]) -> str:
 
 
 def _source_name(cards: Mapping[str, Any]) -> str | None:
+    """Return the source file name or root id for display."""
     path = cards.get("path")
     if isinstance(path, str) and path:
         return Path(path).name
@@ -289,6 +303,7 @@ def _source_name(cards: Mapping[str, Any]) -> str | None:
 
 
 def _location(card: Mapping[str, Any]) -> str | None:
+    """Return a compact line range from card trace data."""
     trace = card.get("trace")
     if not isinstance(trace, Mapping):
         return None
@@ -302,6 +317,7 @@ def _location(card: Mapping[str, Any]) -> str | None:
 
 
 def _summary(card: Mapping[str, Any]) -> str:
+    """Return the best available card summary text."""
     detail = card.get("detail")
     if isinstance(detail, Mapping):
         docstring = detail.get("docstring")

@@ -42,6 +42,7 @@ _BODY_FIELDS = ("body", "orelse", "finalbody")
 
 
 def _load_module(module_name: str, path: Path) -> ModuleType:
+    """Load a sibling tool module from an explicit file path."""
     spec = importlib.util.spec_from_file_location(module_name, path)
     if spec is None or spec.loader is None:
         raise ImportError(f"could not load module from {path}")
@@ -176,7 +177,10 @@ def main() -> None:
 
 
 class _CardBuilder:
+    """Collect cards and relations while walking a semantic AST."""
+
     def __init__(self, *, include_statements: bool) -> None:
+        """Initialize builder state for one card generation run."""
         self.include_statements = include_statements
         self.cards: list[dict[str, Any]] = []
         self.card_index: dict[str, dict[str, Any]] = {}
@@ -187,6 +191,7 @@ class _CardBuilder:
         self.function_cards_by_local_name: dict[str, str] = {}
 
     def build(self, tree: Mapping[str, Any]) -> dict[str, Any]:
+        """Walk the module tree and return the complete card payload."""
         self.module_qualified_name = _module_qualified_name(tree.get("path"))
         root_id = self._visit_module(tree)
         self._add_call_relations(tree)
@@ -202,6 +207,7 @@ class _CardBuilder:
         }
 
     def _visit_module(self, node: Mapping[str, Any]) -> str:
+        """Create the root module card and visit its body."""
         module_id = self._add_card(
             kind="module",
             title=self.module_qualified_name,
@@ -225,6 +231,7 @@ class _CardBuilder:
         parent_qualified_name: str,
         level: int,
     ) -> None:
+        """Visit each mapping node in a semantic AST body list."""
         if not isinstance(body, list):
             return
         for item in body:
@@ -238,6 +245,7 @@ class _CardBuilder:
         parent_qualified_name: str,
         level: int,
     ) -> None:
+        """Dispatch one AST node to the matching card builder."""
         node_type = _string(node.get("type"), "statement")
 
         if node_type == "class":
@@ -265,6 +273,7 @@ class _CardBuilder:
         parent_qualified_name: str,
         level: int,
     ) -> None:
+        """Create a class card, inheritance relations, and child cards."""
         name = _string(node.get("name"), "anonymous_class")
         qualified_name = f"{parent_qualified_name}.{name}"
         bases = [_value_name(base) for base in _list(node.get("bases"))]
@@ -298,6 +307,7 @@ class _CardBuilder:
         parent_qualified_name: str,
         level: int,
     ) -> None:
+        """Create a function card and index it for call relations."""
         name = _string(node.get("name"), "anonymous_function")
         qualified_name = f"{parent_qualified_name}.{name}"
         args = _argument_names(node.get("args"))
@@ -327,6 +337,7 @@ class _CardBuilder:
         parent_qualified_name: str,
         level: int,
     ) -> None:
+        """Create a control-flow block card and visit nested bodies."""
         node_type = _string(node.get("type"), "block")
         line = _line(node)
         qualified_name = f"{parent_qualified_name}.{node_type}@L{line}"
@@ -361,6 +372,7 @@ class _CardBuilder:
         parent_qualified_name: str,
         level: int,
     ) -> str:
+        """Create a compact card for a non-structural statement."""
         node_type = _string(node.get("type"), "statement")
         line = _line(node)
         qualified_name = f"{parent_qualified_name}@L{line}"
@@ -388,6 +400,7 @@ class _CardBuilder:
         node: Mapping[str, Any],
         detail: Mapping[str, Any] | None = None,
     ) -> str:
+        """Append one card and link it to its parent when present."""
         identity = self._unique_identity(kind, qualified_name)
         card_id = f"{kind}:{identity}"
         clean_detail = _clean_dict(dict(detail or {}))
@@ -430,10 +443,12 @@ class _CardBuilder:
         return card_id
 
     def _add_import_relations(self, node: Mapping[str, Any], source_id: str) -> None:
+        """Add one import relation for each imported target."""
         for target in _import_targets(node):
             self._add_relation("imports", source_id=source_id, target=target, node=node)
 
     def _add_call_relations(self, tree: Mapping[str, Any]) -> None:
+        """Add function-to-function call relations from semantic_ast."""
         try:
             call_graph = _semantic_ast.build_call_graph(tree)
         except Exception:
@@ -467,6 +482,7 @@ class _CardBuilder:
         label: Any = None,
         node: Mapping[str, Any] | None,
     ) -> None:
+        """Append a relation unless an identical relation already exists."""
         relation = _clean_dict(
             {
                 "kind": kind,
@@ -497,6 +513,7 @@ class _CardBuilder:
         self.relations.append(relation)
 
     def _unique_identity(self, kind: str, qualified_name: str) -> str:
+        """Return a stable card identity, suffixing duplicates."""
         base = _normalize_identity(qualified_name)
         key = f"{kind}:{base}"
         self.id_counts[key] += 1
@@ -505,6 +522,7 @@ class _CardBuilder:
         return f"{base}#{self.id_counts[key]}"
 
     def _trace_path(self, node: Mapping[str, Any] | None) -> str | None:
+        """Resolve the best source path for a node or existing cards."""
         if node is not None and isinstance(node.get("path"), str):
             return node["path"]
         for card in self.cards:
@@ -514,12 +532,14 @@ class _CardBuilder:
         return None
 
     def _local_name(self, qualified_name: str) -> str:
+        """Remove the module prefix from a qualified name when present."""
         prefix = f"{self.module_qualified_name}."
         if qualified_name.startswith(prefix):
             return qualified_name[len(prefix):]
         return qualified_name
 
     def _stats(self) -> dict[str, Any]:
+        """Count cards and relations by kind for the result metadata."""
         card_kinds = Counter(card["kind"] for card in self.cards)
         relation_kinds = Counter(relation["kind"] for relation in self.relations)
         return {
@@ -531,6 +551,7 @@ class _CardBuilder:
 
 
 def _parse_request(input_data: Any) -> tuple[str, dict[str, Any]]:
+    """Validate the request envelope and return operation parameters."""
     if not isinstance(input_data, dict):
         raise TypeError("input_data must be a dictionary")
 
@@ -565,6 +586,7 @@ def _parse_request(input_data: Any) -> tuple[str, dict[str, Any]]:
 
 
 def _module_qualified_name(path_value: Any) -> str:
+    """Convert a file path into a dotted module-like name."""
     if not isinstance(path_value, str) or not path_value:
         return "module"
 
@@ -586,28 +608,34 @@ def _module_qualified_name(path_value: Any) -> str:
 
 
 def _sanitize_part(value: str) -> str:
+    """Make one path/name segment safe for a qualified name."""
     sanitized = re.sub(r"\W+", "_", value).strip("_")
     return sanitized or "module"
 
 
 def _normalize_identity(value: str) -> str:
+    """Normalize whitespace in a card identity."""
     return re.sub(r"\s+", "_", value.strip()) or "anonymous"
 
 
 def _line(node: Mapping[str, Any]) -> int:
+    """Return a node line number or zero when missing."""
     value = node.get("line")
     return value if isinstance(value, int) else 0
 
 
 def _list(value: Any) -> list[Any]:
+    """Return the value only when it is a list."""
     return value if isinstance(value, list) else []
 
 
 def _string(value: Any, fallback: str) -> str:
+    """Return a non-empty string or a fallback value."""
     return value if isinstance(value, str) and value else fallback
 
 
 def _argument_names(args_node: Any) -> list[str]:
+    """Extract display names from a semantic_ast arguments node."""
     if not isinstance(args_node, Mapping):
         return []
 
@@ -638,12 +666,14 @@ def _argument_names(args_node: Any) -> list[str]:
 
 
 def _argument_name(node: Any) -> str | None:
+    """Return an argument name from an argument node."""
     if isinstance(node, Mapping) and isinstance(node.get("name"), str):
         return node["name"]
     return None
 
 
 def _value_name(node: Any) -> str | None:
+    """Convert a small expression node into a readable name."""
     if node is None:
         return None
     if isinstance(node, str):
@@ -682,6 +712,7 @@ def _value_name(node: Any) -> str | None:
 
 
 def _statement_summary(node: Mapping[str, Any]) -> str | None:
+    """Build a short human-readable statement summary."""
     node_type = node.get("type")
     if node_type in {"assignment", "annotated_assignment"}:
         targets = node.get("targets")
@@ -703,6 +734,7 @@ def _statement_summary(node: Mapping[str, Any]) -> str | None:
 
 
 def _import_targets(node: Mapping[str, Any]) -> list[str]:
+    """Extract import target names from an import node."""
     node_type = node.get("type")
     names = _list(node.get("names"))
     if node_type == "import":
@@ -723,6 +755,7 @@ def _import_targets(node: Mapping[str, Any]) -> list[str]:
 
 
 def _clean_dict(data: dict[str, Any]) -> dict[str, Any]:
+    """Drop empty values from a dictionary."""
     return {
         key: value
         for key, value in data.items()
@@ -731,6 +764,7 @@ def _clean_dict(data: dict[str, Any]) -> dict[str, Any]:
 
 
 def _error_envelope(exc: Exception) -> dict[str, Any]:
+    """Wrap an exception in the standard tool error envelope."""
     message = str(exc)
     return {
         "success": False,
@@ -743,6 +777,7 @@ def _error_envelope(exc: Exception) -> dict[str, Any]:
 
 
 def _exit_code(response: dict[str, Any]) -> int:
+    """Choose a CLI exit code from a tool response envelope."""
     if response.get("success") is True:
         return 0
     if (response.get("error") or {}).get("type") in {
