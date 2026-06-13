@@ -214,3 +214,38 @@ Role is therefore more domain-specific.
 Phase is more general.
 
 A Semantic Card may carry both.
+
+---
+
+## [FND-011] Depth and Level
+
+Depth and level are different axes.
+
+Depth describes structural nesting.
+
+It answers:
+
+How deep is this object inside the local syntax, containment tree, or document structure?
+
+Level describes architectural height.
+
+It answers:
+
+How much of the relation graph does this object govern, coordinate, or contain beneath itself?
+
+Depth is derived from structural traversal.
+
+Level is derived from relation analysis, especially the call graph in software systems.
+
+For code cards:
+
+* `depth` should come from the AST or semantic containment tree.
+* `level` should come from call-graph height.
+
+A shallow function may have a high level if it orchestrates many lower-level functions.
+
+A deeply nested or highly specific helper may have a low level if it governs little beneath itself.
+
+Depth says where a card sits inside a structure.
+
+Level says how architecturally high a card is within a relation graph.
