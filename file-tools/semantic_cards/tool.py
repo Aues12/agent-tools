@@ -411,6 +411,7 @@ class _CardBuilder:
                 "end_line": node.get("end_line"),
             }
         )
+        # The main definition of a card structure
         card = _clean_dict(
             {
                 "id": card_id,
