@@ -18,6 +18,18 @@ Agents working in this repository should:
 * add tests and examples for new capabilities.
 * document any side effect that changes files or state.
 
+## Project Memory
+
+Agents should treat `memory/project_memory/` as the repository's development
+memory.
+
+When a task creates a meaningful repository milestone, agents should consider
+whether `project_memory` needs an update.
+
+Agents should follow the repository-local maintenance rules in
+[`memory/project_memory/maintenance-standard.md`](../memory/project_memory/maintenance-standard.md)
+for update triggers, chronology style, and review expectations.
+
 ## Decision Pattern
 
 When handling a task, an agent should:

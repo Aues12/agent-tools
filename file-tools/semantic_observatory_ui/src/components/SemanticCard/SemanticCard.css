@@ -1,0 +1,103 @@
+.semantic-card {
+  width: min(446px, calc(100vw - 32px));
+  min-height: 308px;
+  padding: 24px 28px 30px;
+  display: flex;
+  flex-direction: column;
+  color: #28231f;
+  background: #fbf7ef;
+  border: 1px solid #d8bd7e;
+  border-radius: 20px;
+}
+
+.semantic-card__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  color: #8b6018;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.semantic-card__body {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+}
+
+.semantic-card__title {
+  margin: 0;
+  font-size: 23px;
+  line-height: 1.12;
+  font-weight: 760;
+  letter-spacing: 0;
+}
+
+.semantic-card__subtle {
+  margin: 8px 0 0;
+  color: #655d53;
+  font-size: 13px;
+  font-weight: 550;
+}
+
+.semantic-card__action {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  color: #956b22;
+  background: #fff8eb;
+  border: 1px solid #dfbf74;
+  border-radius: 999px;
+  padding: 0;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.semantic-card__action:hover {
+  background: #fff2d6;
+}
+
+.semantic-card__action-symbol {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(-1px);
+}
+
+.semantic-card__summary {
+  max-width: 342px;
+  margin: 22px 0 0;
+  color: #514b44;
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+.semantic-card__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.semantic-card__chip {
+  min-width: 132px;
+  padding: 7px 14px;
+  color: #66502b;
+  background: #fff6e6;
+  border: 1px solid #ddbd76;
+  border-radius: 999px;
+  font-size: 11px;
+  line-height: 1.1;
+}
+
+.semantic-card__trace {
+  margin-top: auto;
+  padding-top: 36px;
+  color: #9b968f;
+  font-size: 11px;
+}
