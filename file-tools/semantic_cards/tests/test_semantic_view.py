@@ -28,7 +28,8 @@ def fixture_cards() -> dict[str, object]:
                 "id": "module:sample",
                 "kind": "module",
                 "title": "sample",
-                "level": 0,
+                "depth": 0,
+                "level": 2,
                 "children": [
                     "function:sample.main",
                     "function:sample.helper",
@@ -40,7 +41,8 @@ def fixture_cards() -> dict[str, object]:
                 "id": "function:sample.main",
                 "kind": "function",
                 "title": "main",
-                "level": 1,
+                "depth": 1,
+                "level": 2,
                 "parent_id": "module:sample",
                 "children": ["statement:sample.main@L3"],
                 "detail": {"docstring": "Run the sample workflow."},
@@ -50,7 +52,8 @@ def fixture_cards() -> dict[str, object]:
                 "id": "statement:sample.main@L3",
                 "kind": "statement",
                 "title": "return",
-                "level": 2,
+                "depth": 2,
+                "level": 1,
                 "parent_id": "function:sample.main",
                 "children": [],
                 "detail": {"summary": "returns helper()"},
@@ -60,6 +63,7 @@ def fixture_cards() -> dict[str, object]:
                 "id": "function:sample.helper",
                 "kind": "function",
                 "title": "helper",
+                "depth": 1,
                 "level": 1,
                 "parent_id": "module:sample",
                 "children": [],
@@ -69,7 +73,8 @@ def fixture_cards() -> dict[str, object]:
                 "id": "class:sample.Example",
                 "kind": "class",
                 "title": "Example",
-                "level": 1,
+                "depth": 1,
+                "level": 2,
                 "parent_id": "module:sample",
                 "children": ["function:sample.Example.run"],
                 "trace": {"path": "sample.py", "line": 10, "end_line": 14},
@@ -78,6 +83,7 @@ def fixture_cards() -> dict[str, object]:
                 "id": "function:sample.Example.run",
                 "kind": "function",
                 "title": "run",
+                "depth": 2,
                 "level": 2,
                 "parent_id": "class:sample.Example",
                 "children": [],
@@ -161,6 +167,8 @@ class SemanticViewTests(unittest.TestCase):
         self.assertEqual(view["type"], "semantic_card_view")
         self.assertEqual(view["kind"], "function")
         self.assertEqual(view["title"], "main")
+        self.assertEqual(view["depth"], 1)
+        self.assertEqual(view["level"], 2)
         self.assertEqual(view["location"], "L2-L4")
         self.assertEqual(view["summary"], "Run the sample workflow.")
         self.assertEqual(

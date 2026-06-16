@@ -145,6 +145,8 @@ def card_view(cards: Mapping[str, Any], card_id: str) -> dict[str, Any]:
         "card_id": card_id,
         "kind": _card_kind(card),
         "title": _card_title(card),
+        "depth": card.get("depth"),
+        "level": card.get("level"),
         "location": _location(card),
         "parent_id": card.get("parent_id"),
         "children": list(card.get("children", [])),

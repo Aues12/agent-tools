@@ -128,6 +128,7 @@ Each card should have at least:
   "id": "function:package.module.name",
   "kind": "function",
   "title": "name",
+  "depth": 2,
   "level": 3,
   "parent_id": "module:package.module",
   "children": [],

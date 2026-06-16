@@ -189,12 +189,16 @@ class _CardBuilder:
         self.id_counts: Counter[str] = Counter()
         self.module_qualified_name = "module"
         self.function_cards_by_local_name: dict[str, str] = {}
+        self.function_levels_by_local_name: dict[str, int] = {}
 
     def build(self, tree: Mapping[str, Any]) -> dict[str, Any]:
         """Walk the module tree and return the complete card payload."""
         self.module_qualified_name = _module_qualified_name(tree.get("path"))
+        call_graph = self._build_call_graph(tree)
+        self.function_levels_by_local_name = _function_levels(call_graph)
         root_id = self._visit_module(tree)
-        self._add_call_relations(tree)
+        self._add_call_relations(call_graph)
+        self._propagate_container_levels()
 
         return {
             "type": "semantic_cards",
@@ -212,7 +216,7 @@ class _CardBuilder:
             kind="module",
             title=self.module_qualified_name,
             qualified_name=self.module_qualified_name,
-            level=0,
+            depth=0,
             parent_id=None,
             node=node,
             detail={
@@ -229,49 +233,49 @@ class _CardBuilder:
         body: Any,
         parent_id: str,
         parent_qualified_name: str,
-        level: int,
+        depth: int,
     ) -> None:
         """Visit each mapping node in a semantic AST body list."""
         if not isinstance(body, list):
             return
         for item in body:
             if isinstance(item, Mapping):
-                self._visit_node(item, parent_id, parent_qualified_name, level)
+                self._visit_node(item, parent_id, parent_qualified_name, depth)
 
     def _visit_node(
         self,
         node: Mapping[str, Any],
         parent_id: str,
         parent_qualified_name: str,
-        level: int,
+        depth: int,
     ) -> None:
         """Dispatch one AST node to the matching card builder."""
         node_type = _string(node.get("type"), "statement")
 
         if node_type == "class":
-            self._visit_class(node, parent_id, parent_qualified_name, level)
+            self._visit_class(node, parent_id, parent_qualified_name, depth)
             return
         if node_type == "function":
-            self._visit_function(node, parent_id, parent_qualified_name, level)
+            self._visit_function(node, parent_id, parent_qualified_name, depth)
             return
         if node_type in {"import", "import_from"}:
             self._add_import_relations(node, parent_id)
             if self.include_statements:
-                self._add_statement_card(node, parent_id, parent_qualified_name, level)
+                self._add_statement_card(node, parent_id, parent_qualified_name, depth)
             return
         if node_type in _BLOCK_TYPES:
-            self._visit_block(node, parent_id, parent_qualified_name, level)
+            self._visit_block(node, parent_id, parent_qualified_name, depth)
             return
 
         if self.include_statements:
-            self._add_statement_card(node, parent_id, parent_qualified_name, level)
+            self._add_statement_card(node, parent_id, parent_qualified_name, depth)
 
     def _visit_class(
         self,
         node: Mapping[str, Any],
         parent_id: str,
         parent_qualified_name: str,
-        level: int,
+        depth: int,
     ) -> None:
         """Create a class card, inheritance relations, and child cards."""
         name = _string(node.get("name"), "anonymous_class")
@@ -281,7 +285,7 @@ class _CardBuilder:
             kind="class",
             title=name,
             qualified_name=qualified_name,
-            level=level,
+            depth=depth,
             parent_id=parent_id,
             node=node,
             detail={
@@ -298,14 +302,14 @@ class _CardBuilder:
                     target=base,
                     node=node,
                 )
-        self._visit_body(node.get("body", []), card_id, qualified_name, level + 1)
+        self._visit_body(node.get("body", []), card_id, qualified_name, depth + 1)
 
     def _visit_function(
         self,
         node: Mapping[str, Any],
         parent_id: str,
         parent_qualified_name: str,
-        level: int,
+        depth: int,
     ) -> None:
         """Create a function card and index it for call relations."""
         name = _string(node.get("name"), "anonymous_function")
@@ -315,7 +319,11 @@ class _CardBuilder:
             kind="function",
             title=name,
             qualified_name=qualified_name,
-            level=level,
+            depth=depth,
+            level=self.function_levels_by_local_name.get(
+                self._local_name(qualified_name),
+                1,
+            ),
             parent_id=parent_id,
             node=node,
             detail={
@@ -328,14 +336,14 @@ class _CardBuilder:
         )
         local_name = self._local_name(qualified_name)
         self.function_cards_by_local_name[local_name] = card_id
-        self._visit_body(node.get("body", []), card_id, qualified_name, level + 1)
+        self._visit_body(node.get("body", []), card_id, qualified_name, depth + 1)
 
     def _visit_block(
         self,
         node: Mapping[str, Any],
         parent_id: str,
         parent_qualified_name: str,
-        level: int,
+        depth: int,
     ) -> None:
         """Create a control-flow block card and visit nested bodies."""
         node_type = _string(node.get("type"), "block")
@@ -345,7 +353,7 @@ class _CardBuilder:
             kind="block",
             title=node_type,
             qualified_name=qualified_name,
-            level=level,
+            depth=depth,
             parent_id=parent_id,
             node=node,
             detail={
@@ -357,20 +365,20 @@ class _CardBuilder:
         )
 
         for field in _BODY_FIELDS:
-            self._visit_body(node.get(field, []), card_id, qualified_name, level + 1)
+            self._visit_body(node.get(field, []), card_id, qualified_name, depth + 1)
 
         handlers = node.get("handlers")
         if isinstance(handlers, list):
             for handler in handlers:
                 if isinstance(handler, Mapping):
-                    self._visit_node(handler, card_id, qualified_name, level + 1)
+                    self._visit_node(handler, card_id, qualified_name, depth + 1)
 
     def _add_statement_card(
         self,
         node: Mapping[str, Any],
         parent_id: str,
         parent_qualified_name: str,
-        level: int,
+        depth: int,
     ) -> str:
         """Create a compact card for a non-structural statement."""
         node_type = _string(node.get("type"), "statement")
@@ -380,7 +388,7 @@ class _CardBuilder:
             kind="statement",
             title=node_type,
             qualified_name=qualified_name,
-            level=level,
+            depth=depth,
             parent_id=parent_id,
             node=node,
             detail={
@@ -395,10 +403,11 @@ class _CardBuilder:
         kind: str,
         title: str,
         qualified_name: str,
-        level: int,
+        depth: int,
         parent_id: str | None,
         node: Mapping[str, Any],
         detail: Mapping[str, Any] | None = None,
+        level: int = 1,
     ) -> str:
         """Append one card and link it to its parent when present."""
         identity = self._unique_identity(kind, qualified_name)
@@ -417,6 +426,7 @@ class _CardBuilder:
                 "id": card_id,
                 "kind": kind,
                 "title": title,
+                "depth": depth,
                 "level": level,
                 "parent_id": parent_id,
                 "children": [],
@@ -448,13 +458,15 @@ class _CardBuilder:
         for target in _import_targets(node):
             self._add_relation("imports", source_id=source_id, target=target, node=node)
 
-    def _add_call_relations(self, tree: Mapping[str, Any]) -> None:
-        """Add function-to-function call relations from semantic_ast."""
+    def _build_call_graph(self, tree: Mapping[str, Any]) -> Mapping[str, Any]:
+        """Return semantic_ast call graph data when available."""
         try:
-            call_graph = _semantic_ast.build_call_graph(tree)
+            return _semantic_ast.build_call_graph(tree)
         except Exception:
-            return
+            return {}
 
+    def _add_call_relations(self, call_graph: Mapping[str, Any]) -> None:
+        """Add function-to-function call relations from semantic_ast."""
         for edge in _list(call_graph.get("edges")):
             if not isinstance(edge, Mapping):
                 continue
@@ -472,6 +484,21 @@ class _CardBuilder:
                     label=edge.get("call"),
                     node=None,
                 )
+
+    def _propagate_container_levels(self) -> None:
+        """Lift child architectural levels onto non-function containers."""
+        for card in reversed(self.cards):
+            if card.get("kind") == "function":
+                continue
+            child_levels = [
+                self.card_index[child_id].get("level")
+                for child_id in card.get("children", [])
+                if isinstance(child_id, str) and child_id in self.card_index
+            ]
+            numeric_levels = [
+                level for level in child_levels if isinstance(level, int)
+            ]
+            card["level"] = max(numeric_levels) if numeric_levels else 1
 
     def _add_relation(
         self,
@@ -671,6 +698,19 @@ def _argument_name(node: Any) -> str | None:
     if isinstance(node, Mapping) and isinstance(node.get("name"), str):
         return node["name"]
     return None
+
+
+def _function_levels(call_graph: Mapping[str, Any]) -> dict[str, int]:
+    """Return call graph levels keyed by local function name."""
+    levels: dict[str, int] = {}
+    for node in _list(call_graph.get("nodes")):
+        if not isinstance(node, Mapping):
+            continue
+        node_id = node.get("id")
+        level = node.get("level")
+        if isinstance(node_id, str) and isinstance(level, int):
+            levels[node_id] = level
+    return levels
 
 
 def _value_name(node: Any) -> str | None:

@@ -1,4 +1,6 @@
+# macOS filesystem metadata
 .DS_Store
+**/.DS_Store
 __pycache__/
 .pycache
 .python-version

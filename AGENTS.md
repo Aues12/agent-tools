@@ -26,7 +26,7 @@ Read in this order when onboarding:
 2. `USE_TOOL.md`: standard tool usage contract
 3. `registry/tool_registry.json`: discoverable tool map
 4. `FUTURE_IMPROVEMENTS.md`: roadmap and deferred work
-5. `standards/`: formal specs (`TOOL_SPEC.md`, `SKILL_SPEC.md`, `AGENT_SPEC.md`)
+5. `standards/`: formal specs (`TOOL_SPEC.md`, `SKILL_SPEC.md`, `AGENT_SPEC.md`, `SCHEMA_SPEC.md`)
 
 ---
 

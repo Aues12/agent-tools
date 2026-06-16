@@ -44,6 +44,8 @@ class SemanticCardsToolTests(unittest.TestCase):
         helper = self._card(result, "function:sample.helper")
         self.assertTrue(helper["trace"]["path"].endswith("file-tools/sample.py"))
         self.assertEqual(helper["trace"]["line"], 5)
+        self.assertEqual(helper["depth"], 1)
+        self.assertEqual(helper["level"], 1)
 
     def test_build_cards_preserves_containment_and_relations(self) -> None:
         result = cards_from_source(SOURCE, path="file-tools/sample.py")
@@ -54,6 +56,12 @@ class SemanticCardsToolTests(unittest.TestCase):
         self.assertIn("class:sample.Worker", module["children"])
         self.assertIn("function:sample.Worker.run", worker["children"])
         self.assertEqual(run_card["parent_id"], "class:sample.Worker")
+        self.assertEqual(module["depth"], 0)
+        self.assertEqual(module["level"], 2)
+        self.assertEqual(worker["depth"], 1)
+        self.assertEqual(worker["level"], 2)
+        self.assertEqual(run_card["depth"], 2)
+        self.assertEqual(run_card["level"], 2)
 
         relations = result["relations"]
         self.assertTrue(
@@ -151,6 +159,30 @@ class SemanticCardsToolTests(unittest.TestCase):
 
         self.assertEqual(result["root_ids"], ["module:example"])
         self.assertEqual(result["stats"]["cards"], 1)
+        module = self._card(result, "module:example")
+        self.assertEqual(module["depth"], 0)
+        self.assertEqual(module["level"], 1)
+
+    def test_function_levels_come_from_call_graph(self) -> None:
+        result = cards_from_source(
+            """
+def main():
+    return build()
+
+
+def build():
+    return parse()
+
+
+def parse():
+    return 1
+""",
+            path="pipeline.py",
+        )
+
+        self.assertEqual(self._card(result, "function:pipeline.parse")["level"], 1)
+        self.assertEqual(self._card(result, "function:pipeline.build")["level"], 2)
+        self.assertEqual(self._card(result, "function:pipeline.main")["level"], 3)
 
     def test_run_summary_view_operation(self) -> None:
         cards = cards_from_source(
