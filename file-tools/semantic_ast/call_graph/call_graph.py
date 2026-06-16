@@ -58,6 +58,10 @@ def build_call_graph(tree: Any) -> dict[str, Any]:
         )
 
     edges = _dedupe_edges(edges)
+    levels = _compute_levels(nodes, edges)
+    for node in nodes:
+        node["level"] = levels.get(node["id"], 1)
+
     roots = _find_roots(nodes, edges)
     leaves = _find_leaves(nodes, edges)
 
@@ -253,6 +257,99 @@ def _find_leaves(nodes: list[dict[str, Any]], edges: list[dict[str, str]]) -> li
     node_ids = {node["id"] for node in nodes}
     callers = {edge["caller"] for edge in edges}
     return sorted(node_ids - callers)
+
+
+def _compute_levels(
+    nodes: list[dict[str, Any]],
+    edges: list[dict[str, str]],
+) -> dict[str, int]:
+    """Compute longest call-path height for each local call graph node."""
+    node_ids = {node["id"] for node in nodes}
+    children = {
+        caller: [child for child in values if child in node_ids]
+        for caller, values in _children_by_caller(edges).items()
+        if caller in node_ids
+    }
+    components = _strongly_connected_components(node_ids, children)
+    component_by_node = {
+        node_id: component_id
+        for component_id, component in enumerate(components)
+        for node_id in component
+    }
+    component_children: dict[int, set[int]] = {
+        component_id: set() for component_id in range(len(components))
+    }
+
+    for caller, callee_ids in children.items():
+        caller_component = component_by_node[caller]
+        for callee in callee_ids:
+            callee_component = component_by_node[callee]
+            if callee_component != caller_component:
+                component_children[caller_component].add(callee_component)
+
+    component_levels: dict[int, int] = {}
+
+    def component_level(component_id: int) -> int:
+        if component_id in component_levels:
+            return component_levels[component_id]
+        child_levels = [
+            component_level(child_id)
+            for child_id in sorted(component_children.get(component_id, set()))
+        ]
+        level = 1 + max(child_levels) if child_levels else 1
+        component_levels[component_id] = level
+        return level
+
+    return {
+        node_id: component_level(component_by_node[node_id])
+        for node_id in sorted(node_ids)
+    }
+
+
+def _strongly_connected_components(
+    node_ids: set[str],
+    children: dict[str, list[str]],
+) -> list[list[str]]:
+    """Group nodes so cycles can be leveled without recursion loops."""
+    index = 0
+    stack: list[str] = []
+    stack_members: set[str] = set()
+    indexes: dict[str, int] = {}
+    lowlinks: dict[str, int] = {}
+    components: list[list[str]] = []
+
+    def visit(node_id: str) -> None:
+        nonlocal index
+        indexes[node_id] = index
+        lowlinks[node_id] = index
+        index += 1
+        stack.append(node_id)
+        stack_members.add(node_id)
+
+        for child_id in children.get(node_id, []):
+            if child_id not in indexes:
+                visit(child_id)
+                lowlinks[node_id] = min(lowlinks[node_id], lowlinks[child_id])
+            elif child_id in stack_members:
+                lowlinks[node_id] = min(lowlinks[node_id], indexes[child_id])
+
+        if lowlinks[node_id] != indexes[node_id]:
+            return
+
+        component: list[str] = []
+        while stack:
+            member = stack.pop()
+            stack_members.remove(member)
+            component.append(member)
+            if member == node_id:
+                break
+        components.append(sorted(component))
+
+    for node_id in sorted(node_ids):
+        if node_id not in indexes:
+            visit(node_id)
+
+    return components
 
 
 def _children_by_caller(edges: list[dict[str, str]]) -> dict[str, list[str]]:

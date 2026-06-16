@@ -45,6 +45,7 @@ class CallGraphTests(unittest.TestCase):
         self.assertEqual(graph["tree"], "main\n└── helper")
         main_node = next(node for node in graph["nodes"] if node["id"] == "main")
         self.assertEqual(main_node["external_calls"], ["print"])
+        self.assertEqual(self._levels(graph), {"helper": 1, "main": 2})
 
     def test_build_call_graph_resolves_self_method_calls(self) -> None:
         tree = parse_source(
@@ -100,6 +101,91 @@ class CallGraphTests(unittest.TestCase):
             {"caller": "outer", "callee": "helper", "call": "helper"},
             graph["edges"],
         )
+
+    def test_linear_chain_levels(self) -> None:
+        tree = parse_source(
+            dedent(
+                """
+                def main():
+                    return build()
+
+                def build():
+                    return parse()
+
+                def parse():
+                    return 1
+                """
+            ).strip()
+            + "\n"
+        )
+
+        graph = build_call_graph(tree)
+
+        self.assertEqual(
+            self._levels(graph),
+            {"parse": 1, "build": 2, "main": 3},
+        )
+
+    def test_leaf_function_level(self) -> None:
+        tree = parse_source(
+            "def helper():\n    return 1\n",
+        )
+
+        graph = build_call_graph(tree)
+
+        self.assertEqual(self._levels(graph), {"helper": 1})
+
+    def test_branching_graph_levels(self) -> None:
+        tree = parse_source(
+            dedent(
+                """
+                def main():
+                    parse()
+                    render()
+
+                def parse():
+                    return 1
+
+                def render():
+                    return 2
+                """
+            ).strip()
+            + "\n"
+        )
+
+        graph = build_call_graph(tree)
+
+        self.assertEqual(
+            self._levels(graph),
+            {"parse": 1, "render": 1, "main": 2},
+        )
+
+    def test_cycle_levels_do_not_recurse_forever(self) -> None:
+        tree = parse_source(
+            dedent(
+                """
+                def A():
+                    return B()
+
+                def B():
+                    return A()
+                """
+            ).strip()
+            + "\n"
+        )
+
+        graph = build_call_graph(tree)
+
+        self.assertEqual(self._levels(graph), {"A": 1, "B": 1})
+
+    def _levels(self, graph: dict[str, object]) -> dict[str, int]:
+        nodes = graph["nodes"]
+        assert isinstance(nodes, list)
+        return {
+            node["id"]: node["level"]
+            for node in nodes
+            if isinstance(node, dict)
+        }
 
 
 if __name__ == "__main__":

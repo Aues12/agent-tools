@@ -8,9 +8,21 @@ Build deterministic semantic cards from Python semantic AST trees.
 - Preserves containment through `parent_id` and `children`
 - Emits graph-friendly `contains` relations separately
 - Adds deterministic `imports`, `inherits`, and local `calls` relations
+- Distinguishes structural `depth` from architectural `level`
 - Keeps source audit data in `trace` instead of embedding source text
 - Avoids expression-level cards in the first version
 - Provides compact semantic views over existing card output
+
+## Conceptual Alignment
+
+In Semantic Observatory terms:
+
+- A module, class, function, block, or statement is an observation target.
+- A Semantic Card is a localized interface to that target.
+- `semantic_ast` provides structural localization.
+- `call_graph` provides relation localization.
+- `semantic_cards` provides card/interface localization.
+- `semantic_view` provides presentation localization.
 
 ## ID Standard
 
@@ -40,6 +52,17 @@ Source location lives in `trace`:
   }
 }
 ```
+
+## Depth and Level
+
+Semantic cards expose two separate vertical measurements:
+
+- `depth`: structural nesting from the semantic AST containment tree
+- `level`: architectural height from the local call graph
+
+For function cards, `level` is the longest call-path height beneath that
+function. Leaf functions have `level: 1`; callers have
+`1 + max(callee levels)`.
 
 ## Entry points
 

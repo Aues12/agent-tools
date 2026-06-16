@@ -7,7 +7,16 @@ Extract deterministic function relationships from semantic AST structures.
 - Finds functions and methods in a semantic AST tree
 - Extracts direct function calls from each function body
 - Separates local calls from external calls
+- Computes each local node's architectural `level`
 - Produces graph nodes, edges, roots, leaves, and a readable tree
+
+## Levels
+
+`level` is the longest local call-path height beneath a function.
+
+- Leaf functions have `level: 1`
+- Callers have `1 + max(callee levels)`
+- Cycles are grouped safely so traversal does not recurse forever
 
 ## Python usage
 
