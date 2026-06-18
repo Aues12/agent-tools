@@ -12,6 +12,27 @@ Software serves as the initial domain of exploration, but the principles describ
 
 ---
 
+## Directory Tree
+
+```text
+semantic_observatory/
+├── README.md
+├── epistemic-phases-and-roles.md
+├── foundations.md
+├── implementation-map.md
+├── localization.md
+├── observation-theory.md
+├── ontological-layer.md
+├── quest-tree.md
+├── semantic-architecture.md
+├── semantic-cards.md
+├── semantic-workbench.md
+├── symbolic-geometry.md
+└── vertical-ontology.md
+```
+
+---
+
 ## Conceptual Architecture
 
 The observatory is organized into complementary layers.
