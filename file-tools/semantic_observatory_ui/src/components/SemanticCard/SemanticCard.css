@@ -1,7 +1,7 @@
 .semantic-card {
   width: min(446px, calc(100vw - 32px));
-  min-height: 308px;
-  padding: 24px 28px 30px;
+  min-height: 280px;
+  padding: 28px 36px 30px;
   display: flex;
   flex-direction: column;
   color: #28231f;
@@ -31,7 +31,7 @@
   margin: 0;
   font-size: 23px;
   line-height: 1.12;
-  font-weight: 760;
+  font-weight: 750;
   letter-spacing: 0;
 }
 
@@ -74,7 +74,7 @@
   margin: 22px 0 0;
   color: #514b44;
   font-size: 14px;
-  line-height: 1.25;
+  line-height: 1.5;
 }
 
 .semantic-card__chips {
