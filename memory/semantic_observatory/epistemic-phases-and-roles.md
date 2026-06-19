@@ -339,19 +339,17 @@ This principle is referred to as:
 
 **Fractal Phase Dynamics**
 
-A component may contain all four phases internally while still expressing a dominant phase within a larger context.
+Knowledge processes are recursive.
 
-Example:
+A cycle may exist inside another cycle.
 
-A parser function may internally perform:
+A function may participate within a module-level cycle.
 
-Earth → Fire → Air → Water → Earth
+A module may participate within a system-level cycle.
 
-while being classified as a Water-oriented component within the surrounding system.
+A system may participate within a larger workflow.
 
-The internal cycle and the external role are not contradictory.
-
-They represent different scales of observation.
+The same epistemic movement may therefore appear repeatedly at different scales.
 
 ---
 
@@ -361,28 +359,79 @@ The current model uses the following reference cycle:
 
 Earth → Fire → Air → Water → Earth
 
-This sequence should be preserved whenever possible.
+This sequence must be preserved whenever possible.
 
 Exceptional boundary cases may exist, but the cycle represents the primary movement of transformation.
 
 Symbolically:
 
 Earth
-→ fixed form
+→ material
+→ artifact
+→ stabilized form
 
 Fire
 → transformation
+→ operation
+→ activation
 
 Air
 → temporary representation
+→ temporary memory
+→ intermediate state
 
 Water
-→ interpretation and flow
+→ interpretation
+→ analysis
+→ flow
 
 Earth
-→ stabilized form
+→ realized artifact
+→ preserved result
 
 The cycle may be understood as a recurring movement of information, structure, and realization.
+
+---
+
+## Scope-Relative Phase Principle
+
+Phases are relative to the current scope of observation.
+
+A structure that appears as Earth at one depth may appear as Air at another depth.
+
+Example:
+
+Within a function:
+
+tree
+→ Earth
+
+because it represents the completed result of the local cycle.
+
+Within a surrounding module:
+
+tree
+→ Air
+
+because it serves as an intermediate representation used by subsequent operations.
+
+Therefore:
+
+A local artifact may become a temporary representation at a higher level of abstraction.
+
+Likewise:
+
+A temporary representation at one level may become a stabilized artifact at another.
+
+Phases should therefore be interpreted relative to:
+
+* depth,
+* scope,
+* and cycle boundaries.
+
+Phase classification is not always absolute.
+
+It is often scale-dependent.
 
 ---
 
@@ -392,9 +441,10 @@ The cycle may be understood as a recurring movement of information, structure, a
 def parse_file(path):
     text = read_file(path)
     tree = ast.parse(text)
+    return tree
 ```
 
-Phase interpretation:
+Local function cycle:
 
 path
 → Earth
@@ -415,7 +465,31 @@ Result:
 
 Earth → Fire → Air → Water → Earth
 
-This example serves as a reference implementation of the phase cycle.
+However:
+
+When observed from a higher-level workflow, the returned tree may become Air, serving as an intermediate representation within a larger cycle.
+
+This illustrates the scope-relative nature of phase interpretation.
+
+---
+
+## Fractal Interpretation
+
+Every cycle may contain smaller cycles.
+
+Every completed artifact may become material for a larger process.
+
+Statement Cycle
+⊂ Function Cycle
+⊂ Module Cycle
+⊂ Package Cycle
+⊂ System Cycle
+
+The boundary between Earth and Air is therefore not fixed.
+
+It depends on the current depth of observation.
+
+This relationship forms one of the core principles of Fractal Phase Dynamics.
 
 ---
 
