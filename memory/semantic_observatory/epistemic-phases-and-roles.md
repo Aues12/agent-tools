@@ -577,3 +577,254 @@ A Semantic Seal represents the central meaning associated with a structure, tran
 The precise nature of Semantic Seals remains an area of ongoing exploration.
 
 For now, a Seal should be understood as the meaning-centered counterpart to a Semantic Ring.
+
+---
+
+# [EPR-010] Elements, Modalities, and Archetypal Operations
+
+## Purpose
+
+This note extends the Role / Phase model through the traditional symbolic structure:
+
+```
+4 Elements × 3 Modalities = 12 Archetypal Operations
+```
+
+The goal is not to use popular astrology.
+
+The goal is to study the symbolic logic of qualitative manifestation through a perennial framework.
+
+---
+
+## Guiding Principle
+
+```
+Element = qualitative field
+Modality = mode of movement
+Role = functional task
+```
+
+In the Semantic Observatory model:
+
+```
+Phase
+    → What kind of semantic field is this?
+
+Modality
+    → How does this field move?
+
+Role
+    → What work does this card perform?
+```
+
+---
+
+## Four Elemental Phases
+
+The four phases correspond to the four elements.
+
+```
+Earth = fixed form / product / received material
+Fire  = transformation / operation
+Air   = temporary representation / conceptual structure
+Water = flow / writing / transmission
+```
+
+---
+
+## Three Modalities
+
+The three modalities describe how a phase behaves.
+
+```
+Cardinal = initiating / opening / directing
+Fixed    = stabilizing / preserving / sustaining
+Mutable  = adapting / transitioning / transforming
+```
+
+Thus:
+
+```
+4 Elements
+×
+3 Modalities
+=
+12 Archetypal Operations
+```
+
+---
+
+## Twelve Archetypal Operations
+
+### Earth
+
+```
+Earth + Cardinal (Capricorn)
+= form initiation
+```
+
+Starting a form, schema, model, file, or artifact.
+
+```
+Earth + Fixed (Taurus)
+= form stabilization
+```
+
+Preserving stable data, constants, configuration, or persisted output.
+
+```
+Earth + Mutable (Virgo)
+= form repositioning
+```
+
+Migrating, refactoring, or adapting an existing form.
+
+---
+
+### Fire
+
+```
+Fire + Cardinal (Aries)
+= transformation initiation
+```
+
+Starting an operation, process, or transformation pipeline.
+
+```
+Fire + Fixed (Leo)
+= transformation stabilization
+```
+
+Core transformation logic that consistently performs a defined operation.
+
+```
+Fire + Mutable (Sagittarius)
+= transformation adaptation
+```
+
+Adapting transformation logic to context, strategy, or variant.
+
+---
+
+### Air
+
+```
+Air + Cardinal (Libra)
+= representation initiation
+```
+
+Creating a type, interface, temporary model, or conceptual representation.
+
+```
+Air + Fixed (Aquarius)
+= representation stabilization
+```
+
+Holding an AST, card, graph, or intermediate structure in a stable temporary form.
+
+```
+Air + Mutable (Gemini)
+= representation remapping
+```
+
+Mapping, projecting, translating, or restructuring representations.
+
+---
+
+### Water
+
+```
+Water + Cardinal (Cancer)
+= flow initiation
+```
+
+Beginning writing, exporting, streaming, or transmission.
+
+```
+Water + Fixed (Scorpio)
+= flow channeling
+```
+
+Writing into a stable output format or controlled channel.
+
+```
+Water + Mutable (Pisces)
+= flow adaptation
+```
+
+Streaming, syncing, updating, or distributing output dynamically.
+
+---
+
+## Programming Interpretation
+
+This model may later be used to classify semantic cards.
+
+Example:
+
+```json
+{
+  "phase": "Fire",
+  "modality": "Fixed",
+  "zodiac": "Leo",
+  "role": "Transformer"
+}
+```
+
+This may indicate a core transformation function.
+
+Example:
+
+```json
+{
+  "phase": "Fire",
+  "modality": "Mutable",
+  "zodiac": "Sagittarius",
+  "role": "Adapter"
+}
+```
+
+These zodiac labels are included only as symbolic correspondences to the element–modality combination and do not imply astrological prediction or personality classification.
+
+This may indicate a transformation adapter or strategy.
+
+---
+
+## Relation to Semantic Cards
+
+A semantic card may be understood through three axes:
+
+```
+Phase
+    elemental field
+
+Modality
+    inner movement
+
+Role
+    functional responsibility
+```
+
+Together, these axes help describe both:
+
+```
+what the card is
+```
+
+and
+
+```
+how the card acts
+```
+
+---
+
+## Research Status
+
+This model is experimental.
+
+It should be treated as a symbolic research layer before becoming part of implementation.
+
+Initial implementation should remain deterministic and simple.
+
+Archetypal classification may be introduced after the base card, module, and UI systems are stable.
