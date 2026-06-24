@@ -1,0 +1,141 @@
+{
+  "type": "data_flow_graph",
+  "language": "python",
+  "path": "/workspace/agent-tools/file-tools/semantic_dfg/examples/simple_pipeline.py",
+  "functions": [
+    {
+      "id": "function:simple_pipeline.calculate_total",
+      "name": "calculate_total",
+      "qualified_name": "simple_pipeline.calculate_total",
+      "path": "/workspace/agent-tools/file-tools/semantic_dfg/examples/simple_pipeline.py",
+      "line": 1,
+      "end_line": 5,
+      "nodes": [
+        {
+          "id": "function:simple_pipeline.calculate_total:parameter:price",
+          "name": "price",
+          "kind": "parameter",
+          "scope": "simple_pipeline.calculate_total",
+          "flow_level": 0,
+          "depth": 0,
+          "lineno": 1
+        },
+        {
+          "id": "function:simple_pipeline.calculate_total:parameter:quantity",
+          "name": "quantity",
+          "kind": "parameter",
+          "scope": "simple_pipeline.calculate_total",
+          "flow_level": 0,
+          "depth": 0,
+          "lineno": 1
+        },
+        {
+          "id": "function:simple_pipeline.calculate_total:parameter:tax_rate",
+          "name": "tax_rate",
+          "kind": "parameter",
+          "scope": "simple_pipeline.calculate_total",
+          "flow_level": 0,
+          "depth": 0,
+          "lineno": 1
+        },
+        {
+          "id": "function:simple_pipeline.calculate_total:binding:subtotal",
+          "name": "subtotal",
+          "kind": "binding",
+          "scope": "simple_pipeline.calculate_total",
+          "flow_level": 1,
+          "depth": 1,
+          "lineno": 2
+        },
+        {
+          "id": "function:simple_pipeline.calculate_total:binding:tax",
+          "name": "tax",
+          "kind": "binding",
+          "scope": "simple_pipeline.calculate_total",
+          "flow_level": 2,
+          "depth": 1,
+          "lineno": 3
+        },
+        {
+          "id": "function:simple_pipeline.calculate_total:binding:total",
+          "name": "total",
+          "kind": "binding",
+          "scope": "simple_pipeline.calculate_total",
+          "flow_level": 3,
+          "depth": 1,
+          "lineno": 4
+        },
+        {
+          "id": "function:simple_pipeline.calculate_total:return_value:return_value",
+          "name": "return_value",
+          "kind": "return_value",
+          "scope": "simple_pipeline.calculate_total",
+          "flow_level": 4,
+          "depth": 1,
+          "lineno": 5
+        }
+      ],
+      "edges": [
+        {
+          "source": "function:simple_pipeline.calculate_total:parameter:price",
+          "target": "function:simple_pipeline.calculate_total:binding:subtotal",
+          "kind": "depends_on",
+          "operation": "Mult",
+          "lineno": 2
+        },
+        {
+          "source": "function:simple_pipeline.calculate_total:parameter:quantity",
+          "target": "function:simple_pipeline.calculate_total:binding:subtotal",
+          "kind": "depends_on",
+          "operation": "Mult",
+          "lineno": 2
+        },
+        {
+          "source": "function:simple_pipeline.calculate_total:binding:subtotal",
+          "target": "function:simple_pipeline.calculate_total:binding:tax",
+          "kind": "depends_on",
+          "operation": "Mult",
+          "lineno": 3
+        },
+        {
+          "source": "function:simple_pipeline.calculate_total:parameter:tax_rate",
+          "target": "function:simple_pipeline.calculate_total:binding:tax",
+          "kind": "depends_on",
+          "operation": "Mult",
+          "lineno": 3
+        },
+        {
+          "source": "function:simple_pipeline.calculate_total:binding:subtotal",
+          "target": "function:simple_pipeline.calculate_total:binding:total",
+          "kind": "depends_on",
+          "operation": "Add",
+          "lineno": 4
+        },
+        {
+          "source": "function:simple_pipeline.calculate_total:binding:tax",
+          "target": "function:simple_pipeline.calculate_total:binding:total",
+          "kind": "depends_on",
+          "operation": "Add",
+          "lineno": 4
+        },
+        {
+          "source": "function:simple_pipeline.calculate_total:binding:total",
+          "target": "function:simple_pipeline.calculate_total:return_value:return_value",
+          "kind": "returns",
+          "operation": "return",
+          "lineno": 5
+        }
+      ],
+      "returns": [
+        "function:simple_pipeline.calculate_total:return_value:return_value"
+      ]
+    }
+  ],
+  "warnings": [],
+  "stats": {
+    "functions": 1,
+    "nodes": 7,
+    "edges": 7,
+    "warnings": 0
+  }
+}

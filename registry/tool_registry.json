@@ -130,6 +130,40 @@
       ]
     },
     {
+      "name": "semantic_dfg",
+      "capability": "semantic_code_analysis",
+      "path": "file-tools/semantic_dfg",
+      "entrypoint": "semantic_dfg.py",
+      "transport": "stdin_json",
+      "status": "experimental",
+      "operations": [
+        "build_dfg",
+        "build_dfg_from_source",
+        "build_dfg_from_file",
+        "summarize_dfg"
+      ],
+      "interfaces": [
+        {
+          "name": "stdin_json",
+          "entrypoint": "semantic_dfg.py",
+          "transport": "stdin_json"
+        },
+        {
+          "name": "python_api",
+          "entrypoint": "tool.py",
+          "callables": [
+            "build_dfg",
+            "build_dfg_from_source",
+            "build_dfg_from_file",
+            "dfg_from_source",
+            "dfg_from_file",
+            "summarize_dfg",
+            "run"
+          ]
+        }
+      ]
+    },
+    {
       "name": "ast_parsing",
       "capability": "ast_parsing",
       "path": "file-tools/semantic_ast/ast_parsing",
