@@ -6,7 +6,7 @@ function titleCase(value) {
 }
 
 function lineRange(source) {
-  return `Lines ${source.line}-${source.endLine}`;
+  return `${source.line}-${source.endLine}`;
 }
 
 export function SemanticCard({ card }) {
@@ -16,7 +16,7 @@ export function SemanticCard({ card }) {
     <article className="semantic-card" aria-labelledby={`${card.id}-title`}>
       <header className="semantic-card__meta">
         <span>{titleCase(card.kind)}</span>
-        <span>{lineRange(card.source)}</span>
+        <span>Lines {lineRange(card.source)}</span>
       </header>
 
       <div className="semantic-card__body">
@@ -25,7 +25,7 @@ export function SemanticCard({ card }) {
             {card.title}
           </h1>
           <p className="semantic-card__subtle">
-            Depth {card.depth} · Level {card.level}
+            Depth {card.depth} / Level {card.level}
           </p>
         </div>
 
@@ -44,8 +44,8 @@ export function SemanticCard({ card }) {
       <p className="semantic-card__summary">{card.summary}</p>
 
       <div className="semantic-card__chips" aria-label="Semantic tags">
-        <span className="semantic-card__chip">Role · {card.role}</span>
-        <span className="semantic-card__chip">Phase · {card.phase}</span>
+        <span className="semantic-card__chip">Role / {card.role}</span>
+        <span className="semantic-card__chip">Phase / {card.phase}</span>
       </div>
 
       <footer className="semantic-card__trace">{card.source.displayPath}</footer>

@@ -63,8 +63,11 @@ semantic_ast line/end_line  -> semantic_card.trace.line/end_line
 semantic_card.trace         -> semantic_view.location
 semantic AST containment    -> card.parent_id and card.children
 semantic AST containment    -> contains relations
+semantic AST expressions    -> semantic_dfg nodes and edges
 call_graph edges            -> calls relations
 call_graph node.level       -> function card.level
+semantic_dfg node.flow_level -> value-flow distance for DFG consumers
+semantic_dfg node.depth      -> local structural depth for DFG consumers
 AST traversal depth         -> card.depth
 ```
 
@@ -74,6 +77,14 @@ AST traversal depth         -> card.depth
 depth = structural nesting in a containment tree
 level = architectural height in a relation graph
 ```
+
+DFG value-flow position uses `flow_level` instead of `level` so it is not
+confused with call graph or card architectural height.
+
+DFG nodes may also expose `depth`, which is local structural nesting inside the
+function DFG. Parameters usually have `depth: 0`; top-level statements inside a
+function usually produce nodes with `depth: 1`; nested block statements increase
+that value.
 
 ## Source Input
 
@@ -212,6 +223,123 @@ call    string  Original call surface
 
 Edges should refer only to local/internal calls already resolved by the call
 graph tool. External calls belong in `external_calls` on the node.
+
+## semantic_dfg Result
+
+A semantic DFG result represents local function-level value dependencies.
+
+Required fields:
+
+```text
+type       string  Must be "data_flow_graph"
+language   string  Source language, currently "python"
+functions  array   Function-level DFG records
+stats      object  Summary counts
+```
+
+Common fields:
+
+```text
+path      string|null
+warnings  array
+```
+
+`semantic_dfg` is intentionally local and deterministic. It does not perform
+type inference, interprocedural analysis, runtime tracing, SSA construction, or
+symbolic phase inference.
+
+## semantic_dfg Function
+
+A semantic DFG function record describes value movement inside one local
+function or method.
+
+Required fields:
+
+```text
+id              string
+name            string
+qualified_name  string
+nodes           array
+edges           array
+returns         array
+```
+
+Common fields:
+
+```text
+path      string|null
+line      integer
+end_line  integer
+warnings  array
+```
+
+## semantic_dfg Node
+
+A semantic DFG node represents a value, binding, input, output, literal, call
+result, attribute, or unknown dependency.
+
+Required fields:
+
+```text
+id     string
+name   string
+kind   string
+scope  string
+```
+
+Common fields:
+
+```text
+flow_level  integer
+depth       integer
+lineno      integer
+col_offset  integer
+```
+
+`flow_level` is the longest upstream value-flow distance inside the local
+function DFG. Source-like nodes such as parameters, literals, and unresolved
+unknown values usually have `flow_level: 0`. A node produced from upstream
+values has `1 + max(source.flow_level)` across incoming DFG edges.
+
+Common node kinds:
+
+```text
+parameter
+binding
+literal
+call_result
+return_value
+attribute
+unknown
+```
+
+## semantic_dfg Edge
+
+A semantic DFG edge represents dependency or production.
+
+Required fields:
+
+```text
+source  string  Source DFG node id
+target  string  Target DFG node id
+kind    string
+```
+
+Common fields:
+
+```text
+operation  string|null
+lineno     integer
+```
+
+Common edge kinds:
+
+```text
+depends_on
+produces
+returns
+passes_to_call
+```
 
 ## semantic_cards Result
 

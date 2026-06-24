@@ -1,0 +1,91 @@
+name: semantic_dfg
+type: tool
+capability: semantic_code_analysis
+purpose: Build deterministic local Python data-flow graphs from semantic AST structures.
+status: experimental
+deterministic: true
+interfaces:
+  - name: stdin_json
+    entrypoint: semantic_dfg.py
+    transport: stdin_json
+  - name: python_api
+    entrypoint: tool.py
+    callables:
+      - build_dfg
+      - build_dfg_from_source
+      - build_dfg_from_file
+      - dfg_from_source
+      - dfg_from_file
+      - summarize_dfg
+      - run
+operations:
+  - name: build_dfg
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      tree:
+        type: object
+        required: true
+    returns:
+      type: object
+      description: Function-level data-flow graph result.
+  - name: build_dfg_from_source
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      source:
+        type: string
+        required: true
+      path:
+        type: string
+        required: false
+    returns:
+      type: object
+      description: Parsed Python source data-flow graph.
+  - name: build_dfg_from_file
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      path:
+        type: string
+        required: true
+      encoding:
+        type: string
+        required: false
+        default: utf-8
+    returns:
+      type: object
+      description: Parsed Python file data-flow graph.
+  - name: summarize_dfg
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      dfg:
+        type: object
+        required: true
+    returns:
+      type: object
+      description: Compact human-readable data-flow summaries.
+side_effects:
+  reads:
+    - build_dfg reads provided semantic AST data only.
+    - build_dfg_from_source reads provided source text only.
+    - build_dfg_from_file reads the provided file path.
+    - summarize_dfg reads provided DFG data only.
+  writes: []
+line_numbers:
+  base: 1
+  ranges: inclusive
+limits:
+  - v1 is local to Python function scopes.
+  - v1 does not perform type inference, interprocedural analysis, SSA, runtime tracing, or symbolic phase inference.
+failure_modes:
+  - non-module trees return a structured ValueError envelope.
+  - invalid source raises SyntaxError or IndentationError in the structured error envelope.
+  - missing files raise FileNotFoundError.
+validation:
+  - python3 -m unittest discover -s file-tools/semantic_dfg/tests

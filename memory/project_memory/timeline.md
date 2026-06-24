@@ -65,3 +65,12 @@ Working-note milestone:
 * single semantic card implemented in React/Vite
 * elemental phase symbolism connected to card UI
 * `project_memory` chronology method initialized
+
+## 2026-06-24
+
+Working-note milestone:
+
+* `semantic_dfg` implemented as a deterministic local data-flow layer
+* DFG schema, registry metadata, tests, examples, and playground artifact added
+* `flow_level` introduced for value-flow distance
+* DFG-local `depth` introduced for structural nesting inside function bodies

@@ -1,26 +1,26 @@
 .semantic-card {
-  width: min(446px, calc(100vw - 32px));
-  min-height: 280px;
-  padding: 28px 36px 30px;
+  width: 100%;
+  min-height: 330px;
+  padding: 24px;
   display: flex;
   flex-direction: column;
-  color: #28231f;
-  background: #fbf7ef;
-  border: 1px solid #d8bd7e;
-  border-radius: 20px;
+  color: #20252b;
+  background: #ffffff;
+  border: 1px solid #d7ddda;
+  border-radius: 8px;
 }
 
 .semantic-card__meta {
   display: flex;
   justify-content: space-between;
   gap: 16px;
-  color: #8b6018;
+  color: #527067;
   font-size: 12px;
-  font-weight: 650;
+  font-weight: 750;
 }
 
 .semantic-card__body {
-  margin-top: 12px;
+  margin-top: 14px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -29,37 +29,34 @@
 
 .semantic-card__title {
   margin: 0;
-  font-size: 23px;
+  color: #1c2a2b;
+  font-size: 26px;
   line-height: 1.12;
-  font-weight: 750;
+  font-weight: 800;
   letter-spacing: 0;
+  overflow-wrap: anywhere;
 }
 
 .semantic-card__subtle {
-  margin: 8px 0 0;
-  color: #655d53;
+  margin: 9px 0 0;
+  color: #63706e;
   font-size: 13px;
-  font-weight: 550;
+  font-weight: 650;
 }
 
 .semantic-card__action {
-  width: 48px;
-  height: 48px;
+  width: 52px;
+  height: 52px;
   display: grid;
   place-items: center;
   flex: 0 0 auto;
-  color: #956b22;
-  background: #fff8eb;
-  border: 1px solid #dfbf74;
+  color: #2f6f66;
+  background: #eef8f4;
+  border: 1px solid #b9d5cd;
   border-radius: 999px;
   padding: 0;
   font-size: 28px;
   line-height: 1;
-  cursor: pointer;
-}
-
-.semantic-card__action:hover {
-  background: #fff2d6;
 }
 
 .semantic-card__action-symbol {
@@ -70,34 +67,34 @@
 }
 
 .semantic-card__summary {
-  max-width: 342px;
-  margin: 22px 0 0;
-  color: #514b44;
-  font-size: 14px;
-  line-height: 1.5;
+  max-width: 34rem;
+  margin: 24px 0 0;
+  color: #4f5958;
+  font-size: 15px;
+  line-height: 1.55;
 }
 
 .semantic-card__chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 10px;
   margin-top: 22px;
 }
 
 .semantic-card__chip {
-  min-width: 132px;
-  padding: 7px 14px;
-  color: #66502b;
-  background: #fff6e6;
-  border: 1px solid #ddbd76;
+  padding: 7px 11px;
+  color: #5d5945;
+  background: #f7f1e4;
+  border: 1px solid #ded3b8;
   border-radius: 999px;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.1;
 }
 
 .semantic-card__trace {
   margin-top: auto;
-  padding-top: 36px;
-  color: #9b968f;
-  font-size: 11px;
+  padding-top: 30px;
+  color: #77807f;
+  font-size: 12px;
+  overflow-wrap: anywhere;
 }
