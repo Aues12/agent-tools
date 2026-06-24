@@ -154,6 +154,26 @@ Below or beside the visual card, show structured details:
 * source trace
 * relations
 
+### DFG Enrichment
+
+For function cards, a local Data Flow Graph may enrich the card without
+replacing it.
+
+The DFG shows function-internal value movement.
+
+The Semantic Card remains the navigable semantic unit.
+
+```txt
+Semantic Card
+    ↓
+DFG detail
+    ↓
+function-internal flow
+```
+
+This keeps the card stable while allowing users to inspect how values enter,
+transform, and leave the local function scope.
+
 ---
 
 ## Data Model
