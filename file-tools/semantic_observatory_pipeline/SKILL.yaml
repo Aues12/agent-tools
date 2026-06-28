@@ -1,0 +1,90 @@
+name: semantic_observatory_pipeline
+type: tool
+capability: semantic_code_observation
+purpose: Run existing semantic analysis tools and adapt their artifacts for Semantic Observatory UI.
+status: experimental
+deterministic: true
+interfaces:
+  - name: stdin_json
+    entrypoint: semantic_observatory_pipeline.py
+    transport: stdin_json
+  - name: python_api
+    entrypoint: tool.py
+    callables:
+      - analyze_source
+      - analyze_file
+      - adapt_for_ui
+      - run
+operations:
+  - name: analyze_source
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      source:
+        type: string
+        required: true
+      path:
+        type: string
+        required: false
+      display_path:
+        type: string
+        required: false
+      include_statements:
+        type: boolean
+        required: false
+        default: false
+      include_blocks:
+        type: boolean
+        required: false
+        default: false
+    returns:
+      type: object
+      description: Semantic Observatory analysis payload with artifacts and UI data.
+  - name: analyze_file
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      path:
+        type: string
+        required: true
+      encoding:
+        type: string
+        required: false
+        default: utf-8
+      include_statements:
+        type: boolean
+        required: false
+        default: false
+      include_blocks:
+        type: boolean
+        required: false
+        default: false
+    returns:
+      type: object
+      description: Semantic Observatory analysis payload for a Python file.
+  - name: adapt_for_ui
+    available_via:
+      - python_api
+    params:
+      semantic_cards:
+        type: object
+        required: true
+      data_flow_graph:
+        type: object
+        required: false
+    returns:
+      type: object
+      description: Flat View compatible UI data.
+side_effects:
+  reads:
+    - analyze_source reads provided source text only.
+    - analyze_file reads the provided Python file path.
+    - adapt_for_ui reads provided artifact objects only.
+  writes: []
+line_numbers:
+  base: 1
+  ranges: inclusive
+validation:
+  - python3 -m unittest discover -s file-tools/semantic_observatory_pipeline/tests

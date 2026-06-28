@@ -164,6 +164,36 @@
       ]
     },
     {
+      "name": "semantic_observatory_pipeline",
+      "capability": "semantic_code_observation",
+      "path": "file-tools/semantic_observatory_pipeline",
+      "entrypoint": "semantic_observatory_pipeline.py",
+      "transport": "stdin_json",
+      "status": "experimental",
+      "operations": [
+        "analyze_source",
+        "analyze_file",
+        "adapt_for_ui"
+      ],
+      "interfaces": [
+        {
+          "name": "stdin_json",
+          "entrypoint": "semantic_observatory_pipeline.py",
+          "transport": "stdin_json"
+        },
+        {
+          "name": "python_api",
+          "entrypoint": "tool.py",
+          "callables": [
+            "analyze_source",
+            "analyze_file",
+            "adapt_for_ui",
+            "run"
+          ]
+        }
+      ]
+    },
+    {
       "name": "ast_parsing",
       "capability": "ast_parsing",
       "path": "file-tools/semantic_ast/ast_parsing",
