@@ -139,7 +139,8 @@ Build a compact text containment tree from an existing semantic card result.
   "params": {
     "cards": { "... semantic_cards result ..." },
     "max_depth": 3,
-    "include_statements": false
+    "include_statements": false,
+    "include_blocks": false
   }
 }
 ```

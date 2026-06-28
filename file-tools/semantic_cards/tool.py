@@ -69,25 +69,36 @@ def cards_from_source(
     source: str,
     path: str | None = None,
     include_statements: bool = True,
+    include_blocks: bool = True,
 ) -> dict[str, Any]:
     """Parse Python source and build semantic cards."""
     tree = _semantic_ast.parse_source(source=source, path=path, include_source=False)
-    return build_cards(tree, include_statements=include_statements)
+    return build_cards(
+        tree,
+        include_statements=include_statements,
+        include_blocks=include_blocks,
+    )
 
 
 def cards_from_file(
     path: str | Path,
     encoding: str = "utf-8",
     include_statements: bool = True,
+    include_blocks: bool = True,
 ) -> dict[str, Any]:
     """Read a Python file through semantic_ast and build semantic cards."""
     tree = _semantic_ast.parse_file(path=path, encoding=encoding, include_source=False)
-    return build_cards(tree, include_statements=include_statements)
+    return build_cards(
+        tree,
+        include_statements=include_statements,
+        include_blocks=include_blocks,
+    )
 
 
 def build_cards(
     tree: Mapping[str, Any],
     include_statements: bool = True,
+    include_blocks: bool = True,
 ) -> dict[str, Any]:
     """Build semantic cards and relations from a normalized semantic AST tree."""
     if not isinstance(tree, Mapping):
@@ -95,7 +106,10 @@ def build_cards(
     if tree.get("type") != "module":
         raise ValueError("tree must be a semantic_ast module node")
 
-    builder = _CardBuilder(include_statements=include_statements)
+    builder = _CardBuilder(
+        include_statements=include_statements,
+        include_blocks=include_blocks,
+    )
     return builder.build(tree)
 
 
@@ -108,6 +122,7 @@ def run(input_data: dict[str, Any]) -> dict[str, Any]:
             result = build_cards(
                 params["tree"],
                 include_statements=bool(params.get("include_statements", True)),
+                include_blocks=bool(params.get("include_blocks", True)),
             )
             message = "Built semantic cards from semantic AST"
         elif operation == "cards_from_source":
@@ -115,6 +130,7 @@ def run(input_data: dict[str, Any]) -> dict[str, Any]:
                 source=params["source"],
                 path=params.get("path"),
                 include_statements=bool(params.get("include_statements", True)),
+                include_blocks=bool(params.get("include_blocks", True)),
             )
             message = "Parsed Python source and built semantic cards"
         elif operation == "cards_from_file":
@@ -122,6 +138,7 @@ def run(input_data: dict[str, Any]) -> dict[str, Any]:
                 path=params["path"],
                 encoding=params.get("encoding", "utf-8"),
                 include_statements=bool(params.get("include_statements", True)),
+                include_blocks=bool(params.get("include_blocks", True)),
             )
             message = "Parsed Python file and built semantic cards"
         elif operation == "summary_view":
@@ -179,9 +196,10 @@ def main() -> None:
 class _CardBuilder:
     """Collect cards and relations while walking a semantic AST."""
 
-    def __init__(self, *, include_statements: bool) -> None:
+    def __init__(self, *, include_statements: bool, include_blocks: bool) -> None:
         """Initialize builder state for one card generation run."""
         self.include_statements = include_statements
+        self.include_blocks = include_blocks
         self.cards: list[dict[str, Any]] = []
         self.card_index: dict[str, dict[str, Any]] = {}
         self.relations: list[dict[str, Any]] = []
@@ -349,6 +367,16 @@ class _CardBuilder:
         node_type = _string(node.get("type"), "block")
         line = _line(node)
         qualified_name = f"{parent_qualified_name}.{node_type}@L{line}"
+        if not self.include_blocks:
+            for field in _BODY_FIELDS:
+                self._visit_body(node.get(field, []), parent_id, parent_qualified_name, depth)
+            handlers = node.get("handlers")
+            if isinstance(handlers, list):
+                for handler in handlers:
+                    if isinstance(handler, Mapping):
+                        self._visit_node(handler, parent_id, parent_qualified_name, depth)
+            return
+
         card_id = self._add_card(
             kind="block",
             title=node_type,
