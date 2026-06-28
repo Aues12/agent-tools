@@ -30,6 +30,14 @@ The first implementation should remain simple and deterministic.
 
 Semantic Observatory may eventually support multiple interface models.
 
+Visual design experiments are tracked separately in:
+
+* `memory/semantic_observatory/semantic-ui-design.md`
+
+The canonical Flat View design brief is:
+
+* `memory/semantic_observatory/flat-view-ui.md`
+
 ### Flat Interface
 
 A simple screen-based interface.
@@ -176,6 +184,37 @@ transform, and leave the local function scope.
 
 ---
 
+## v0.2 Goal — Flat View Research Desk
+
+Flat View v0.2 keeps the same inspector behavior but splits the interface into
+a progressive left-to-right research desk:
+
+```txt
+Tools / Filters
+    →
+Atlas Index
+    →
+Open Page
+    →
+Research Notes
+```
+
+The intended component model is:
+
+```txt
+SemanticFlatView
+├── IndexPanel
+├── CardNameListPanel
+├── CardViewPanel
+└── CardDetailPanel
+```
+
+This keeps search and filtering narrow, makes card browsing compact, gives the
+selected card a dedicated identity view, and keeps Overview / Relations / DFG /
+Trace inside the research notes area.
+
+---
+
 ## Data Model
 
 The UI should consume generated semantic data.
@@ -193,6 +232,28 @@ sourcemap.json
 The UI renders and later may edit views.
 
 Semantic truth remains in upstream artifacts.
+
+### Local Analysis Upload
+
+Flat View may accept a user-selected `.py` file through the browser.
+
+The browser reads the file content and sends it to a local API server:
+
+```txt
+UI file input
+    →
+POST /api/analyze
+    →
+semantic_observatory_pipeline
+    →
+semantic_ast + semantic_cards + semantic_dfg
+    →
+Flat View UI data
+```
+
+The UI does not perform semantic analysis in the browser. It renders the
+pipeline result and keeps sample data as a fallback when the local API is not
+available.
 
 ---
 

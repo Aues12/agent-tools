@@ -74,3 +74,12 @@ Working-note milestone:
 * DFG schema, registry metadata, tests, examples, and playground artifact added
 * `flow_level` introduced for value-flow distance
 * DFG-local `depth` introduced for structural nesting inside function bodies
+
+## 2026-06-28
+
+Working-note milestone:
+
+* Flat View v0.2 refactored into a four-column research desk layout
+* `semantic_observatory_pipeline` introduced to connect AST, cards, DFG, and UI data
+* local `.py` upload flow added through a small development API server
+* generated Flat View data now omits statement and control-flow block cards by default

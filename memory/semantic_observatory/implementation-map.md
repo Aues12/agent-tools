@@ -16,6 +16,7 @@ Structural Localization semantic_ast
 Relation Localization   call_graph, semantic_dfg
 Value-flow Localization semantic_dfg
 Interface Localization  semantic_cards
+Observation Pipeline    semantic_observatory_pipeline
 Presentation View       semantic_view
 Depth                   AST containment depth
 Level                   call graph height
@@ -33,6 +34,7 @@ semantic_ast   = structural localization
 call_graph     = function relation localization
 semantic_dfg   = value-flow localization
 semantic_cards = card/interface localization
+semantic_observatory_pipeline = executable analysis pipeline for UI-ready data
 semantic_view  = presentation localization
 ```
 
