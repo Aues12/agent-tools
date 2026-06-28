@@ -1,7 +1,7 @@
 .semantic-card {
   width: 100%;
-  min-height: 330px;
-  padding: 24px;
+  min-height: 300px;
+  padding: 22px;
   display: flex;
   flex-direction: column;
   color: #20252b;
@@ -30,7 +30,7 @@
 .semantic-card__title {
   margin: 0;
   color: #1c2a2b;
-  font-size: 26px;
+  font-size: 24px;
   line-height: 1.12;
   font-weight: 800;
   letter-spacing: 0;
@@ -68,7 +68,7 @@
 
 .semantic-card__summary {
   max-width: 34rem;
-  margin: 24px 0 0;
+  margin: 20px 0 0;
   color: #4f5958;
   font-size: 15px;
   line-height: 1.55;
@@ -78,7 +78,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-top: 22px;
+  margin-top: 20px;
 }
 
 .semantic-card__chip {
@@ -93,7 +93,7 @@
 
 .semantic-card__trace {
   margin-top: auto;
-  padding-top: 30px;
+  padding-top: 24px;
   color: #77807f;
   font-size: 12px;
   overflow-wrap: anywhere;
