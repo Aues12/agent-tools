@@ -6,6 +6,8 @@
   "scripts": {
     "api": "python3 server.py",
     "dev": "vite --host 127.0.0.1",
+    "dev:all": "python3 dev.py",
+    "start": "python3 dev.py",
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1"
   },
