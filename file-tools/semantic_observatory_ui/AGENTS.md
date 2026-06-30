@@ -17,6 +17,8 @@ semantic_ast
     ↓
 semantic_cards
     ↓
+semantic_observatory_pipeline
+    ↓
 semantic_view
     ↓
 semantic_observatory_ui
@@ -25,6 +27,12 @@ semantic_observatory_ui
 The UI visualizes semantic structures.
 
 It does not generate, modify, reinterpret, or replace semantic data.
+
+The local API server may accept uploaded Python source and call
+`semantic_observatory_pipeline`.
+
+In that flow, the UI still consumes generated semantic artifacts. The browser
+does not perform semantic analysis itself.
 
 ---
 
@@ -221,6 +229,15 @@ semantic_tree.json
 The UI should consume data.
 
 The UI should not generate semantic structures.
+
+For local development, `server.py` exposes:
+
+```txt
+POST /api/analyze
+```
+
+This endpoint accepts uploaded Python source content and returns
+Semantic Observatory analysis data produced by `semantic_observatory_pipeline`.
 
 ---
 
