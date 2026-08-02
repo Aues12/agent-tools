@@ -164,6 +164,74 @@
       ]
     },
     {
+      "name": "semantic_cfg",
+      "capability": "semantic_code_analysis",
+      "path": "file-tools/semantic_cfg",
+      "entrypoint": "semantic_cfg.py",
+      "transport": "stdin_json",
+      "status": "experimental",
+      "operations": [
+        "build_cfg",
+        "build_cfg_from_source",
+        "build_cfg_from_file",
+        "summarize_cfg"
+      ],
+      "interfaces": [
+        {
+          "name": "stdin_json",
+          "entrypoint": "semantic_cfg.py",
+          "transport": "stdin_json"
+        },
+        {
+          "name": "python_api",
+          "entrypoint": "tool.py",
+          "callables": [
+            "build_cfg",
+            "build_cfg_from_source",
+            "build_cfg_from_file",
+            "cfg_from_source",
+            "cfg_from_file",
+            "summarize_cfg",
+            "run"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "semantic_cpg",
+      "capability": "semantic_code_analysis",
+      "path": "file-tools/semantic_cpg",
+      "entrypoint": "semantic_cpg.py",
+      "transport": "stdin_json",
+      "status": "experimental",
+      "operations": [
+        "build_cpg",
+        "build_cpg_from_source",
+        "build_cpg_from_file",
+        "summarize_cpg"
+      ],
+      "interfaces": [
+        {
+          "name": "stdin_json",
+          "entrypoint": "semantic_cpg.py",
+          "transport": "stdin_json"
+        },
+        {
+          "name": "python_api",
+          "entrypoint": "tool.py",
+          "callables": [
+            "build_cpg",
+            "build_cpg_from_source",
+            "build_cpg_from_file",
+            "cpg_from_source",
+            "cpg_from_file",
+            "summarize_cpg",
+            "run"
+          ]
+        }
+      ]
+    },
+    {
       "name": "semantic_observatory_pipeline",
       "capability": "semantic_code_observation",
       "path": "file-tools/semantic_observatory_pipeline",

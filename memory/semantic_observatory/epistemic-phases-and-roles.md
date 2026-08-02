@@ -26,6 +26,8 @@
 
 [EPR-012] Ring Visibility and Partial Arcs
 
+[EPR-013] — Semantic CPG and the Projection Layer
+
 ---
 
 # [EPR-001] Introduction
@@ -1649,3 +1651,31 @@ at another.
 
 Ring visibility, completeness, and scope should always be interpreted together.
 
+# [EPR-013] — Semantic CPG and the Projection Layer
+
+The Semantic Observatory shall use a unified **Semantic Code Property Graph (Semantic CPG)** as its core analysis model. AST, CFG, DFG, and the Call Graph are generated as independent analyses and then merged into a single Semantic CPG through a shared node identity system.
+
+The Semantic CPG is **not** intended to be rendered directly. Instead, all user interfaces are deterministic **projections** of the underlying graph.
+
+```text
+Semantic AST
+      │
+ ┌────┼────┐
+ │    │    │
+CFG  DFG  Call Graph
+ │    │    │
+ └────┼────┘
+      ▼
+ Semantic CPG
+      ▼
+ Projection Layer
+      ├── Flowchart View
+      ├── Ring View
+      ├── Card View
+      ├── Graph View
+      └── Semantic View
+```
+
+Within this architecture, the Semantic CPG serves as the **Single Source of Truth**. Every visualization represents a deterministic projection of the same underlying analysis model, ensuring that visualization concerns remain completely separated from program analysis.
+
+This separation allows multiple visual paradigms—such as flowcharts, ring layouts, semantic cards, or graph-based exploration—to coexist while remaining fully consistent with one another.

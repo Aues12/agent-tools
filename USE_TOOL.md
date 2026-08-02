@@ -104,6 +104,33 @@ printf '%s' '{
 }' | python3 file-tools/semantic_cards/semantic_cards.py
 ```
 
+### `semantic_cfg` — local control-flow graph
+
+```bash
+printf '%s' '{
+  "operation":"build_cfg_from_file",
+  "params":{"path":"file-tools/semantic_ast/tool.py"}
+}' | python3 file-tools/semantic_cfg/semantic_cfg.py
+```
+
+### `semantic_dfg` — local data-flow graph
+
+```bash
+printf '%s' '{
+  "operation":"build_dfg_from_file",
+  "params":{"path":"file-tools/semantic_ast/tool.py"}
+}' | python3 file-tools/semantic_dfg/semantic_dfg.py
+```
+
+### `semantic_cpg` — merged code property graph
+
+```bash
+printf '%s' '{
+  "operation":"build_cpg_from_file",
+  "params":{"path":"file-tools/semantic_ast/tool.py"}
+}' | python3 file-tools/semantic_cpg/semantic_cpg.py
+```
+
 ### `ast_dump` — canonical Python ast.dump
 
 ```bash
@@ -125,6 +152,9 @@ python3 -m unittest discover -s file-tools/<tool_name>/tests
 
 - Use `copy_paste` for deterministic text operations (read/find/extract/insert).
 - Use `semantic_ast` for semantic JSON tree, compression, and call-graph analysis.
+- Use `semantic_cfg` for deterministic local Python control-flow graphs.
+- Use `semantic_dfg` for deterministic local Python data-flow graphs.
+- Use `semantic_cpg` to merge AST, CFG, DFG, and call graph outputs for projection layers.
 - Use `semantic_cards` for semantic navigation cards and separate relations.
 - Use `ast_dump` for Python-native AST fidelity (`ast.dump`) and low-level AST checks.
 
