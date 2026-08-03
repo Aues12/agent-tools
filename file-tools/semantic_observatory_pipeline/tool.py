@@ -42,6 +42,12 @@ def _load_module(module_name: str, path: Path) -> ModuleType:
     spec = importlib.util.spec_from_file_location(module_name, path)
     if spec is None or spec.loader is None:
         raise ImportError(f"could not load module from {path}")
+    shadowed_names = ("builder", "schema", "summarizer")
+    shadowed_modules = {
+        name: sys.modules.pop(name)
+        for name in shadowed_names
+        if name in sys.modules
+    }
     module = importlib.util.module_from_spec(spec)
     sys.path.insert(0, str(path.parent))
     try:
@@ -51,6 +57,9 @@ def _load_module(module_name: str, path: Path) -> ModuleType:
             sys.path.remove(str(path.parent))
         except ValueError:
             pass
+        for name in shadowed_names:
+            sys.modules.pop(name, None)
+        sys.modules.update(shadowed_modules)
     return module
 
 
@@ -65,6 +74,10 @@ _semantic_cards = _load_module(
 _semantic_dfg = _load_module(
     "semantic_observatory_pipeline_semantic_dfg",
     _TOOL_DIR.parent / "semantic_dfg" / "tool.py",
+)
+_semantic_cpg = _load_module(
+    "semantic_observatory_pipeline_semantic_cpg",
+    _TOOL_DIR.parent / "semantic_cpg" / "tool.py",
 )
 
 
@@ -90,12 +103,14 @@ def analyze_source(
         include_blocks=include_blocks,
     )
     dfg = _semantic_dfg.build_dfg(tree)
+    cpg = _semantic_cpg.build_cpg(tree=tree, dfg=dfg)
     return _analysis_payload(
         source_name=path,
         display_path=display_path,
         tree=tree,
         cards=cards,
         dfg=dfg,
+        cpg=cpg,
     )
 
 
@@ -231,6 +246,7 @@ def _analysis_payload(
     tree: Mapping[str, Any],
     cards: Mapping[str, Any],
     dfg: Mapping[str, Any],
+    cpg: Mapping[str, Any],
 ) -> dict[str, Any]:
     ui = adapt_for_ui(cards, dfg, display_path=display_path)
     display_name = display_path or Path(str(tree.get("path") or source_name or "uploaded.py")).name
@@ -245,6 +261,7 @@ def _analysis_payload(
             "semantic_ast": tree,
             "semantic_cards": cards,
             "data_flow_graph": dfg,
+            "semantic_cpg": cpg,
         },
         "ui": ui,
         "stats": {
@@ -254,6 +271,12 @@ def _analysis_payload(
             "cards": ui["stats"]["cards"],
             "relations": ui["stats"]["relations"],
             "dfgFunctions": ui["stats"]["dfgFunctions"],
+            "cpgNodes": _int(cpg.get("stats", {}).get("nodes"), 0)
+            if isinstance(cpg.get("stats"), Mapping)
+            else 0,
+            "cpgEdges": _int(cpg.get("stats", {}).get("edges"), 0)
+            if isinstance(cpg.get("stats"), Mapping)
+            else 0,
         },
     }
 

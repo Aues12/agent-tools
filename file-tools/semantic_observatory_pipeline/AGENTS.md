@@ -18,6 +18,8 @@ semantic_cards
     ↓
 semantic_dfg
     ↓
+semantic_cpg
+    ↓
 Semantic Observatory UI data
 ```
 
@@ -30,6 +32,7 @@ It should:
 * parse Python source into semantic AST
 * build semantic cards
 * build local function-level DFGs
+* build a provenance-preserving Semantic CPG for projection layers
 * adapt generated artifacts into the Flat View card shape
 
 It should not:
@@ -50,6 +53,7 @@ Canonical semantic artifacts remain:
 * semantic AST
 * semantic cards
 * data flow graph
+* semantic CPG
 
 ## Line Numbers
 

@@ -18,7 +18,11 @@ Software serves as the initial domain of exploration, but the principles describ
 semantic_observatory/
 ├── README.md
 ├── epistemic-phases-and-roles.md
+├── faz-döngüleri.md
+├── flat-view-ui.md
 ├── foundations.md
+├── function-mandala.md
+├── geometric-field-engine.md
 ├── implementation-map.md
 ├── localization.md
 ├── observation-theory.md
@@ -26,10 +30,44 @@ semantic_observatory/
 ├── quest-tree.md
 ├── semantic-architecture.md
 ├── semantic-cards.md
+├── semantic-ui.md
+├── semantic-ui-design.md
 ├── semantic-workbench.md
 ├── symbolic-geometry.md
+├── the-zodiac.md
 └── vertical-ontology.md
 ```
+
+---
+
+## Document Status
+
+```text
+Status        Documents
+---------------------------------------------------------------
+Active Core   foundations, observation-theory, localization,
+              vertical-ontology, semantic-cards,
+              epistemic-phases-and-roles
+
+Active Bridge implementation-map, semantic-architecture,
+              semantic-ui, flat-view-ui, semantic-ui-design
+
+Experimental  symbolic-geometry, geometric-field-engine,
+              function-mandala, quest-tree, semantic-workbench,
+              ontological-layer, faz-döngüleri, the-zodiac
+
+Future        star maps, repository-scale observatory maps,
+              build mode contracts, projection-layer schemas
+```
+
+Active Core documents define the conceptual language.
+
+Active Bridge documents connect that language to implementation, UI, and
+product direction.
+
+Experimental documents are important research notes, but should not be treated
+as executable contracts until they are mapped through `implementation-map.md`,
+tool schemas, or UI specifications.
 
 ---
 
@@ -109,6 +147,40 @@ How is it visualized?
 
 Geometry studies spatial and symbolic representations of meaning, structure, and relationships.
 
+Current geometry documents are exploratory. They define visual-localization
+principles and future projection ideas, but they do not yet define a stable
+tool contract.
+
+---
+
+## Current Implementation Alignment
+
+The current executable Semantic Observatory stack is:
+
+```text
+Python source
+  ↓
+semantic_ast          structural localization
+  ↓
+semantic_cfg          local control-flow localization
+semantic_dfg          local value-flow localization
+call_graph            local function-call localization
+  ↓
+semantic_cpg          unified analysis localization
+  ↓
+semantic_cards        card/interface localization
+  ↓
+semantic_view         compact presentation localization
+  ↓
+semantic_observatory_pipeline
+  ↓
+semantic_observatory_ui
+```
+
+The UI currently emphasizes Flat View card inspection. CPG-aware artifacts are
+available for future projection layers, while geometric and mandala views remain
+conceptual until their construction rules stabilize.
+
 
 ## Core Documents
 
@@ -174,19 +246,20 @@ Questions:
 
 ---
 
-## Planned Documents
-
-### [QST] Quest Tree
-
-Natural-language navigation through knowledge structures.
-
-### [GEO] Geometry
-
-Geometric representations of meaning, structure, and relationships.
+## Future / Deferred Documents
 
 ### [MAP] Star Maps
 
 Knowledge constellations, regions, pathways, and navigable conceptual spaces.
+
+### Projection Layer Schemas
+
+Stable JSON contracts for flowchart, geometric field, telescope, and map views.
+
+### Build Mode Contracts
+
+Rules for moving from observation interfaces into architecture-editing and
+source-synthesis workflows.
 
 ---
 
