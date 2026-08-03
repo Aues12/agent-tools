@@ -13,8 +13,10 @@ Conceptual Layer        Implementation
 Observation Unit        function, class, module, or card target
 Localization            source, AST, call_graph, data_flow_graph, card, view
 Structural Localization semantic_ast
-Relation Localization   call_graph, semantic_dfg
+Control-flow Localization semantic_cfg
+Relation Localization   call_graph, semantic_cfg, semantic_dfg
 Value-flow Localization semantic_dfg
+Unified Analysis Graph  semantic_cpg
 Interface Localization  semantic_cards
 Observation Pipeline    semantic_observatory_pipeline
 Presentation View       semantic_view
@@ -24,15 +26,18 @@ Flow Level              DFG value-flow distance
 Role                    parser, builder, transformer, validator etc.
 Phase                   discovery, understanding, transformation, manifestation
 Quest                   guided traversal or query plan
-Geometry                future visual localization
+Projection Layer        future flowchart, telescope, map, and geometry outputs
+Geometry                future visual localization over semantic_cpg/cards
 ```
 
 ## Tool Alignment
 
 ```text
 semantic_ast   = structural localization
-call_graph     = function relation localization
+semantic_cfg   = control-flow localization
 semantic_dfg   = value-flow localization
+call_graph     = function-call relation localization
+semantic_cpg   = unified analysis localization and projection substrate
 semantic_cards = card/interface localization
 semantic_observatory_pipeline = executable analysis pipeline for UI-ready data
 semantic_view  = presentation localization
@@ -58,8 +63,11 @@ For Python code:
 ```text
 card depth comes from semantic AST traversal
 card level comes from local call graph height
+CFG node depth comes from local structural nesting inside a function
 DFG node depth comes from local structural nesting inside a function
 DFG node flow_level comes from local value-flow distance
+CPG nodes preserve their source analysis origin
+CPG corresponds_to edges connect analysis nodes over shared source spans
 ```
 
 Example:
@@ -115,3 +123,39 @@ contracts.
 
 Tools should still expose explicit inputs, outputs, side effects, and validation
 rules.
+
+## Current Pipeline
+
+The current code-understanding pipeline is:
+
+```text
+source.py
+  -> semantic_ast
+  -> semantic_cfg
+  -> semantic_dfg
+  -> call_graph
+  -> semantic_cpg
+  -> semantic_cards
+  -> semantic_view
+  -> semantic_observatory_pipeline
+  -> semantic_observatory_ui
+```
+
+`semantic_observatory_pipeline` currently returns CPG-aware artifacts while
+preserving the Flat View UI adapter. Flat View still uses semantic cards and DFG
+enrichment as its primary display data. The CPG is the preferred substrate for
+future projection layers.
+
+## Projection Status
+
+```text
+Projection             Status
+---------------------------------------------------------------
+Flat View              implemented prototype
+Semantic View          compact textual/card presentation operations
+Flowchart View         planned over semantic_cfg or semantic_cpg
+Telescope View         conceptual
+Geometric Field        conceptual, should consume cards/semantic_cpg
+Function Mandala       research note; construction rules deferred
+Build Mode             future architecture-editing workflow
+```

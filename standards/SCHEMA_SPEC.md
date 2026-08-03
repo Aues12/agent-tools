@@ -15,7 +15,11 @@ Python source
   ↓
 semantic_ast
   ↓
+semantic_cfg / semantic_dfg
+  ↓
 call_graph
+  ↓
+semantic_cpg
   ↓
 semantic_cards
   ↓
@@ -49,7 +53,10 @@ Each pipeline stage is a localization of the same underlying code artifact:
 ```text
 source text      = textual localization
 semantic_ast     = structural localization
+semantic_cfg     = control-flow localization
+semantic_dfg     = value-flow localization
 call_graph       = relation localization
+semantic_cpg     = unified analysis localization
 semantic_cards   = card/interface localization
 semantic_view    = presentation localization
 ```
@@ -63,11 +70,15 @@ semantic_ast line/end_line  -> semantic_card.trace.line/end_line
 semantic_card.trace         -> semantic_view.location
 semantic AST containment    -> card.parent_id and card.children
 semantic AST containment    -> contains relations
+semantic AST statements      -> semantic_cfg nodes and edges
 semantic AST expressions    -> semantic_dfg nodes and edges
 call_graph edges            -> calls relations
 call_graph node.level       -> function card.level
+semantic_cfg node.depth      -> local structural depth for CFG consumers
 semantic_dfg node.flow_level -> value-flow distance for DFG consumers
 semantic_dfg node.depth      -> local structural depth for DFG consumers
+semantic_cpg origin          -> analysis provenance for projection consumers
+semantic_cpg corresponds_to  -> source-span links between analysis nodes
 AST traversal depth         -> card.depth
 ```
 
@@ -85,6 +96,11 @@ DFG nodes may also expose `depth`, which is local structural nesting inside the
 function DFG. Parameters usually have `depth: 0`; top-level statements inside a
 function usually produce nodes with `depth: 1`; nested block statements increase
 that value.
+
+CFG nodes may also expose `depth`, which is local structural nesting inside the
+function CFG. Entry and exit nodes usually have `depth: 0`; top-level statements
+inside a function usually have `depth: 1`; nested branch and loop body nodes
+increase that value.
 
 ## Source Input
 
@@ -340,6 +356,255 @@ produces
 returns
 passes_to_call
 ```
+
+## semantic_cfg Result
+
+A semantic CFG result represents local function-level control flow.
+
+Required fields:
+
+```text
+type       string  Must be "control_flow_graph"
+language   string  Source language, currently "python"
+functions  array   Function-level CFG records
+stats      object  Summary counts
+```
+
+Common fields:
+
+```text
+path      string|null
+warnings  array
+```
+
+`semantic_cfg` is intentionally local and deterministic. It does not perform
+type inference, interprocedural analysis, runtime tracing, symbolic execution,
+path feasibility proofs, or SSA construction.
+
+## semantic_cfg Function
+
+A semantic CFG function record describes possible execution transitions inside
+one local function or method.
+
+Required fields:
+
+```text
+id              string
+name            string
+qualified_name  string
+entry           string
+exit            string
+nodes           array
+edges           array
+```
+
+Common fields:
+
+```text
+path      string|null
+line      integer
+end_line  integer
+exits     array
+warnings  array
+```
+
+## semantic_cfg Node
+
+A semantic CFG node represents an entry point, exit point, statement, branch,
+loop, jump, return, raise, or join point.
+
+Required fields:
+
+```text
+id     string
+kind   string
+label  string
+scope  string
+```
+
+Common fields:
+
+```text
+depth     integer
+line      integer
+end_line  integer
+```
+
+Common node kinds:
+
+```text
+entry
+exit
+statement
+branch
+loop
+return
+raise
+break
+continue
+join
+```
+
+## semantic_cfg Edge
+
+A semantic CFG edge represents a possible transfer of control.
+
+Required fields:
+
+```text
+source  string  Source CFG node id
+target  string  Target CFG node id
+kind    string
+```
+
+Common fields:
+
+```text
+condition  string|null
+lineno     integer
+```
+
+Common edge kinds:
+
+```text
+next
+branch_true
+branch_false
+loop_body
+loop_exit
+loop_back
+break
+continue
+return
+exception
+```
+
+## semantic_cpg Result
+
+A semantic CPG result represents a unified graph surface over semantic AST, CFG,
+DFG, and call graph outputs.
+
+Required fields:
+
+```text
+type    string  Must be "semantic_code_property_graph"
+nodes   array   Unified CPG nodes
+edges   array   Unified CPG edges
+stats   object  Summary counts
+```
+
+Common fields:
+
+```text
+language    string
+path        string|null
+warnings    array
+provenance  object
+```
+
+`semantic_cpg` is intentionally a merger and provenance-preserving analysis
+surface. It does not replace the source analysis schemas and does not perform
+type inference, symbolic execution, runtime tracing, or path feasibility
+proofs.
+
+## semantic_cpg Node
+
+A semantic CPG node wraps a structural unit or a node from an upstream analysis.
+
+Required fields:
+
+```text
+id      string
+kind    string
+label   string
+origin  object
+```
+
+Common fields:
+
+```text
+scope       string|null
+trace       object
+properties  object
+```
+
+`origin.tool` identifies the upstream source, such as `semantic_ast`,
+`semantic_cfg`, `semantic_dfg`, `call_graph`, or `semantic_cpg` for merge-created
+links.
+
+Common node kinds:
+
+```text
+module
+class
+function
+ast_statement
+control_entry
+control_exit
+control_statement
+control_branch
+control_loop
+control_join
+control_return
+control_raise
+control_jump
+value_parameter
+value_binding
+value_literal
+value_call_result
+value_return
+value_unknown
+```
+
+## semantic_cpg Edge
+
+A semantic CPG edge represents containment, local control flow, local data flow,
+local calls, or cross-analysis correspondence.
+
+Required fields:
+
+```text
+source  string
+target  string
+kind    string
+origin  object
+```
+
+Common fields:
+
+```text
+condition   string|null
+trace       object
+properties  object
+```
+
+Common edge kinds:
+
+```text
+contains
+has_cfg_node
+has_dfg_node
+calls
+control_next
+control_branch_true
+control_branch_false
+control_loop_body
+control_loop_exit
+control_loop_back
+control_break
+control_continue
+control_return
+control_exception
+data_depends_on
+data_produces
+data_returns
+data_passes_to_call
+corresponds_to
+```
+
+`corresponds_to` edges should include an origin reason such as
+`same_source_span`. They connect related upstream analysis nodes without
+collapsing them into a single node.
 
 ## semantic_cards Result
 

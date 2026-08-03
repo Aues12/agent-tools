@@ -1,0 +1,381 @@
+{
+  "success": true,
+  "message": "Parsed Python file and built control-flow graph",
+  "result": {
+    "type": "control_flow_graph",
+    "language": "python",
+    "path": "/workspace/agent-tools/agent-playground/semantic_cfg/branch_loop_try_example.py",
+    "functions": [
+      {
+        "id": "function:branch_loop_try_example.evaluate_items",
+        "name": "evaluate_items",
+        "qualified_name": "branch_loop_try_example.evaluate_items",
+        "path": "/workspace/agent-tools/agent-playground/semantic_cfg/branch_loop_try_example.py",
+        "line": 1,
+        "end_line": 15,
+        "entry": "function:branch_loop_try_example.evaluate_items:entry",
+        "exit": "function:branch_loop_try_example.evaluate_items:exit",
+        "exits": [
+          "function:branch_loop_try_example.evaluate_items:exit"
+        ],
+        "nodes": [
+          {
+            "id": "function:branch_loop_try_example.evaluate_items:statement:1",
+            "kind": "statement",
+            "label": "assign",
+            "scope": "branch_loop_try_example.evaluate_items",
+            "depth": 1,
+            "line": 2,
+            "end_line": 2
+          },
+          {
+            "id": "function:branch_loop_try_example.evaluate_items:join:3",
+            "kind": "join",
+            "label": "loop exit",
+            "scope": "branch_loop_try_example.evaluate_items",
+            "depth": 1,
+            "line": 3,
+            "end_line": 14
+          },
+          {
+            "id": "function:branch_loop_try_example.evaluate_items:loop:2",
+            "kind": "loop",
+            "label": "for",
+            "scope": "branch_loop_try_example.evaluate_items",
+            "depth": 1,
+            "line": 3,
+            "end_line": 14
+          },
+          {
+            "id": "function:branch_loop_try_example.evaluate_items:branch:4",
+            "kind": "branch",
+            "label": "if compare",
+            "scope": "branch_loop_try_example.evaluate_items",
+            "depth": 2,
+            "line": 4,
+            "end_line": 5
+          },
+          {
+            "id": "function:branch_loop_try_example.evaluate_items:join:5",
+            "kind": "join",
+            "label": "if join",
+            "scope": "branch_loop_try_example.evaluate_items",
+            "depth": 2,
+            "line": 4,
+            "end_line": 5
+          },
+          {
+            "id": "function:branch_loop_try_example.evaluate_items:continue:6",
+            "kind": "continue",
+            "label": "continue",
+            "scope": "branch_loop_try_example.evaluate_items",
+            "depth": 3,
+            "line": 5,
+            "end_line": 5
+          },
+          {
+            "id": "function:branch_loop_try_example.evaluate_items:branch:7",
+            "kind": "branch",
+            "label": "if compare",
+            "scope": "branch_loop_try_example.evaluate_items",
+            "depth": 2,
+            "line": 6,
+            "end_line": 7
+          },
+          {
+            "id": "function:branch_loop_try_example.evaluate_items:join:8",
+            "kind": "join",
+            "label": "if join",
+            "scope": "branch_loop_try_example.evaluate_items",
+            "depth": 2,
+            "line": 6,
+            "end_line": 7
+          },
+          {
+            "id": "function:branch_loop_try_example.evaluate_items:break:9",
+            "kind": "break",
+            "label": "break",
+            "scope": "branch_loop_try_example.evaluate_items",
+            "depth": 3,
+            "line": 7,
+            "end_line": 7
+          },
+          {
+            "id": "function:branch_loop_try_example.evaluate_items:join:11",
+            "kind": "join",
+            "label": "try join",
+            "scope": "branch_loop_try_example.evaluate_items",
+            "depth": 2,
+            "line": 8,
+            "end_line": 11
+          },
+          {
+            "id": "function:branch_loop_try_example.evaluate_items:statement:10",
+            "kind": "statement",
+            "label": "try",
+            "scope": "branch_loop_try_example.evaluate_items",
+            "depth": 2,
+            "line": 8,
+            "end_line": 11
+          },
+          {
+            "id": "function:branch_loop_try_example.evaluate_items:statement:12",
+            "kind": "statement",
+            "label": "assign",
+            "scope": "branch_loop_try_example.evaluate_items",
+            "depth": 3,
+            "line": 9,
+            "end_line": 9
+          },
+          {
+            "id": "function:branch_loop_try_example.evaluate_items:statement:13",
+            "kind": "statement",
+            "label": "assign",
+            "scope": "branch_loop_try_example.evaluate_items",
+            "depth": 3,
+            "line": 11,
+            "end_line": 11
+          },
+          {
+            "id": "function:branch_loop_try_example.evaluate_items:statement:14",
+            "kind": "statement",
+            "label": "augmented assign",
+            "scope": "branch_loop_try_example.evaluate_items",
+            "depth": 2,
+            "line": 12,
+            "end_line": 12
+          },
+          {
+            "id": "function:branch_loop_try_example.evaluate_items:branch:15",
+            "kind": "branch",
+            "label": "if compare",
+            "scope": "branch_loop_try_example.evaluate_items",
+            "depth": 2,
+            "line": 13,
+            "end_line": 14
+          },
+          {
+            "id": "function:branch_loop_try_example.evaluate_items:join:16",
+            "kind": "join",
+            "label": "if join",
+            "scope": "branch_loop_try_example.evaluate_items",
+            "depth": 2,
+            "line": 13,
+            "end_line": 14
+          },
+          {
+            "id": "function:branch_loop_try_example.evaluate_items:return:17",
+            "kind": "return",
+            "label": "return",
+            "scope": "branch_loop_try_example.evaluate_items",
+            "depth": 3,
+            "line": 14,
+            "end_line": 14
+          },
+          {
+            "id": "function:branch_loop_try_example.evaluate_items:return:18",
+            "kind": "return",
+            "label": "return",
+            "scope": "branch_loop_try_example.evaluate_items",
+            "depth": 1,
+            "line": 15,
+            "end_line": 15
+          },
+          {
+            "id": "function:branch_loop_try_example.evaluate_items:entry",
+            "kind": "entry",
+            "label": "entry",
+            "scope": "branch_loop_try_example.evaluate_items",
+            "depth": 0
+          },
+          {
+            "id": "function:branch_loop_try_example.evaluate_items:exit",
+            "kind": "exit",
+            "label": "exit",
+            "scope": "branch_loop_try_example.evaluate_items",
+            "depth": 0
+          }
+        ],
+        "edges": [
+          {
+            "source": "function:branch_loop_try_example.evaluate_items:entry",
+            "target": "function:branch_loop_try_example.evaluate_items:statement:1",
+            "kind": "next",
+            "lineno": 2
+          },
+          {
+            "source": "function:branch_loop_try_example.evaluate_items:join:16",
+            "target": "function:branch_loop_try_example.evaluate_items:loop:2",
+            "kind": "loop_back",
+            "lineno": 3
+          },
+          {
+            "source": "function:branch_loop_try_example.evaluate_items:loop:2",
+            "target": "function:branch_loop_try_example.evaluate_items:join:3",
+            "kind": "loop_exit",
+            "condition": "false",
+            "lineno": 3
+          },
+          {
+            "source": "function:branch_loop_try_example.evaluate_items:statement:1",
+            "target": "function:branch_loop_try_example.evaluate_items:loop:2",
+            "kind": "next",
+            "lineno": 3
+          },
+          {
+            "source": "function:branch_loop_try_example.evaluate_items:branch:4",
+            "target": "function:branch_loop_try_example.evaluate_items:join:5",
+            "kind": "branch_false",
+            "condition": "false",
+            "lineno": 4
+          },
+          {
+            "source": "function:branch_loop_try_example.evaluate_items:loop:2",
+            "target": "function:branch_loop_try_example.evaluate_items:branch:4",
+            "kind": "loop_body",
+            "condition": "body",
+            "lineno": 4
+          },
+          {
+            "source": "function:branch_loop_try_example.evaluate_items:branch:4",
+            "target": "function:branch_loop_try_example.evaluate_items:continue:6",
+            "kind": "branch_true",
+            "condition": "true",
+            "lineno": 5
+          },
+          {
+            "source": "function:branch_loop_try_example.evaluate_items:continue:6",
+            "target": "function:branch_loop_try_example.evaluate_items:loop:2",
+            "kind": "continue",
+            "lineno": 5
+          },
+          {
+            "source": "function:branch_loop_try_example.evaluate_items:branch:7",
+            "target": "function:branch_loop_try_example.evaluate_items:join:8",
+            "kind": "branch_false",
+            "condition": "false",
+            "lineno": 6
+          },
+          {
+            "source": "function:branch_loop_try_example.evaluate_items:join:5",
+            "target": "function:branch_loop_try_example.evaluate_items:branch:7",
+            "kind": "next",
+            "lineno": 6
+          },
+          {
+            "source": "function:branch_loop_try_example.evaluate_items:branch:7",
+            "target": "function:branch_loop_try_example.evaluate_items:break:9",
+            "kind": "branch_true",
+            "condition": "true",
+            "lineno": 7
+          },
+          {
+            "source": "function:branch_loop_try_example.evaluate_items:break:9",
+            "target": "function:branch_loop_try_example.evaluate_items:join:3",
+            "kind": "break",
+            "lineno": 7
+          },
+          {
+            "source": "function:branch_loop_try_example.evaluate_items:join:8",
+            "target": "function:branch_loop_try_example.evaluate_items:statement:10",
+            "kind": "next",
+            "lineno": 8
+          },
+          {
+            "source": "function:branch_loop_try_example.evaluate_items:statement:12",
+            "target": "function:branch_loop_try_example.evaluate_items:join:11",
+            "kind": "next",
+            "lineno": 8
+          },
+          {
+            "source": "function:branch_loop_try_example.evaluate_items:statement:13",
+            "target": "function:branch_loop_try_example.evaluate_items:join:11",
+            "kind": "next",
+            "lineno": 8
+          },
+          {
+            "source": "function:branch_loop_try_example.evaluate_items:statement:10",
+            "target": "function:branch_loop_try_example.evaluate_items:statement:12",
+            "kind": "next",
+            "lineno": 9
+          },
+          {
+            "source": "function:branch_loop_try_example.evaluate_items:statement:10",
+            "target": "function:branch_loop_try_example.evaluate_items:statement:13",
+            "kind": "exception",
+            "condition": "except ValueError",
+            "lineno": 11
+          },
+          {
+            "source": "function:branch_loop_try_example.evaluate_items:join:11",
+            "target": "function:branch_loop_try_example.evaluate_items:statement:14",
+            "kind": "next",
+            "lineno": 12
+          },
+          {
+            "source": "function:branch_loop_try_example.evaluate_items:branch:15",
+            "target": "function:branch_loop_try_example.evaluate_items:join:16",
+            "kind": "branch_false",
+            "condition": "false",
+            "lineno": 13
+          },
+          {
+            "source": "function:branch_loop_try_example.evaluate_items:statement:14",
+            "target": "function:branch_loop_try_example.evaluate_items:branch:15",
+            "kind": "next",
+            "lineno": 13
+          },
+          {
+            "source": "function:branch_loop_try_example.evaluate_items:branch:15",
+            "target": "function:branch_loop_try_example.evaluate_items:return:17",
+            "kind": "branch_true",
+            "condition": "true",
+            "lineno": 14
+          },
+          {
+            "source": "function:branch_loop_try_example.evaluate_items:return:17",
+            "target": "function:branch_loop_try_example.evaluate_items:exit",
+            "kind": "return",
+            "lineno": 14
+          },
+          {
+            "source": "function:branch_loop_try_example.evaluate_items:join:3",
+            "target": "function:branch_loop_try_example.evaluate_items:return:18",
+            "kind": "next",
+            "lineno": 15
+          },
+          {
+            "source": "function:branch_loop_try_example.evaluate_items:return:18",
+            "target": "function:branch_loop_try_example.evaluate_items:exit",
+            "kind": "return",
+            "lineno": 15
+          }
+        ],
+        "warnings": [
+          {
+            "kind": "PartialAnalysis",
+            "message": "try is modeled with normal and handler paths only.",
+            "lineno": 8
+          }
+        ]
+      }
+    ],
+    "warnings": [
+      {
+        "kind": "PartialAnalysis",
+        "message": "try is modeled with normal and handler paths only.",
+        "lineno": 8
+      }
+    ],
+    "stats": {
+      "functions": 1,
+      "nodes": 20,
+      "edges": 24,
+      "warnings": 1
+    }
+  },
+  "meta": {
+    "operation": "build_cfg_from_file",
+    "normalized_operation": "build_cfg_from_file"
+  }
+}

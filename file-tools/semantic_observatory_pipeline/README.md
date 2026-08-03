@@ -8,6 +8,7 @@ source.py
   -> semantic_ast
   -> semantic_cards
   -> semantic_dfg
+  -> semantic_cpg
   -> Flat View UI data
 ```
 
@@ -35,6 +36,19 @@ result = analyze_source("def add(a, b):\n    return a + b\n", path="example.py")
 
 The returned result includes canonical artifacts under `artifacts` and UI-ready
 data under `ui`.
+
+Current artifacts:
+
+```txt
+semantic_ast      structural localization
+semantic_cards    card/interface localization
+data_flow_graph   local value-flow localization
+semantic_cpg      unified analysis graph for projection layers
+```
+
+Flat View UI data is still adapted from semantic cards and DFG enrichment. The
+CPG is included for future projection layers such as flowchart, map, and
+geometric views.
 
 By default the pipeline requests Flat View friendly card generation:
 

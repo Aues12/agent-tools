@@ -1,7 +1,7 @@
 name: semantic_observatory_pipeline
 type: tool
 capability: semantic_code_observation
-purpose: Run existing semantic analysis tools and adapt their artifacts for Semantic Observatory UI.
+purpose: Run existing semantic analysis tools, produce CPG-aware artifacts, and adapt them for Semantic Observatory UI.
 status: experimental
 deterministic: true
 interfaces:
@@ -40,7 +40,7 @@ operations:
         default: false
     returns:
       type: object
-      description: Semantic Observatory analysis payload with artifacts and UI data.
+      description: Semantic Observatory analysis payload with semantic_ast, semantic_cards, data_flow_graph, semantic_cpg, and UI data.
   - name: analyze_file
     available_via:
       - stdin_json
@@ -63,7 +63,7 @@ operations:
         default: false
     returns:
       type: object
-      description: Semantic Observatory analysis payload for a Python file.
+      description: Semantic Observatory analysis payload with semantic_ast, semantic_cards, data_flow_graph, semantic_cpg, and UI data for a Python file.
   - name: adapt_for_ui
     available_via:
       - python_api

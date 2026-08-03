@@ -24,6 +24,13 @@ def calculate_total(price, quantity):
         self.assertIn("semantic_ast", result["artifacts"])
         self.assertIn("semantic_cards", result["artifacts"])
         self.assertIn("data_flow_graph", result["artifacts"])
+        self.assertIn("semantic_cpg", result["artifacts"])
+        self.assertEqual(
+            result["artifacts"]["semantic_cpg"]["type"],
+            "semantic_code_property_graph",
+        )
+        self.assertGreater(result["stats"]["cpgNodes"], 0)
+        self.assertGreater(result["stats"]["cpgEdges"], 0)
         cards = result["ui"]["semanticCards"]
         function_card = next(card for card in cards if card["id"] == "function:sample.calculate_total")
         self.assertEqual(function_card["kind"], "function")

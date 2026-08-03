@@ -6,6 +6,7 @@ Detailed notes live in:
 
 * [chronology/2026-05.md](./chronology/2026-05.md)
 * [chronology/2026-06.md](./chronology/2026-06.md)
+* [chronology/2026-08.md](./chronology/2026-08.md)
 
 ## 2026-05-16
 
@@ -83,3 +84,35 @@ Working-note milestone:
 * `semantic_observatory_pipeline` introduced to connect AST, cards, DFG, and UI data
 * local `.py` upload flow added through a small development API server
 * generated Flat View data now omits statement and control-flow block cards by default
+
+## 2026-06-30
+
+Commit-backed milestone:
+
+* Semantic Observatory dev runner added
+* local UI iteration became easier to start and repeat
+
+## 2026-08-02
+
+Commit-backed milestone:
+
+* `semantic_cfg` documented as the deterministic local control-flow layer
+* `semantic_cpg` documented as the provenance-preserving merge layer over AST,
+  CFG, DFG, and call graph outputs
+* schema and registry metadata expanded to describe CFG and CPG as first-class
+  tools
+* the code-understanding pipeline became ready for projection layers over a
+  unified analysis graph
+
+## 2026-08-03
+
+Working-note milestone:
+
+* Semantic Observatory README and implementation map were synced with the
+  current repository inventory
+* document statuses were clarified as Active Core, Active Bridge, Experimental,
+  and Future
+* `semantic_observatory_pipeline` became CPG-aware while preserving Flat View's
+  cards-plus-DFG adapter
+* Function Mandala was kept deferred until construction rules and concept are
+  stable enough for implementation

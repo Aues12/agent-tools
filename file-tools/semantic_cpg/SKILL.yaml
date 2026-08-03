@@ -1,0 +1,101 @@
+name: semantic_cpg
+type: tool
+capability: semantic_code_analysis
+purpose: Merge semantic AST, CFG, DFG, and call graph outputs into a unified Semantic Code Property Graph.
+status: experimental
+deterministic: true
+interfaces:
+  - name: stdin_json
+    entrypoint: semantic_cpg.py
+    transport: stdin_json
+  - name: python_api
+    entrypoint: tool.py
+    callables:
+      - build_cpg
+      - build_cpg_from_source
+      - build_cpg_from_file
+      - cpg_from_source
+      - cpg_from_file
+      - summarize_cpg
+      - run
+operations:
+  - name: build_cpg
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      tree:
+        type: object
+        required: true
+      cfg:
+        type: object
+        required: false
+      dfg:
+        type: object
+        required: false
+      call_graph:
+        type: object
+        required: false
+    returns:
+      type: object
+      description: Unified Semantic CPG result.
+  - name: build_cpg_from_source
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      source:
+        type: string
+        required: true
+      path:
+        type: string
+        required: false
+    returns:
+      type: object
+      description: Parsed Python source Semantic CPG.
+  - name: build_cpg_from_file
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      path:
+        type: string
+        required: true
+      encoding:
+        type: string
+        required: false
+        default: utf-8
+    returns:
+      type: object
+      description: Parsed Python file Semantic CPG.
+  - name: summarize_cpg
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      cpg:
+        type: object
+        required: true
+    returns:
+      type: object
+      description: Compact human-readable Semantic CPG summary.
+side_effects:
+  reads:
+    - build_cpg reads provided analysis data only.
+    - build_cpg_from_source reads provided source text only.
+    - build_cpg_from_file reads the provided file path.
+    - summarize_cpg reads provided CPG data only.
+  writes: []
+line_numbers:
+  base: 1
+  ranges: inclusive
+limits:
+  - v1 is an analysis merger, not a new inference engine.
+  - v1 preserves source analysis provenance instead of replacing AST, CFG, DFG, or call graph schemas.
+  - v1 correspondence edges are based on function scope and source-span overlap.
+failure_modes:
+  - non-module trees return a structured ValueError envelope.
+  - invalid source raises SyntaxError or IndentationError in the structured error envelope.
+  - missing files raise FileNotFoundError.
+validation:
+  - python3 -m unittest discover -s file-tools/semantic_cpg/tests
