@@ -13,6 +13,12 @@ TOOL_TEST_DIRS = [
     "file-tools/semantic_ast/compression/tests",
     "file-tools/semantic_ast/call_graph/tests",
     "file-tools/semantic_cards/tests",
+    "file-tools/semantic_dfg/tests",
+    "file-tools/semantic_cfg/tests",
+    "file-tools/semantic_cpg/tests",
+    "file-tools/semantic_observatory_pipeline/tests",
+    "file-tools/semantic_graph_visualizer/tests",
+    "file-tools/ast_dump/tests",
 ]
 
 

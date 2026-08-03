@@ -131,6 +131,19 @@ printf '%s' '{
 }' | python3 file-tools/semantic_cpg/semantic_cpg.py
 ```
 
+### `semantic_graph_visualizer` — local CPG HTML view
+
+```bash
+printf '%s' '{
+  "operation":"render_cpg_file",
+  "params":{
+    "path":"agent-playground/example_cpg.json",
+    "output_path":"agent-playground/example_cpg.html",
+    "title":"Example CPG"
+  }
+}' | python3 file-tools/semantic_graph_visualizer/semantic_graph_visualizer.py
+```
+
 ### `ast_dump` — canonical Python ast.dump
 
 ```bash
@@ -155,6 +168,7 @@ python3 -m unittest discover -s file-tools/<tool_name>/tests
 - Use `semantic_cfg` for deterministic local Python control-flow graphs.
 - Use `semantic_dfg` for deterministic local Python data-flow graphs.
 - Use `semantic_cpg` to merge AST, CFG, DFG, and call graph outputs for projection layers.
+- Use `semantic_graph_visualizer` to render Semantic CPG JSON as a local debug HTML graph.
 - Use `semantic_cards` for semantic navigation cards and separate relations.
 - Use `ast_dump` for Python-native AST fidelity (`ast.dump`) and low-level AST checks.
 

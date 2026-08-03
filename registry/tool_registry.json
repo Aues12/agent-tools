@@ -262,6 +262,34 @@
       ]
     },
     {
+      "name": "semantic_graph_visualizer",
+      "capability": "semantic_code_visualization",
+      "path": "file-tools/semantic_graph_visualizer",
+      "entrypoint": "semantic_graph_visualizer.py",
+      "transport": "stdin_json",
+      "status": "experimental",
+      "operations": [
+        "render_cpg_html",
+        "render_cpg_file"
+      ],
+      "interfaces": [
+        {
+          "name": "stdin_json",
+          "entrypoint": "semantic_graph_visualizer.py",
+          "transport": "stdin_json"
+        },
+        {
+          "name": "python_api",
+          "entrypoint": "tool.py",
+          "callables": [
+            "render_cpg_html",
+            "render_cpg_file",
+            "run"
+          ]
+        }
+      ]
+    },
+    {
       "name": "ast_parsing",
       "capability": "ast_parsing",
       "path": "file-tools/semantic_ast/ast_parsing",

@@ -1,0 +1,1728 @@
+{
+  "type": "semantic_code_property_graph",
+  "language": "python",
+  "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+  "nodes": [
+    {
+      "id": "cpg:cfg:function_simple_order.apply_discount_entry",
+      "kind": "control_entry",
+      "label": "entry",
+      "scope": "simple_order.apply_discount",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py"
+      },
+      "origin": {
+        "tool": "semantic_cfg",
+        "id": "function:simple_order.apply_discount:entry",
+        "kind": "entry"
+      },
+      "properties": {
+        "original_kind": "entry",
+        "depth": 0
+      }
+    },
+    {
+      "id": "cpg:cfg:function_simple_order.calculate_total_entry",
+      "kind": "control_entry",
+      "label": "entry",
+      "scope": "simple_order.calculate_total",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py"
+      },
+      "origin": {
+        "tool": "semantic_cfg",
+        "id": "function:simple_order.calculate_total:entry",
+        "kind": "entry"
+      },
+      "properties": {
+        "original_kind": "entry",
+        "depth": 0
+      }
+    },
+    {
+      "id": "cpg:cfg:function_simple_order.main_entry",
+      "kind": "control_entry",
+      "label": "entry",
+      "scope": "simple_order.main",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py"
+      },
+      "origin": {
+        "tool": "semantic_cfg",
+        "id": "function:simple_order.main:entry",
+        "kind": "entry"
+      },
+      "properties": {
+        "original_kind": "entry",
+        "depth": 0
+      }
+    },
+    {
+      "id": "cpg:cfg:function_simple_order.apply_discount_exit",
+      "kind": "control_exit",
+      "label": "exit",
+      "scope": "simple_order.apply_discount",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py"
+      },
+      "origin": {
+        "tool": "semantic_cfg",
+        "id": "function:simple_order.apply_discount:exit",
+        "kind": "exit"
+      },
+      "properties": {
+        "original_kind": "exit",
+        "depth": 0
+      }
+    },
+    {
+      "id": "cpg:cfg:function_simple_order.calculate_total_exit",
+      "kind": "control_exit",
+      "label": "exit",
+      "scope": "simple_order.calculate_total",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py"
+      },
+      "origin": {
+        "tool": "semantic_cfg",
+        "id": "function:simple_order.calculate_total:exit",
+        "kind": "exit"
+      },
+      "properties": {
+        "original_kind": "exit",
+        "depth": 0
+      }
+    },
+    {
+      "id": "cpg:cfg:function_simple_order.main_exit",
+      "kind": "control_exit",
+      "label": "exit",
+      "scope": "simple_order.main",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py"
+      },
+      "origin": {
+        "tool": "semantic_cfg",
+        "id": "function:simple_order.main:exit",
+        "kind": "exit"
+      },
+      "properties": {
+        "original_kind": "exit",
+        "depth": 0
+      }
+    },
+    {
+      "id": "cpg:ast:function:simple_order.apply_discount",
+      "kind": "function",
+      "label": "apply_discount",
+      "scope": "simple_order",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 1,
+        "end_line": 3
+      },
+      "origin": {
+        "tool": "semantic_ast",
+        "id": "simple_order.apply_discount",
+        "kind": "function"
+      }
+    },
+    {
+      "id": "cpg:ast:module:simple_order",
+      "kind": "module",
+      "label": "simple_order",
+      "scope": "simple_order",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 1,
+        "end_line": 15
+      },
+      "origin": {
+        "tool": "semantic_ast",
+        "id": "simple_order",
+        "kind": "module"
+      }
+    },
+    {
+      "id": "cpg:dfg:function_simple_order.apply_discount_parameter_price",
+      "kind": "value_parameter",
+      "label": "price",
+      "scope": "simple_order.apply_discount",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 1,
+        "end_line": 1
+      },
+      "origin": {
+        "tool": "semantic_dfg",
+        "id": "function:simple_order.apply_discount:parameter:price",
+        "kind": "parameter"
+      },
+      "properties": {
+        "original_kind": "parameter",
+        "flow_level": 0,
+        "depth": 0
+      }
+    },
+    {
+      "id": "cpg:dfg:function_simple_order.apply_discount_parameter_rate",
+      "kind": "value_parameter",
+      "label": "rate",
+      "scope": "simple_order.apply_discount",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 1,
+        "end_line": 1
+      },
+      "origin": {
+        "tool": "semantic_dfg",
+        "id": "function:simple_order.apply_discount:parameter:rate",
+        "kind": "parameter"
+      },
+      "properties": {
+        "original_kind": "parameter",
+        "flow_level": 0,
+        "depth": 0
+      }
+    },
+    {
+      "id": "cpg:ast:simple_order.apply_discount:assignment:2:1",
+      "kind": "ast_statement",
+      "label": "assignment",
+      "scope": "simple_order.apply_discount",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 2,
+        "end_line": 2
+      },
+      "origin": {
+        "tool": "semantic_ast",
+        "kind": "assignment"
+      },
+      "properties": {
+        "depth": 1
+      }
+    },
+    {
+      "id": "cpg:cfg:function_simple_order.apply_discount_statement_1",
+      "kind": "control_statement",
+      "label": "assign",
+      "scope": "simple_order.apply_discount",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 2,
+        "end_line": 2
+      },
+      "origin": {
+        "tool": "semantic_cfg",
+        "id": "function:simple_order.apply_discount:statement:1",
+        "kind": "statement"
+      },
+      "properties": {
+        "original_kind": "statement",
+        "depth": 1
+      }
+    },
+    {
+      "id": "cpg:dfg:function_simple_order.apply_discount_binding_discount",
+      "kind": "value_binding",
+      "label": "discount",
+      "scope": "simple_order.apply_discount",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 2,
+        "end_line": 2
+      },
+      "origin": {
+        "tool": "semantic_dfg",
+        "id": "function:simple_order.apply_discount:binding:discount",
+        "kind": "binding"
+      },
+      "properties": {
+        "original_kind": "binding",
+        "flow_level": 1,
+        "depth": 1
+      }
+    },
+    {
+      "id": "cpg:ast:simple_order.apply_discount:return:3:2",
+      "kind": "ast_statement",
+      "label": "return",
+      "scope": "simple_order.apply_discount",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 3,
+        "end_line": 3
+      },
+      "origin": {
+        "tool": "semantic_ast",
+        "kind": "return"
+      },
+      "properties": {
+        "depth": 1
+      }
+    },
+    {
+      "id": "cpg:cfg:function_simple_order.apply_discount_return_2",
+      "kind": "control_return",
+      "label": "return",
+      "scope": "simple_order.apply_discount",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 3,
+        "end_line": 3
+      },
+      "origin": {
+        "tool": "semantic_cfg",
+        "id": "function:simple_order.apply_discount:return:2",
+        "kind": "return"
+      },
+      "properties": {
+        "original_kind": "return",
+        "depth": 1
+      }
+    },
+    {
+      "id": "cpg:dfg:function_simple_order.apply_discount_return_value_return_value",
+      "kind": "value_return",
+      "label": "return_value",
+      "scope": "simple_order.apply_discount",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 3,
+        "end_line": 3
+      },
+      "origin": {
+        "tool": "semantic_dfg",
+        "id": "function:simple_order.apply_discount:return_value:return_value",
+        "kind": "return_value"
+      },
+      "properties": {
+        "original_kind": "return_value",
+        "flow_level": 2,
+        "depth": 1
+      }
+    },
+    {
+      "id": "cpg:ast:function:simple_order.calculate_total",
+      "kind": "function",
+      "label": "calculate_total",
+      "scope": "simple_order",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 6,
+        "end_line": 11
+      },
+      "origin": {
+        "tool": "semantic_ast",
+        "id": "simple_order.calculate_total",
+        "kind": "function"
+      }
+    },
+    {
+      "id": "cpg:dfg:function_simple_order.calculate_total_parameter_price",
+      "kind": "value_parameter",
+      "label": "price",
+      "scope": "simple_order.calculate_total",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 6,
+        "end_line": 6
+      },
+      "origin": {
+        "tool": "semantic_dfg",
+        "id": "function:simple_order.calculate_total:parameter:price",
+        "kind": "parameter"
+      },
+      "properties": {
+        "original_kind": "parameter",
+        "flow_level": 0,
+        "depth": 0
+      }
+    },
+    {
+      "id": "cpg:dfg:function_simple_order.calculate_total_parameter_quantity",
+      "kind": "value_parameter",
+      "label": "quantity",
+      "scope": "simple_order.calculate_total",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 6,
+        "end_line": 6
+      },
+      "origin": {
+        "tool": "semantic_dfg",
+        "id": "function:simple_order.calculate_total:parameter:quantity",
+        "kind": "parameter"
+      },
+      "properties": {
+        "original_kind": "parameter",
+        "flow_level": 0,
+        "depth": 0
+      }
+    },
+    {
+      "id": "cpg:dfg:function_simple_order.calculate_total_parameter_tax_rate",
+      "kind": "value_parameter",
+      "label": "tax_rate",
+      "scope": "simple_order.calculate_total",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 6,
+        "end_line": 6
+      },
+      "origin": {
+        "tool": "semantic_dfg",
+        "id": "function:simple_order.calculate_total:parameter:tax_rate",
+        "kind": "parameter"
+      },
+      "properties": {
+        "original_kind": "parameter",
+        "flow_level": 0,
+        "depth": 0
+      }
+    },
+    {
+      "id": "cpg:ast:simple_order.calculate_total:assignment:7:1",
+      "kind": "ast_statement",
+      "label": "assignment",
+      "scope": "simple_order.calculate_total",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 7,
+        "end_line": 7
+      },
+      "origin": {
+        "tool": "semantic_ast",
+        "kind": "assignment"
+      },
+      "properties": {
+        "depth": 1
+      }
+    },
+    {
+      "id": "cpg:cfg:function_simple_order.calculate_total_statement_1",
+      "kind": "control_statement",
+      "label": "assign",
+      "scope": "simple_order.calculate_total",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 7,
+        "end_line": 7
+      },
+      "origin": {
+        "tool": "semantic_cfg",
+        "id": "function:simple_order.calculate_total:statement:1",
+        "kind": "statement"
+      },
+      "properties": {
+        "original_kind": "statement",
+        "depth": 1
+      }
+    },
+    {
+      "id": "cpg:dfg:function_simple_order.calculate_total_binding_subtotal",
+      "kind": "value_binding",
+      "label": "subtotal",
+      "scope": "simple_order.calculate_total",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 7,
+        "end_line": 7
+      },
+      "origin": {
+        "tool": "semantic_dfg",
+        "id": "function:simple_order.calculate_total:binding:subtotal",
+        "kind": "binding"
+      },
+      "properties": {
+        "original_kind": "binding",
+        "flow_level": 1,
+        "depth": 1
+      }
+    },
+    {
+      "id": "cpg:ast:simple_order.calculate_total:if:8:2",
+      "kind": "ast_statement",
+      "label": "if",
+      "scope": "simple_order.calculate_total",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 8,
+        "end_line": 9
+      },
+      "origin": {
+        "tool": "semantic_ast",
+        "kind": "if"
+      },
+      "properties": {
+        "depth": 1
+      }
+    },
+    {
+      "id": "cpg:cfg:function_simple_order.calculate_total_branch_2",
+      "kind": "control_branch",
+      "label": "if compare",
+      "scope": "simple_order.calculate_total",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 8,
+        "end_line": 9
+      },
+      "origin": {
+        "tool": "semantic_cfg",
+        "id": "function:simple_order.calculate_total:branch:2",
+        "kind": "branch"
+      },
+      "properties": {
+        "original_kind": "branch",
+        "depth": 1
+      }
+    },
+    {
+      "id": "cpg:cfg:function_simple_order.calculate_total_join_3",
+      "kind": "control_join",
+      "label": "if join",
+      "scope": "simple_order.calculate_total",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 8,
+        "end_line": 9
+      },
+      "origin": {
+        "tool": "semantic_cfg",
+        "id": "function:simple_order.calculate_total:join:3",
+        "kind": "join"
+      },
+      "properties": {
+        "original_kind": "join",
+        "depth": 1
+      }
+    },
+    {
+      "id": "cpg:ast:simple_order.calculate_total:assignment:9:1",
+      "kind": "ast_statement",
+      "label": "assignment",
+      "scope": "simple_order.calculate_total",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 9,
+        "end_line": 9
+      },
+      "origin": {
+        "tool": "semantic_ast",
+        "kind": "assignment"
+      },
+      "properties": {
+        "depth": 2
+      }
+    },
+    {
+      "id": "cpg:cfg:function_simple_order.calculate_total_statement_4",
+      "kind": "control_statement",
+      "label": "assign",
+      "scope": "simple_order.calculate_total",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 9,
+        "end_line": 9
+      },
+      "origin": {
+        "tool": "semantic_cfg",
+        "id": "function:simple_order.calculate_total:statement:4",
+        "kind": "statement"
+      },
+      "properties": {
+        "original_kind": "statement",
+        "depth": 2
+      }
+    },
+    {
+      "id": "cpg:ast:simple_order.calculate_total:assignment:10:3",
+      "kind": "ast_statement",
+      "label": "assignment",
+      "scope": "simple_order.calculate_total",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 10,
+        "end_line": 10
+      },
+      "origin": {
+        "tool": "semantic_ast",
+        "kind": "assignment"
+      },
+      "properties": {
+        "depth": 1
+      }
+    },
+    {
+      "id": "cpg:cfg:function_simple_order.calculate_total_statement_5",
+      "kind": "control_statement",
+      "label": "assign",
+      "scope": "simple_order.calculate_total",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 10,
+        "end_line": 10
+      },
+      "origin": {
+        "tool": "semantic_cfg",
+        "id": "function:simple_order.calculate_total:statement:5",
+        "kind": "statement"
+      },
+      "properties": {
+        "original_kind": "statement",
+        "depth": 1
+      }
+    },
+    {
+      "id": "cpg:dfg:function_simple_order.calculate_total_binding_tax",
+      "kind": "value_binding",
+      "label": "tax",
+      "scope": "simple_order.calculate_total",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 10,
+        "end_line": 10
+      },
+      "origin": {
+        "tool": "semantic_dfg",
+        "id": "function:simple_order.calculate_total:binding:tax",
+        "kind": "binding"
+      },
+      "properties": {
+        "original_kind": "binding",
+        "flow_level": 2,
+        "depth": 1
+      }
+    },
+    {
+      "id": "cpg:ast:simple_order.calculate_total:return:11:4",
+      "kind": "ast_statement",
+      "label": "return",
+      "scope": "simple_order.calculate_total",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 11,
+        "end_line": 11
+      },
+      "origin": {
+        "tool": "semantic_ast",
+        "kind": "return"
+      },
+      "properties": {
+        "depth": 1
+      }
+    },
+    {
+      "id": "cpg:cfg:function_simple_order.calculate_total_return_6",
+      "kind": "control_return",
+      "label": "return",
+      "scope": "simple_order.calculate_total",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 11,
+        "end_line": 11
+      },
+      "origin": {
+        "tool": "semantic_cfg",
+        "id": "function:simple_order.calculate_total:return:6",
+        "kind": "return"
+      },
+      "properties": {
+        "original_kind": "return",
+        "depth": 1
+      }
+    },
+    {
+      "id": "cpg:dfg:function_simple_order.calculate_total_return_value_return_value",
+      "kind": "value_return",
+      "label": "return_value",
+      "scope": "simple_order.calculate_total",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 11,
+        "end_line": 11
+      },
+      "origin": {
+        "tool": "semantic_dfg",
+        "id": "function:simple_order.calculate_total:return_value:return_value",
+        "kind": "return_value"
+      },
+      "properties": {
+        "original_kind": "return_value",
+        "flow_level": 3,
+        "depth": 1
+      }
+    },
+    {
+      "id": "cpg:ast:function:simple_order.main",
+      "kind": "function",
+      "label": "main",
+      "scope": "simple_order",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 14,
+        "end_line": 15
+      },
+      "origin": {
+        "tool": "semantic_ast",
+        "id": "simple_order.main",
+        "kind": "function"
+      }
+    },
+    {
+      "id": "cpg:ast:simple_order.main:return:15:1",
+      "kind": "ast_statement",
+      "label": "return",
+      "scope": "simple_order.main",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 15,
+        "end_line": 15
+      },
+      "origin": {
+        "tool": "semantic_ast",
+        "kind": "return"
+      },
+      "properties": {
+        "depth": 1
+      }
+    },
+    {
+      "id": "cpg:cfg:function_simple_order.main_return_1",
+      "kind": "control_return",
+      "label": "return",
+      "scope": "simple_order.main",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 15,
+        "end_line": 15
+      },
+      "origin": {
+        "tool": "semantic_cfg",
+        "id": "function:simple_order.main:return:1",
+        "kind": "return"
+      },
+      "properties": {
+        "original_kind": "return",
+        "depth": 1
+      }
+    },
+    {
+      "id": "cpg:dfg:function_simple_order.main_literal_return_value_literal",
+      "kind": "value_literal",
+      "label": "return_value_literal",
+      "scope": "simple_order.main",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 15,
+        "end_line": 15
+      },
+      "origin": {
+        "tool": "semantic_dfg",
+        "id": "function:simple_order.main:literal:return_value_literal",
+        "kind": "literal"
+      },
+      "properties": {
+        "original_kind": "literal",
+        "flow_level": 0,
+        "depth": 1
+      }
+    },
+    {
+      "id": "cpg:dfg:function_simple_order.main_return_value_return_value",
+      "kind": "value_return",
+      "label": "return_value",
+      "scope": "simple_order.main",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 15,
+        "end_line": 15
+      },
+      "origin": {
+        "tool": "semantic_dfg",
+        "id": "function:simple_order.main:return_value:return_value",
+        "kind": "return_value"
+      },
+      "properties": {
+        "original_kind": "return_value",
+        "flow_level": 1,
+        "depth": 1
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "cpg:ast:function:simple_order.calculate_total",
+      "target": "cpg:ast:function:simple_order.apply_discount",
+      "kind": "calls",
+      "origin": {
+        "tool": "call_graph",
+        "call": "apply_discount"
+      }
+    },
+    {
+      "source": "cpg:ast:function:simple_order.main",
+      "target": "cpg:ast:function:simple_order.calculate_total",
+      "kind": "calls",
+      "origin": {
+        "tool": "call_graph",
+        "call": "calculate_total"
+      }
+    },
+    {
+      "source": "cpg:ast:function:simple_order.apply_discount",
+      "target": "cpg:ast:simple_order.apply_discount:assignment:2:1",
+      "kind": "contains",
+      "origin": {
+        "tool": "semantic_ast"
+      }
+    },
+    {
+      "source": "cpg:ast:function:simple_order.apply_discount",
+      "target": "cpg:ast:simple_order.apply_discount:return:3:2",
+      "kind": "contains",
+      "origin": {
+        "tool": "semantic_ast"
+      }
+    },
+    {
+      "source": "cpg:ast:function:simple_order.calculate_total",
+      "target": "cpg:ast:simple_order.calculate_total:assignment:10:3",
+      "kind": "contains",
+      "origin": {
+        "tool": "semantic_ast"
+      }
+    },
+    {
+      "source": "cpg:ast:function:simple_order.calculate_total",
+      "target": "cpg:ast:simple_order.calculate_total:assignment:7:1",
+      "kind": "contains",
+      "origin": {
+        "tool": "semantic_ast"
+      }
+    },
+    {
+      "source": "cpg:ast:function:simple_order.calculate_total",
+      "target": "cpg:ast:simple_order.calculate_total:if:8:2",
+      "kind": "contains",
+      "origin": {
+        "tool": "semantic_ast"
+      }
+    },
+    {
+      "source": "cpg:ast:function:simple_order.calculate_total",
+      "target": "cpg:ast:simple_order.calculate_total:return:11:4",
+      "kind": "contains",
+      "origin": {
+        "tool": "semantic_ast"
+      }
+    },
+    {
+      "source": "cpg:ast:function:simple_order.main",
+      "target": "cpg:ast:simple_order.main:return:15:1",
+      "kind": "contains",
+      "origin": {
+        "tool": "semantic_ast"
+      }
+    },
+    {
+      "source": "cpg:ast:module:simple_order",
+      "target": "cpg:ast:function:simple_order.apply_discount",
+      "kind": "contains",
+      "origin": {
+        "tool": "semantic_ast"
+      }
+    },
+    {
+      "source": "cpg:ast:module:simple_order",
+      "target": "cpg:ast:function:simple_order.calculate_total",
+      "kind": "contains",
+      "origin": {
+        "tool": "semantic_ast"
+      }
+    },
+    {
+      "source": "cpg:ast:module:simple_order",
+      "target": "cpg:ast:function:simple_order.main",
+      "kind": "contains",
+      "origin": {
+        "tool": "semantic_ast"
+      }
+    },
+    {
+      "source": "cpg:ast:simple_order.calculate_total:if:8:2",
+      "target": "cpg:ast:simple_order.calculate_total:assignment:9:1",
+      "kind": "contains",
+      "origin": {
+        "tool": "semantic_ast"
+      }
+    },
+    {
+      "source": "cpg:ast:simple_order.apply_discount:assignment:2:1",
+      "target": "cpg:cfg:function_simple_order.apply_discount_statement_1",
+      "kind": "corresponds_to",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "same_source_span"
+      }
+    },
+    {
+      "source": "cpg:ast:simple_order.apply_discount:assignment:2:1",
+      "target": "cpg:dfg:function_simple_order.apply_discount_binding_discount",
+      "kind": "corresponds_to",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "same_source_span"
+      }
+    },
+    {
+      "source": "cpg:ast:simple_order.apply_discount:return:3:2",
+      "target": "cpg:cfg:function_simple_order.apply_discount_return_2",
+      "kind": "corresponds_to",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "same_source_span"
+      }
+    },
+    {
+      "source": "cpg:ast:simple_order.apply_discount:return:3:2",
+      "target": "cpg:dfg:function_simple_order.apply_discount_return_value_return_value",
+      "kind": "corresponds_to",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "same_source_span"
+      }
+    },
+    {
+      "source": "cpg:ast:simple_order.calculate_total:assignment:10:3",
+      "target": "cpg:cfg:function_simple_order.calculate_total_statement_5",
+      "kind": "corresponds_to",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "same_source_span"
+      }
+    },
+    {
+      "source": "cpg:ast:simple_order.calculate_total:assignment:10:3",
+      "target": "cpg:dfg:function_simple_order.calculate_total_binding_tax",
+      "kind": "corresponds_to",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "same_source_span"
+      }
+    },
+    {
+      "source": "cpg:ast:simple_order.calculate_total:assignment:7:1",
+      "target": "cpg:cfg:function_simple_order.calculate_total_statement_1",
+      "kind": "corresponds_to",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "same_source_span"
+      }
+    },
+    {
+      "source": "cpg:ast:simple_order.calculate_total:assignment:7:1",
+      "target": "cpg:dfg:function_simple_order.calculate_total_binding_subtotal",
+      "kind": "corresponds_to",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "same_source_span"
+      }
+    },
+    {
+      "source": "cpg:ast:simple_order.calculate_total:assignment:9:1",
+      "target": "cpg:cfg:function_simple_order.calculate_total_branch_2",
+      "kind": "corresponds_to",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "same_source_span"
+      }
+    },
+    {
+      "source": "cpg:ast:simple_order.calculate_total:assignment:9:1",
+      "target": "cpg:cfg:function_simple_order.calculate_total_join_3",
+      "kind": "corresponds_to",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "same_source_span"
+      }
+    },
+    {
+      "source": "cpg:ast:simple_order.calculate_total:assignment:9:1",
+      "target": "cpg:cfg:function_simple_order.calculate_total_statement_4",
+      "kind": "corresponds_to",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "same_source_span"
+      }
+    },
+    {
+      "source": "cpg:ast:simple_order.calculate_total:if:8:2",
+      "target": "cpg:cfg:function_simple_order.calculate_total_branch_2",
+      "kind": "corresponds_to",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "same_source_span"
+      }
+    },
+    {
+      "source": "cpg:ast:simple_order.calculate_total:if:8:2",
+      "target": "cpg:cfg:function_simple_order.calculate_total_join_3",
+      "kind": "corresponds_to",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "same_source_span"
+      }
+    },
+    {
+      "source": "cpg:ast:simple_order.calculate_total:if:8:2",
+      "target": "cpg:cfg:function_simple_order.calculate_total_statement_4",
+      "kind": "corresponds_to",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "same_source_span"
+      }
+    },
+    {
+      "source": "cpg:ast:simple_order.calculate_total:return:11:4",
+      "target": "cpg:cfg:function_simple_order.calculate_total_return_6",
+      "kind": "corresponds_to",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "same_source_span"
+      }
+    },
+    {
+      "source": "cpg:ast:simple_order.calculate_total:return:11:4",
+      "target": "cpg:dfg:function_simple_order.calculate_total_return_value_return_value",
+      "kind": "corresponds_to",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "same_source_span"
+      }
+    },
+    {
+      "source": "cpg:ast:simple_order.main:return:15:1",
+      "target": "cpg:cfg:function_simple_order.main_return_1",
+      "kind": "corresponds_to",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "same_source_span"
+      }
+    },
+    {
+      "source": "cpg:ast:simple_order.main:return:15:1",
+      "target": "cpg:dfg:function_simple_order.main_literal_return_value_literal",
+      "kind": "corresponds_to",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "same_source_span"
+      }
+    },
+    {
+      "source": "cpg:ast:simple_order.main:return:15:1",
+      "target": "cpg:dfg:function_simple_order.main_return_value_return_value",
+      "kind": "corresponds_to",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "same_source_span"
+      }
+    },
+    {
+      "source": "cpg:cfg:function_simple_order.apply_discount_return_2",
+      "target": "cpg:dfg:function_simple_order.apply_discount_return_value_return_value",
+      "kind": "corresponds_to",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "same_source_span"
+      }
+    },
+    {
+      "source": "cpg:cfg:function_simple_order.apply_discount_statement_1",
+      "target": "cpg:dfg:function_simple_order.apply_discount_binding_discount",
+      "kind": "corresponds_to",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "same_source_span"
+      }
+    },
+    {
+      "source": "cpg:cfg:function_simple_order.calculate_total_return_6",
+      "target": "cpg:dfg:function_simple_order.calculate_total_return_value_return_value",
+      "kind": "corresponds_to",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "same_source_span"
+      }
+    },
+    {
+      "source": "cpg:cfg:function_simple_order.calculate_total_statement_1",
+      "target": "cpg:dfg:function_simple_order.calculate_total_binding_subtotal",
+      "kind": "corresponds_to",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "same_source_span"
+      }
+    },
+    {
+      "source": "cpg:cfg:function_simple_order.calculate_total_statement_5",
+      "target": "cpg:dfg:function_simple_order.calculate_total_binding_tax",
+      "kind": "corresponds_to",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "same_source_span"
+      }
+    },
+    {
+      "source": "cpg:cfg:function_simple_order.main_return_1",
+      "target": "cpg:dfg:function_simple_order.main_literal_return_value_literal",
+      "kind": "corresponds_to",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "same_source_span"
+      }
+    },
+    {
+      "source": "cpg:cfg:function_simple_order.main_return_1",
+      "target": "cpg:dfg:function_simple_order.main_return_value_return_value",
+      "kind": "corresponds_to",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "same_source_span"
+      }
+    },
+    {
+      "source": "cpg:ast:function:simple_order.apply_discount",
+      "target": "cpg:cfg:function_simple_order.apply_discount_entry",
+      "kind": "has_cfg_node",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "function_scope"
+      }
+    },
+    {
+      "source": "cpg:ast:function:simple_order.apply_discount",
+      "target": "cpg:cfg:function_simple_order.apply_discount_exit",
+      "kind": "has_cfg_node",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "function_scope"
+      }
+    },
+    {
+      "source": "cpg:ast:function:simple_order.apply_discount",
+      "target": "cpg:cfg:function_simple_order.apply_discount_return_2",
+      "kind": "has_cfg_node",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "function_scope"
+      }
+    },
+    {
+      "source": "cpg:ast:function:simple_order.apply_discount",
+      "target": "cpg:cfg:function_simple_order.apply_discount_statement_1",
+      "kind": "has_cfg_node",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "function_scope"
+      }
+    },
+    {
+      "source": "cpg:ast:function:simple_order.calculate_total",
+      "target": "cpg:cfg:function_simple_order.calculate_total_branch_2",
+      "kind": "has_cfg_node",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "function_scope"
+      }
+    },
+    {
+      "source": "cpg:ast:function:simple_order.calculate_total",
+      "target": "cpg:cfg:function_simple_order.calculate_total_entry",
+      "kind": "has_cfg_node",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "function_scope"
+      }
+    },
+    {
+      "source": "cpg:ast:function:simple_order.calculate_total",
+      "target": "cpg:cfg:function_simple_order.calculate_total_exit",
+      "kind": "has_cfg_node",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "function_scope"
+      }
+    },
+    {
+      "source": "cpg:ast:function:simple_order.calculate_total",
+      "target": "cpg:cfg:function_simple_order.calculate_total_join_3",
+      "kind": "has_cfg_node",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "function_scope"
+      }
+    },
+    {
+      "source": "cpg:ast:function:simple_order.calculate_total",
+      "target": "cpg:cfg:function_simple_order.calculate_total_return_6",
+      "kind": "has_cfg_node",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "function_scope"
+      }
+    },
+    {
+      "source": "cpg:ast:function:simple_order.calculate_total",
+      "target": "cpg:cfg:function_simple_order.calculate_total_statement_1",
+      "kind": "has_cfg_node",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "function_scope"
+      }
+    },
+    {
+      "source": "cpg:ast:function:simple_order.calculate_total",
+      "target": "cpg:cfg:function_simple_order.calculate_total_statement_4",
+      "kind": "has_cfg_node",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "function_scope"
+      }
+    },
+    {
+      "source": "cpg:ast:function:simple_order.calculate_total",
+      "target": "cpg:cfg:function_simple_order.calculate_total_statement_5",
+      "kind": "has_cfg_node",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "function_scope"
+      }
+    },
+    {
+      "source": "cpg:ast:function:simple_order.main",
+      "target": "cpg:cfg:function_simple_order.main_entry",
+      "kind": "has_cfg_node",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "function_scope"
+      }
+    },
+    {
+      "source": "cpg:ast:function:simple_order.main",
+      "target": "cpg:cfg:function_simple_order.main_exit",
+      "kind": "has_cfg_node",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "function_scope"
+      }
+    },
+    {
+      "source": "cpg:ast:function:simple_order.main",
+      "target": "cpg:cfg:function_simple_order.main_return_1",
+      "kind": "has_cfg_node",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "function_scope"
+      }
+    },
+    {
+      "source": "cpg:ast:function:simple_order.apply_discount",
+      "target": "cpg:dfg:function_simple_order.apply_discount_binding_discount",
+      "kind": "has_dfg_node",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "function_scope"
+      }
+    },
+    {
+      "source": "cpg:ast:function:simple_order.apply_discount",
+      "target": "cpg:dfg:function_simple_order.apply_discount_parameter_price",
+      "kind": "has_dfg_node",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "function_scope"
+      }
+    },
+    {
+      "source": "cpg:ast:function:simple_order.apply_discount",
+      "target": "cpg:dfg:function_simple_order.apply_discount_parameter_rate",
+      "kind": "has_dfg_node",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "function_scope"
+      }
+    },
+    {
+      "source": "cpg:ast:function:simple_order.apply_discount",
+      "target": "cpg:dfg:function_simple_order.apply_discount_return_value_return_value",
+      "kind": "has_dfg_node",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "function_scope"
+      }
+    },
+    {
+      "source": "cpg:ast:function:simple_order.calculate_total",
+      "target": "cpg:dfg:function_simple_order.calculate_total_binding_subtotal",
+      "kind": "has_dfg_node",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "function_scope"
+      }
+    },
+    {
+      "source": "cpg:ast:function:simple_order.calculate_total",
+      "target": "cpg:dfg:function_simple_order.calculate_total_binding_tax",
+      "kind": "has_dfg_node",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "function_scope"
+      }
+    },
+    {
+      "source": "cpg:ast:function:simple_order.calculate_total",
+      "target": "cpg:dfg:function_simple_order.calculate_total_parameter_price",
+      "kind": "has_dfg_node",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "function_scope"
+      }
+    },
+    {
+      "source": "cpg:ast:function:simple_order.calculate_total",
+      "target": "cpg:dfg:function_simple_order.calculate_total_parameter_quantity",
+      "kind": "has_dfg_node",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "function_scope"
+      }
+    },
+    {
+      "source": "cpg:ast:function:simple_order.calculate_total",
+      "target": "cpg:dfg:function_simple_order.calculate_total_parameter_tax_rate",
+      "kind": "has_dfg_node",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "function_scope"
+      }
+    },
+    {
+      "source": "cpg:ast:function:simple_order.calculate_total",
+      "target": "cpg:dfg:function_simple_order.calculate_total_return_value_return_value",
+      "kind": "has_dfg_node",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "function_scope"
+      }
+    },
+    {
+      "source": "cpg:ast:function:simple_order.main",
+      "target": "cpg:dfg:function_simple_order.main_literal_return_value_literal",
+      "kind": "has_dfg_node",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "function_scope"
+      }
+    },
+    {
+      "source": "cpg:ast:function:simple_order.main",
+      "target": "cpg:dfg:function_simple_order.main_return_value_return_value",
+      "kind": "has_dfg_node",
+      "origin": {
+        "tool": "semantic_cpg",
+        "reason": "function_scope"
+      }
+    },
+    {
+      "source": "cpg:cfg:function_simple_order.apply_discount_entry",
+      "target": "cpg:cfg:function_simple_order.apply_discount_statement_1",
+      "kind": "control_next",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 2,
+        "end_line": 2
+      },
+      "origin": {
+        "tool": "semantic_cfg",
+        "kind": "next"
+      }
+    },
+    {
+      "source": "cpg:dfg:function_simple_order.apply_discount_parameter_price",
+      "target": "cpg:dfg:function_simple_order.apply_discount_binding_discount",
+      "kind": "data_depends_on",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 2,
+        "end_line": 2
+      },
+      "origin": {
+        "tool": "semantic_dfg",
+        "kind": "depends_on",
+        "operation": "Mult"
+      }
+    },
+    {
+      "source": "cpg:dfg:function_simple_order.apply_discount_parameter_rate",
+      "target": "cpg:dfg:function_simple_order.apply_discount_binding_discount",
+      "kind": "data_depends_on",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 2,
+        "end_line": 2
+      },
+      "origin": {
+        "tool": "semantic_dfg",
+        "kind": "depends_on",
+        "operation": "Mult"
+      }
+    },
+    {
+      "source": "cpg:cfg:function_simple_order.apply_discount_statement_1",
+      "target": "cpg:cfg:function_simple_order.apply_discount_return_2",
+      "kind": "control_next",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 3,
+        "end_line": 3
+      },
+      "origin": {
+        "tool": "semantic_cfg",
+        "kind": "next"
+      }
+    },
+    {
+      "source": "cpg:cfg:function_simple_order.apply_discount_return_2",
+      "target": "cpg:cfg:function_simple_order.apply_discount_exit",
+      "kind": "control_return",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 3,
+        "end_line": 3
+      },
+      "origin": {
+        "tool": "semantic_cfg",
+        "kind": "return"
+      }
+    },
+    {
+      "source": "cpg:dfg:function_simple_order.apply_discount_binding_discount",
+      "target": "cpg:dfg:function_simple_order.apply_discount_return_value_return_value",
+      "kind": "data_returns",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 3,
+        "end_line": 3
+      },
+      "origin": {
+        "tool": "semantic_dfg",
+        "kind": "returns",
+        "operation": "return"
+      }
+    },
+    {
+      "source": "cpg:dfg:function_simple_order.apply_discount_parameter_price",
+      "target": "cpg:dfg:function_simple_order.apply_discount_return_value_return_value",
+      "kind": "data_returns",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 3,
+        "end_line": 3
+      },
+      "origin": {
+        "tool": "semantic_dfg",
+        "kind": "returns",
+        "operation": "return"
+      }
+    },
+    {
+      "source": "cpg:cfg:function_simple_order.calculate_total_entry",
+      "target": "cpg:cfg:function_simple_order.calculate_total_statement_1",
+      "kind": "control_next",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 7,
+        "end_line": 7
+      },
+      "origin": {
+        "tool": "semantic_cfg",
+        "kind": "next"
+      }
+    },
+    {
+      "source": "cpg:dfg:function_simple_order.calculate_total_parameter_price",
+      "target": "cpg:dfg:function_simple_order.calculate_total_binding_subtotal",
+      "kind": "data_depends_on",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 7,
+        "end_line": 7
+      },
+      "origin": {
+        "tool": "semantic_dfg",
+        "kind": "depends_on",
+        "operation": "Mult"
+      }
+    },
+    {
+      "source": "cpg:dfg:function_simple_order.calculate_total_parameter_quantity",
+      "target": "cpg:dfg:function_simple_order.calculate_total_binding_subtotal",
+      "kind": "data_depends_on",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 7,
+        "end_line": 7
+      },
+      "origin": {
+        "tool": "semantic_dfg",
+        "kind": "depends_on",
+        "operation": "Mult"
+      }
+    },
+    {
+      "source": "cpg:cfg:function_simple_order.calculate_total_branch_2",
+      "target": "cpg:cfg:function_simple_order.calculate_total_join_3",
+      "kind": "control_branch_false",
+      "condition": "false",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 8,
+        "end_line": 8
+      },
+      "origin": {
+        "tool": "semantic_cfg",
+        "kind": "branch_false"
+      }
+    },
+    {
+      "source": "cpg:cfg:function_simple_order.calculate_total_statement_1",
+      "target": "cpg:cfg:function_simple_order.calculate_total_branch_2",
+      "kind": "control_next",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 8,
+        "end_line": 8
+      },
+      "origin": {
+        "tool": "semantic_cfg",
+        "kind": "next"
+      }
+    },
+    {
+      "source": "cpg:cfg:function_simple_order.calculate_total_statement_4",
+      "target": "cpg:cfg:function_simple_order.calculate_total_join_3",
+      "kind": "control_next",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 8,
+        "end_line": 8
+      },
+      "origin": {
+        "tool": "semantic_cfg",
+        "kind": "next"
+      }
+    },
+    {
+      "source": "cpg:cfg:function_simple_order.calculate_total_branch_2",
+      "target": "cpg:cfg:function_simple_order.calculate_total_statement_4",
+      "kind": "control_branch_true",
+      "condition": "true",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 9,
+        "end_line": 9
+      },
+      "origin": {
+        "tool": "semantic_cfg",
+        "kind": "branch_true"
+      }
+    },
+    {
+      "source": "cpg:dfg:function_simple_order.calculate_total_binding_subtotal",
+      "target": "cpg:dfg:function_simple_order.calculate_total_binding_subtotal",
+      "kind": "data_depends_on",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 9,
+        "end_line": 9
+      },
+      "origin": {
+        "tool": "semantic_dfg",
+        "kind": "depends_on",
+        "operation": "apply_discount"
+      }
+    },
+    {
+      "source": "cpg:cfg:function_simple_order.calculate_total_join_3",
+      "target": "cpg:cfg:function_simple_order.calculate_total_statement_5",
+      "kind": "control_next",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 10,
+        "end_line": 10
+      },
+      "origin": {
+        "tool": "semantic_cfg",
+        "kind": "next"
+      }
+    },
+    {
+      "source": "cpg:dfg:function_simple_order.calculate_total_binding_subtotal",
+      "target": "cpg:dfg:function_simple_order.calculate_total_binding_tax",
+      "kind": "data_depends_on",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 10,
+        "end_line": 10
+      },
+      "origin": {
+        "tool": "semantic_dfg",
+        "kind": "depends_on",
+        "operation": "Mult"
+      }
+    },
+    {
+      "source": "cpg:dfg:function_simple_order.calculate_total_parameter_tax_rate",
+      "target": "cpg:dfg:function_simple_order.calculate_total_binding_tax",
+      "kind": "data_depends_on",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 10,
+        "end_line": 10
+      },
+      "origin": {
+        "tool": "semantic_dfg",
+        "kind": "depends_on",
+        "operation": "Mult"
+      }
+    },
+    {
+      "source": "cpg:cfg:function_simple_order.calculate_total_statement_5",
+      "target": "cpg:cfg:function_simple_order.calculate_total_return_6",
+      "kind": "control_next",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 11,
+        "end_line": 11
+      },
+      "origin": {
+        "tool": "semantic_cfg",
+        "kind": "next"
+      }
+    },
+    {
+      "source": "cpg:cfg:function_simple_order.calculate_total_return_6",
+      "target": "cpg:cfg:function_simple_order.calculate_total_exit",
+      "kind": "control_return",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 11,
+        "end_line": 11
+      },
+      "origin": {
+        "tool": "semantic_cfg",
+        "kind": "return"
+      }
+    },
+    {
+      "source": "cpg:dfg:function_simple_order.calculate_total_binding_subtotal",
+      "target": "cpg:dfg:function_simple_order.calculate_total_return_value_return_value",
+      "kind": "data_returns",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 11,
+        "end_line": 11
+      },
+      "origin": {
+        "tool": "semantic_dfg",
+        "kind": "returns",
+        "operation": "return"
+      }
+    },
+    {
+      "source": "cpg:dfg:function_simple_order.calculate_total_binding_tax",
+      "target": "cpg:dfg:function_simple_order.calculate_total_return_value_return_value",
+      "kind": "data_returns",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 11,
+        "end_line": 11
+      },
+      "origin": {
+        "tool": "semantic_dfg",
+        "kind": "returns",
+        "operation": "return"
+      }
+    },
+    {
+      "source": "cpg:cfg:function_simple_order.main_entry",
+      "target": "cpg:cfg:function_simple_order.main_return_1",
+      "kind": "control_next",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 15,
+        "end_line": 15
+      },
+      "origin": {
+        "tool": "semantic_cfg",
+        "kind": "next"
+      }
+    },
+    {
+      "source": "cpg:cfg:function_simple_order.main_return_1",
+      "target": "cpg:cfg:function_simple_order.main_exit",
+      "kind": "control_return",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 15,
+        "end_line": 15
+      },
+      "origin": {
+        "tool": "semantic_cfg",
+        "kind": "return"
+      }
+    },
+    {
+      "source": "cpg:dfg:function_simple_order.main_literal_return_value_literal",
+      "target": "cpg:dfg:function_simple_order.main_return_value_return_value",
+      "kind": "data_returns",
+      "trace": {
+        "path": "/workspace/agent-tools/agent-playground/semantic_graph_visualizer/simple_example/simple_order.py",
+        "line": 15,
+        "end_line": 15
+      },
+      "origin": {
+        "tool": "semantic_dfg",
+        "kind": "returns",
+        "operation": "return"
+      }
+    }
+  ],
+  "warnings": [
+    {
+      "kind": "PartialAnalysis",
+      "message": "if is analyzed by visiting contained statements only.",
+      "source": "semantic_dfg",
+      "lineno": 8
+    }
+  ],
+  "provenance": {
+    "tools": [
+      "semantic_ast",
+      "semantic_cfg",
+      "semantic_dfg",
+      "call_graph"
+    ],
+    "merge_tool": "semantic_cpg"
+  },
+  "stats": {
+    "nodes": 39,
+    "edges": 91,
+    "functions": 3,
+    "classes": 0,
+    "warnings": 1
+  }
+}

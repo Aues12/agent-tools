@@ -41,6 +41,7 @@ semantic_cpg   = unified analysis localization and projection substrate
 semantic_cards = card/interface localization
 semantic_observatory_pipeline = executable analysis pipeline for UI-ready data
 semantic_view  = presentation localization
+semantic_graph_visualizer = CPG debug projection
 ```
 
 ## Code Card Alignment
@@ -153,6 +154,7 @@ Projection             Status
 ---------------------------------------------------------------
 Flat View              implemented prototype
 Semantic View          compact textual/card presentation operations
+CPG Debug View         implemented prototype through semantic_graph_visualizer
 Flowchart View         planned over semantic_cfg or semantic_cpg
 Telescope View         conceptual
 Geometric Field        conceptual, should consume cards/semantic_cpg

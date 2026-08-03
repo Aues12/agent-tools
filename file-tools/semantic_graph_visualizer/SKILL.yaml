@@ -1,0 +1,64 @@
+name: semantic_graph_visualizer
+type: tool
+capability: semantic_code_visualization
+purpose: Render Semantic CPG JSON into a self-contained local HTML debug graph.
+status: experimental
+deterministic: true
+interfaces:
+  - name: stdin_json
+    entrypoint: semantic_graph_visualizer.py
+    transport: stdin_json
+  - name: python_api
+    entrypoint: tool.py
+    callables:
+      - render_cpg_html
+      - render_cpg_file
+      - run
+operations:
+  - name: render_cpg_html
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      cpg:
+        type: object
+        required: true
+      title:
+        type: string
+        required: false
+      max_nodes:
+        type: integer
+        required: false
+        default: 200
+    returns:
+      type: string
+      description: Self-contained HTML document.
+  - name: render_cpg_file
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      path:
+        type: string
+        required: true
+      output_path:
+        type: string
+        required: true
+      title:
+        type: string
+        required: false
+      max_nodes:
+        type: integer
+        required: false
+        default: 200
+    returns:
+      type: object
+      description: Output path and graph summary.
+side_effects:
+  reads:
+    - render_cpg_html reads provided CPG data only.
+    - render_cpg_file reads the provided CPG JSON path.
+  writes:
+    - render_cpg_file writes the requested output_path.
+validation:
+  - python3 -m unittest discover -s file-tools/semantic_graph_visualizer/tests

@@ -116,3 +116,6 @@ Working-note milestone:
   cards-plus-DFG adapter
 * Function Mandala was kept deferred until construction rules and concept are
   stable enough for implementation
+* `semantic_graph_visualizer` was introduced as a minimal self-contained HTML
+  debug projection for Semantic CPG data
+* aggregate test coverage was expanded to include newer semantic tools
