@@ -109,7 +109,7 @@ def render_cpg_html(
     .node-hit {{ fill: transparent; stroke: transparent; pointer-events: all; cursor: pointer; }}
     .node circle:not(.node-hit) {{ stroke: rgba(0,0,0,.28); stroke-width: 1.2; pointer-events: none; }}
     .node text {{ pointer-events: none; fill: #253032; font-size: 11px; text-anchor: middle; }}
-    .node:hover circle {{ stroke: #172322; stroke-width: 2; }}
+    .node:hover circle:not(.node-hit) {{ stroke: #172322; stroke-width: 2; }}
     .empty {{
       position: absolute;
       inset: 0;
@@ -358,15 +358,12 @@ def render_cpg_html(
         g.setAttribute("class", "node");
         g.setAttribute("transform", `translate(${{node.x}}, ${{node.y}})`);
         g.addEventListener("click", () => showNode(node));
-        const hitBox = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        const nodeRadius = node.kind === "function" ? 10 : node.kind === "call_edge" ? 8 : 7;
+        const hitBox = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         hitBox.setAttribute("class", "node-hit");
-        hitBox.setAttribute("x", -82);
-        hitBox.setAttribute("y", -18);
-        hitBox.setAttribute("width", 164);
-        hitBox.setAttribute("height", 54);
-        hitBox.setAttribute("rx", 8);
+        hitBox.setAttribute("r", nodeRadius);
         const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        circle.setAttribute("r", node.kind === "function" ? 10 : node.kind === "call_edge" ? 8 : 7);
+        circle.setAttribute("r", nodeRadius);
         circle.setAttribute("fill", colorForNode(node));
         const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
         text.setAttribute("y", 24);
