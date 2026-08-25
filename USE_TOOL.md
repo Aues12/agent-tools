@@ -153,6 +153,19 @@ printf '%s' '{
 }' | python3 file-tools/ast_dump/ast_dump.py
 ```
 
+### `isbn_barcode` — publication-layout ISBN-13 SVG
+
+```bash
+printf '%s' '{
+  "operation":"write_svg",
+  "params":{
+    "isbn":"9786253798338",
+    "display_text":"ISBN 978-625-379-833-8",
+    "output_path":"/tmp/isbn-9786253798338.svg"
+  }
+}' | python3 file-tools/isbn_barcode/isbn_barcode.py
+```
+
 ## 5) Validation Pattern
 
 Before relying on a tool, run its tests:
@@ -171,6 +184,7 @@ python3 -m unittest discover -s file-tools/<tool_name>/tests
 - Use `semantic_graph_visualizer` to render Semantic CPG JSON as a local debug HTML graph.
 - Use `semantic_cards` for semantic navigation cards and separate relations.
 - Use `ast_dump` for Python-native AST fidelity (`ast.dump`) and low-level AST checks.
+- Use `isbn_barcode` to generate or structurally verify nominal-size ISBN-13/EAN-13 SVG files.
 
 ## 7) Notes
 

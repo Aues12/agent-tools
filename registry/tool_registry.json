@@ -397,6 +397,36 @@
           ]
         }
       ]
+    },
+    {
+      "name": "isbn_barcode",
+      "capability": "barcode_generation",
+      "path": "file-tools/isbn_barcode",
+      "entrypoint": "isbn_barcode.py",
+      "transport": "stdin_json",
+      "status": "experimental",
+      "operations": [
+        "generate_svg",
+        "write_svg",
+        "verify_svg"
+      ],
+      "interfaces": [
+        {
+          "name": "stdin_json",
+          "entrypoint": "isbn_barcode.py",
+          "transport": "stdin_json"
+        },
+        {
+          "name": "python_api",
+          "entrypoint": "tool.py",
+          "callables": [
+            "generate_svg",
+            "write_svg",
+            "verify_svg",
+            "run"
+          ]
+        }
+      ]
     }
   ]
 }

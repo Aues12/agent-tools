@@ -37,3 +37,5 @@ capabilities:
     description: "Analyze source code semantics, structure, and relationships."
   semantic_code_navigation:
     description: "Build navigable semantic code views and relation records."
+  barcode_generation:
+    description: "Generate and verify deterministic machine-readable barcode artifacts."

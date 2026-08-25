@@ -1,0 +1,83 @@
+name: isbn_barcode
+type: tool
+capability: barcode_generation
+purpose: Generate and verify nominal-size publication-layout ISBN-13/EAN-13 SVG barcodes.
+status: experimental
+deterministic: true
+interfaces:
+  - name: stdin_json
+    entrypoint: isbn_barcode.py
+    transport: stdin_json
+  - name: python_api
+    entrypoint: tool.py
+    callables:
+      - generate_svg
+      - write_svg
+      - verify_svg
+      - run
+operations:
+  - name: generate_svg
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      isbn:
+        type: string
+        required: true
+      display_text:
+        type: string
+        required: false
+        description: Optional assigned ISBN hyphenation shown above the symbol.
+    returns:
+      type: object
+      description: SVG text and nominal symbol metadata.
+  - name: write_svg
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      isbn:
+        type: string
+        required: true
+      output_path:
+        type: string
+        required: true
+      display_text:
+        type: string
+        required: false
+      overwrite:
+        type: boolean
+        required: false
+        default: false
+    returns:
+      type: object
+      description: Written SVG path, nominal symbol metadata, and verification report.
+  - name: verify_svg
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      path:
+        type: string
+        required: true
+      isbn:
+        type: string
+        required: true
+      display_text:
+        type: string
+        required: false
+    returns:
+      type: object
+      description: Structural verification report for SVG geometry, text, and EAN-13 modules.
+side_effects:
+  reads:
+    - verify_svg reads the provided SVG path.
+  writes:
+    - write_svg atomically writes one caller-selected SVG path.
+failure_modes:
+  - malformed or checksum-invalid ISBN values raise ValueError.
+  - display text whose digits differ from the encoded ISBN raises ValueError.
+  - write_svg rejects non-SVG paths and existing files unless overwrite is true.
+  - malformed SVG input raises ValueError through the structured error envelope.
+validation:
+  - python3 -m unittest discover -s file-tools/isbn_barcode/tests
