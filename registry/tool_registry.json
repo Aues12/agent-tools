@@ -369,6 +369,56 @@
           ]
         }
       ]
+    },
+    {
+      "name": "isbn_barcode",
+      "capability": "barcode_generation",
+      "path": "file-tools/isbn_barcode",
+      "entrypoint": "isbn_barcode.py",
+      "transport": "stdin_json",
+      "status": "experimental",
+      "operations": [
+        "generate_svg",
+        "write_svg",
+        "write_pdf",
+        "write_barcode",
+        "verify_svg",
+        "verify_pdf"
+      ],
+      "interfaces": [
+        {
+          "name": "stdin_json",
+          "entrypoint": "isbn_barcode.py",
+          "transport": "stdin_json"
+        },
+        {
+          "name": "python_api",
+          "entrypoint": "tool.py",
+          "callables": [
+            "build_layout",
+            "generate_svg",
+            "write_svg",
+            "write_pdf",
+            "write_barcode",
+            "verify_svg",
+            "verify_pdf",
+            "run"
+          ]
+        },
+        {
+          "name": "python_package",
+          "entrypoint": "bookbarcode/__init__.py",
+          "callables": [
+            "Barcode",
+            "BarcodeLayout",
+            "encode_ean13",
+            "render_svg",
+            "render_pdf",
+            "verify_svg",
+            "verify_pdf"
+          ]
+        }
+      ]
     }
   ]
 }

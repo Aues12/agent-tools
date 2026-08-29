@@ -140,6 +140,15 @@ printf '%s' '{
 }' | python3 file-tools/ast_dump/ast_dump.py
 ```
 
+### `isbn_barcode` — print-ready ISBN-13 barcode
+
+```bash
+printf '%s' '{
+  "operation":"write_barcode",
+  "params":{"isbn":"9786253798338","output_base":"/tmp/book-barcode"}
+}' | python3 file-tools/isbn_barcode/isbn_barcode.py
+```
+
 ## 5) Validation Pattern
 
 Before relying on a tool, run its tests:
@@ -157,6 +166,7 @@ python3 -m unittest discover -s file-tools/<tool_name>/tests
 - Use `semantic_cpg` to merge AST, CFG, DFG, and call graph outputs for projection layers.
 - Use `semantic_cards` for semantic navigation cards and separate relations.
 - Use `ast_dump` for Python-native AST fidelity (`ast.dump`) and low-level AST checks.
+- Use `isbn_barcode` for verified ISBN-13 SVG and process-black CMYK PDF output.
 
 ## 7) Notes
 

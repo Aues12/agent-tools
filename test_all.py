@@ -13,6 +13,7 @@ TOOL_TEST_DIRS = [
     "file-tools/semantic_ast/compression/tests",
     "file-tools/semantic_ast/call_graph/tests",
     "file-tools/semantic_cards/tests",
+    "file-tools/isbn_barcode/tests",
 ]
 
 
