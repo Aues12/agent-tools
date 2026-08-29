@@ -29,6 +29,26 @@ The package is the single source of truth. The agent adapter may translate
 parameters and responses, but it must not reimplement ISBN, EAN, geometry,
 rendering, verification, or file-writing algorithms.
 
+## Documentation Set
+
+Maintain the documentation as distinct, linked surfaces:
+
+* `README.md` — concise package overview and primary entrypoints;
+* `docs/KULLANIM.md` — complete Turkish user guide for package, CLI, and tool;
+* `docs/KDY-REFERANS-NOTLARI.md` — auditable interpretation of KDY dimensions
+  and process-black guidance;
+* `SKILL.yaml` — machine-readable operation contract;
+* `AGENTS.md` — architecture, maintenance, quality, and release policy.
+
+When CLI syntax, public API, layout behavior, or output policy changes, update
+every affected document in the same change. Examples must be executable against
+the current implementation; do not preserve obsolete `main.py` commands.
+
+Third-party reference binaries require confirmed redistribution rights before
+entering the repository or package archives. Until the KDY source PDF's rights
+are confirmed, maintain its relevant technical content as attributed Markdown
+notes and treat the original document as the authoritative external reference.
+
 ## Architecture and Ownership
 
 ```text
@@ -122,6 +142,7 @@ For each change:
 5. Run the repository aggregate tests and metadata checks.
 6. Update `README.md`, `SKILL.yaml`, registry metadata, and examples when a
    public operation or parameter changes.
+   Update `docs/KULLANIM.md` whenever user-facing package or CLI behavior changes.
 7. Build a wheel and source distribution for packaging-related changes.
 8. Inspect generated SVG/PDF output when geometry or rendering changes.
 

@@ -14,6 +14,11 @@ Custom dimensions, bar height, and symmetric or independent side margins are
 supported. The same `bookbarcode` package powers the Python API, standalone
 CLI, and agent-tools JSON adapter.
 
+Documentation:
+
+* [Türkçe kullanım kılavuzu](docs/KULLANIM.md)
+* [KDY ölçü ve renk referans notları](docs/KDY-REFERANS-NOTLARI.md)
+
 ## Python package
 
 From this directory, install in editable mode during development:
@@ -93,6 +98,34 @@ Available operations are `generate_svg`, `write_svg`, `write_pdf`,
 `write_barcode`, `verify_svg`, and `verify_pdf`.
 
 ## Architecture
+
+```mermaid
+flowchart TD
+    input["ISBN ve layout girdisi"]
+    validate{"ISBN-13 ve ölçüler geçerli mi?"}
+    encode["95 modüllük EAN-13 desenini oluştur"]
+    geometry["Ortak çubuk ve metin geometrisini hesapla"]
+    format{"Çıktı biçimi"}
+    svg["SVG renderer"]
+    pdf["Process-black CMYK PDF renderer"]
+    verify{"Serileştirilmiş çıktı doğrulandı mı?"}
+    write["Atomik olarak hedefe yaz"]
+    ready(["Doğrulanmış barkod"])
+    error(["Açıklayıcı hata"])
+
+    input --> validate
+    validate -->|Evet| encode
+    validate -->|Hayır| error
+    encode --> geometry
+    geometry --> format
+    format -->|SVG| svg
+    format -->|PDF| pdf
+    svg --> verify
+    pdf --> verify
+    verify -->|Evet| write
+    verify -->|Hayır| error
+    write --> ready
+```
 
 ```text
 ISBN validation → EAN-13 modules → shared geometry
