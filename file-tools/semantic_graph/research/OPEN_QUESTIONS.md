@@ -2,28 +2,23 @@
 
 ## Core model
 
-* Is the base `Graph` directed, undirected, mixed, or neutral?
-* Is direction graph-wide or edge-local?
-* Should self-loops and parallel edges be accepted by default?
+* Is direction graph-wide for common models with mixed direction deferred to an
+  edge-local extension?
 * Which cross-cutting properties belong in policies rather than subclasses?
 * Is class inheritance useful in the public API, internal implementation, or
   only the conceptual model?
+* Should the serialized model use orthogonal fields such as `orientation` and
+  `multiplicity`, or a compact named model plus overrides?
+* What exactly makes two edges duplicates when their kinds or attributes differ?
 
 ## Identity
 
-* Are graph-local integer IDs assigned only by the tool or optionally accepted
-  from callers?
 * Should nodes and edges expose optional symbolic keys?
 * What is the canonical cross-graph address?
-* Are counters stored directly or derived from an append-only identity record?
 
 ## Session interface
 
-* Shell-like commands or newline-delimited JSON?
-* Structured JSON responses by default or compact text?
-* Auto-save after every valid mutation or explicit save/checkpoint?
 * How should dirty state recover after interruption?
-* Is a single active graph enough for the first session prototype?
 
 ## Packets, profiles, and protocols
 
@@ -38,3 +33,11 @@
 * What graph size should the in-memory prototype support comfortably?
 * Which operations need bounded output for agent context?
 * When should recursive algorithms be replaced with iterative implementations?
+
+## Model boundaries
+
+* Is bipartite behavior a model, a constraint, or both in different APIs?
+* Which directed-tree convention should named hierarchy profiles adopt?
+* When do temporal attributes become a true temporal graph model?
+* Should hypergraphs use endpoint arrays or an incidence/bipartite projection?
+* Which interoperability guarantees would justify explicit RDF support?

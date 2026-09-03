@@ -16,6 +16,34 @@ DAG model
 Profiles are not the current research priority. This document exists to keep
 the distinction visible while graph models are studied.
 
+## Model composition before profile meaning
+
+A profile should name its required structure explicitly. For example:
+
+```text
+dependency graph profile
+    orientation: directed
+    cycles: forbidden unless profile says otherwise
+    likely edge kind: depends_on
+
+approval workflow profile
+    orientation: directed
+    cycles: allowed for revision/rework
+    likely node kinds: activity, decision, outcome
+
+assignment profile
+    partitioning: bipartite
+    optional enrichment: weight
+    likely edge kind: eligible_for
+```
+
+The examples show why a domain name is insufficient as a structural model.
+`Workflow`, for instance, does not imply DAG: retry and revision paths may be
+valid cycles.
+
+See [GRAPH_MODELS.md](GRAPH_MODELS.md) for the structural taxonomy and
+[USE_CASES.md](USE_CASES.md) for candidate domains.
+
 ## Possible profile contents
 
 A future profile may declare:

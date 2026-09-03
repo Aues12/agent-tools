@@ -2,51 +2,49 @@
 
 ## Purpose
 
-`semantic_graph` helps an LLM turn an already-understood process or context
-into a small directed graph. It validates graph structure; it does not infer
-meaning from source code or prose.
+`semantic_graph` gives an agent a small, persistent terminal workspace for
+constructing a graph incrementally. The agent supplies the meaning; the tool
+owns identities, basic structural integrity, serialization, and session state.
 
-## Prototype scope
+## v0.1.0 scope
 
-Keep the first version deliberately small:
+Keep this version deliberately small:
 
-* directed nodes and edges;
-* caller-defined node and edge kinds;
-* endpoint and duplicate validation;
-* optional acyclic enforcement;
-* JSON stdin/stdout and Python interfaces.
+* one general `Graph` class;
+* basic `Node` and `Edge` records;
+* graph-local monotonic integer identities;
+* separate node and edge counters;
+* a persistent line-oriented terminal session;
+* node and edge creation through flags or JSON parameter packets;
+* JSON save/open support.
 
-Do not add source parsing, graph visualization, persistence, LLM calls,
-ontology management, or code analysis to this tool.
+Do not add graph-model subclasses, profiles, traversal algorithms, source
+parsing, visualization, LLM calls, deletion, mutation, or ontology management.
 
-## Type policy
+## Model policy
 
-Kinds are open strings rather than a closed enum. Defaults exist only to make
-small graph construction convenient:
+The base graph imposes no directed, acyclic, simple-graph, or domain-specific
+rules. `source` and `target` preserve endpoint order without claiming what that
+order means. Later models or profiles may interpret or restrict it.
 
-```text
-node kind: node
-edge kind: relates_to
-```
+Node and edge `kind` values are open strings. Defaults exist only for
+convenience and do not form an ontology.
 
-New kinds do not require a tool release. The result reports the kinds actually
-used so consumers can inspect them.
+## Identity policy
 
-## Graph policy
+`graph_id` identifies the graph. Each node and edge also receives a positive
+integer `unique_id` within that graph. Node and edge namespaces are separate,
+both begin at 1, and counters move monotonically. IDs are not caller-assigned.
 
-Graphs are directed. Cycles are accepted by default. A caller may request DAG
-validation with `require_acyclic: true`; a detected cycle must then produce a
-clear validation error.
+## Session policy
 
-The tool must remain deterministic and side-effect free. Preserve caller node
-and edge order, generate no semantic claims, and never repair invalid endpoint
-references silently.
+The session keeps one active graph in process memory. Mutating commands report
+the created identity and resulting revision. Command errors must not terminate
+the session. `save` is the only graph mutation that writes to disk; it uses an
+atomic replacement. `open` and `@packet.json` are explicit reads.
 
 ## Development rule
 
-Prefer a minimal contract over speculative graph features. Add a field or
-operation only after a concrete workflow needs it.
-
-Design exploration belongs under `research/`. Those notes are informative and
-must not be treated as implemented behavior until the public metadata,
-documentation, and tests are updated together.
+Prefer a minimal contract over speculative graph features. Design exploration
+belongs under `research/` and is not implemented behavior until code, public
+metadata, documentation, and tests change together.

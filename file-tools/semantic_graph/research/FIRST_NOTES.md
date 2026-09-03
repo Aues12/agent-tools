@@ -74,6 +74,20 @@ Graph
 
 This is a research direction, not yet a commitment to a Python class hierarchy.
 
+The model research now uses a compositional taxonomy with five distinct layers:
+
+```text
+carrier structure
+structural axes
+global shape constraints
+element enrichments
+domain profiles
+```
+
+This avoids treating every combination as a new leaf class. See
+[GRAPH_MODELS.md](GRAPH_MODELS.md) for the working taxonomy and
+[USE_CASES.md](USE_CASES.md) for cross-domain pressure tests.
+
 ## Identity
 
 Every persisted graph should have a stable `graph_id`. A separate `title` is
@@ -121,17 +135,16 @@ not own a closed ontology.
 ## Incremental agent authoring
 
 An agent should not need to rewrite a complete JSON graph after every change.
-A persistent terminal session could load a graph once and accept short
+The v0.1.0 persistent terminal session holds one graph and accepts short
 commands:
 
 ```text
-create
+new
 add-node
 add-edge
 show
-inspect-node
-validate
 save
+open
 ```
 
 This supports a tight feedback loop:
@@ -147,15 +160,12 @@ rather than assumed.
 ## JSON parameter packets
 
 Short interactive commands and reusable JSON parameter packets should coexist.
-A packet can describe one operation or a reusable group of parameters:
+A packet can describe a reusable group of parameters for one command:
 
 ```json
 {
-  "command": "add-node",
-  "params": {
-    "kind": "input",
-    "label": "ISBN input"
-  }
+  "kind": "input",
+  "label": "ISBN input"
 }
 ```
 
@@ -179,12 +189,12 @@ change the meaning of the underlying graph.
 
 ## Safety and persistence
 
-Any future file-backed mutation should use:
+File-backed mutation should use:
 
 * validation before mutation is committed;
 * temporary-file plus atomic replacement;
 * monotonically increasing graph revision;
-* optional expected-revision checks;
+* optional expected-revision checks when concurrent writers become relevant;
 * structured responses;
 * no silent endpoint repair or ID renumbering.
 
@@ -193,6 +203,6 @@ behavior.
 
 ## Present boundary
 
-The existing prototype remains intentionally smaller than these notes. The
-research phase should precede changes to identity, persistence, graph model
-inheritance, session handling, profiles, and protocols.
+The v0.1.0 implementation intentionally remains smaller than these notes. It
+now covers identity, explicit persistence, and a single-graph terminal session.
+Graph-model specializations, profiles, and protocols remain research topics.
