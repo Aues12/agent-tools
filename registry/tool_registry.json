@@ -164,6 +164,34 @@
       ]
     },
     {
+      "name": "semantic_graph",
+      "capability": "semantic_graph_construction",
+      "path": "file-tools/semantic_graph",
+      "entrypoint": "semantic_graph.py",
+      "transport": "stdin_json",
+      "status": "experimental",
+      "operations": [
+        "build_graph",
+        "validate_graph"
+      ],
+      "interfaces": [
+        {
+          "name": "stdin_json",
+          "entrypoint": "semantic_graph.py",
+          "transport": "stdin_json"
+        },
+        {
+          "name": "python_api",
+          "entrypoint": "tool.py",
+          "callables": [
+            "build_graph",
+            "validate_graph",
+            "run"
+          ]
+        }
+      ]
+    },
+    {
       "name": "semantic_cfg",
       "capability": "semantic_code_analysis",
       "path": "file-tools/semantic_cfg",

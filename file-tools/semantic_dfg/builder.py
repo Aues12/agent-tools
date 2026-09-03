@@ -296,7 +296,7 @@ class _DFGBuilder:
             return existing
         return self._add_node(
             name=dependency,
-            kind="unknown",
+            kind="attribute" if "." in dependency else "unknown",
             lineno=_int_or_none(statement.get("line")),
         )
 
@@ -498,8 +498,11 @@ def _collect_dependencies(node: Any, dependencies: list[str]) -> None:
             dependencies.append(name)
         return
     if node_type == "attribute":
-        base = node.get("value")
-        _collect_dependencies(base, dependencies)
+        name = _static_attribute_name(node)
+        if name:
+            dependencies.append(name)
+        else:
+            _collect_dependencies(node.get("value"), dependencies)
         return
     if node_type == "subscript":
         _collect_dependencies(node.get("value"), dependencies)
@@ -565,6 +568,17 @@ def _value_name(node: Any) -> str | None:
         base = _value_name(node.get("value"))
         return f"{base}[]" if base else None
     return None
+
+
+def _static_attribute_name(node: Any) -> str | None:
+    """Return a complete attribute path only when its receiver is static."""
+    if not isinstance(node, Mapping) or node.get("type") != "attribute":
+        return None
+    base = _value_name(node.get("value"))
+    attr = _string_or_none(node.get("attr"))
+    if not base or not attr:
+        return None
+    return f"{base}.{attr}"
 
 
 def _module_name(path: str | None) -> str | None:

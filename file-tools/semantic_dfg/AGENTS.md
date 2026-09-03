@@ -595,17 +595,28 @@ Example:
 name = user.name
 ```
 
-For v1:
+Preserve a statically identifiable attribute path as its own source node:
 
 ```txt
-user → name
+user.name → name
 ```
 
-operation:
+The source node uses:
+
+```txt
+kind: attribute
+name: user.name
+```
+
+and the edge operation is:
 
 ```txt
 attribute_access
 ```
+
+Nested static paths such as `config.output.path` should remain intact. Do not
+guess a full path when the receiver is dynamic; retain only dependencies that
+can be extracted deterministically.
 
 ---
 

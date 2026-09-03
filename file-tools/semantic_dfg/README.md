@@ -108,6 +108,17 @@ top-level body nodes depth 1
 nested block nodes   depth 2+
 ```
 
+Static attribute reads retain their complete path as source nodes:
+
+```text
+self.width_mm ───────────→ available
+config.margin.left_mm ──→ available
+```
+
+These nodes use `kind: "attribute"`. Dynamic receiver resolution remains out
+of scope; the analyzer falls back to dependencies it can extract without
+guessing.
+
 ## Validation
 
 ```sh

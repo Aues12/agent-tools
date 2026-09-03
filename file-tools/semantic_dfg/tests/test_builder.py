@@ -100,6 +100,38 @@ class SemanticDfgBuilderTests(unittest.TestCase):
             )
         )
 
+    def test_preserves_static_attribute_dependencies(self) -> None:
+        result = build_dfg_from_source(
+            dedent(
+                """
+                class Layout:
+                    def available_width(self, config):
+                        available = self.width_mm - config.margin.left_mm
+                        return available
+                """
+            ).strip()
+            + "\n",
+            path="layout.py",
+        )
+
+        function = result["functions"][0]
+        nodes = {node["name"]: node for node in function["nodes"]}
+        sources = {
+            edge["source"]
+            for edge in function["edges"]
+            if edge["target"] == "function:layout.Layout.available_width:binding:available"
+        }
+
+        self.assertEqual(nodes["self.width_mm"]["kind"], "attribute")
+        self.assertEqual(nodes["config.margin.left_mm"]["kind"], "attribute")
+        self.assertEqual(
+            sources,
+            {
+                "function:layout.Layout.available_width:attribute:self.width_mm",
+                "function:layout.Layout.available_width:attribute:config.margin.left_mm",
+            },
+        )
+
     def test_tuple_assignment_is_supported_simply(self) -> None:
         result = build_dfg_from_source(
             dedent(

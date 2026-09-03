@@ -61,6 +61,48 @@ semantic_cards   = card/interface localization
 semantic_view    = presentation localization
 ```
 
+`semantic_graph` is separate from this extraction pipeline. It validates a
+small, caller-authored directed graph and does not infer graph meaning from
+source code.
+
+## semantic_graph Result
+
+A semantic graph represents caller-supplied concepts and directed relations.
+Only structural fields are standardized; `kind` values remain open strings so
+an LLM or workflow can introduce vocabulary as needed.
+
+Required graph fields:
+
+```text
+type      string   Must be "semantic_graph"
+directed  boolean  Must be true
+acyclic   boolean  Computed from the supplied edges
+nodes     array
+edges     array
+kinds     object   Distinct node and edge kinds used
+stats     object   Node and edge counts
+```
+
+Required node fields:
+
+```text
+id     string
+label  string
+kind   string
+```
+
+Required edge fields:
+
+```text
+source  string  Existing node id
+target  string  Existing node id
+kind    string
+```
+
+Nodes and edges may include an `attributes` object. Graphs permit directed
+cycles by default. Callers may request acyclic validation when their intended
+graph is a DAG.
+
 The expected transformations are:
 
 ```text
@@ -328,6 +370,10 @@ return_value
 attribute
 unknown
 ```
+
+An `attribute` node should preserve the complete statically identifiable path,
+such as `self.width_mm` or `config.output.path`. If the receiver cannot be
+identified deterministically, producers must not invent a complete path.
 
 ## semantic_dfg Edge
 
