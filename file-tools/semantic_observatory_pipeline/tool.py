@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import importlib.util
 import json
 import sys
@@ -105,6 +106,7 @@ def analyze_source(
     dfg = _semantic_dfg.build_dfg(tree)
     cpg = _semantic_cpg.build_cpg(tree=tree, dfg=dfg)
     return _analysis_payload(
+        source_text=source,
         source_name=path,
         display_path=display_path,
         tree=tree,
@@ -241,6 +243,7 @@ def main() -> None:
 
 def _analysis_payload(
     *,
+    source_text: str,
     source_name: str | None,
     display_path: str | None,
     tree: Mapping[str, Any],
@@ -256,6 +259,8 @@ def _analysis_payload(
         "source": {
             "path": display_path or tree.get("path") or source_name,
             "displayName": display_name,
+            "contentHash": hashlib.sha256(source_text.encode("utf-8")).hexdigest(),
+            "hashBasis": "sha256:utf8-decoded-source",
         },
         "artifacts": {
             "semantic_ast": tree,
@@ -287,8 +292,9 @@ def _adapt_card(
     dfg_index: dict[str, Mapping[str, Any]],
     display_path: str | None = None,
 ) -> dict[str, Any]:
-    role = _infer_role(card)
-    phase = PHASE_BY_ROLE.get(role, "Understanding")
+    classification = _classify_card(card)
+    role = classification["role"]["value"]
+    phase = classification["phase"]["value"]
     trace = card.get("trace") if isinstance(card.get("trace"), Mapping) else {}
     path = _string(trace.get("path"), "")
     qualified_name = _string(card.get("qualified_name"), _string(card.get("id"), "card"))
@@ -307,6 +313,7 @@ def _adapt_card(
         "summary": _summary(card),
         "role": role,
         "phase": phase,
+        "classification": classification,
         "module": _module_name(card, path),
         "source": {
             "path": display_path or path,
@@ -429,30 +436,62 @@ def _summary(card: Mapping[str, Any]) -> str:
     return f"{title} semantic {kind} card."
 
 
-def _infer_role(card: Mapping[str, Any]) -> str:
+# Ordering preserves the existing adapter's first-match display behavior.
+ROLE_KEYWORDS = (
+    ("Explorer", ("find", "search", "scan", "locate", "list")),
+    ("Parser", ("parse", "read", "load", "extract", "collect", "get")),
+    ("Validator", ("validate", "check", "assert", "verify")),
+    ("Transformer", ("transform", "convert", "normalize", "compress", "map", "calculate", "compute", "process", "apply")),
+    ("Renderer", ("render", "view", "display", "show", "summarize")),
+    ("Executor", ("run", "execute", "main", "dispatch")),
+    ("Builder", ("build", "create", "generate", "make", "emit", "write", "save", "export")),
+)
+
+
+def _classify_card(card: Mapping[str, Any]) -> dict[str, Any]:
+    """Explain display labels without treating name hints as behavioral evidence."""
     kind = _string(card.get("kind"), "card")
     title = _string(card.get("title"), "").lower()
+    candidates = []
     if kind in {"module", "class", "block"}:
-        return "Container"
-    if kind == "statement":
-        if title in {"import", "import_from"}:
-            return "Locator"
-        return "Statement"
-    if any(word in title for word in ("find", "search", "scan", "locate", "list")):
-        return "Explorer"
-    if any(word in title for word in ("parse", "read", "load", "extract", "collect", "get")):
-        return "Parser"
-    if any(word in title for word in ("validate", "check", "assert", "verify")):
-        return "Validator"
-    if any(word in title for word in ("transform", "convert", "normalize", "compress", "map", "calculate", "compute", "process", "apply")):
-        return "Transformer"
-    if any(word in title for word in ("render", "view", "display", "show", "summarize")):
-        return "Renderer"
-    if any(word in title for word in ("run", "execute", "main", "dispatch")):
-        return "Executor"
-    if any(word in title for word in ("build", "create", "generate", "make", "emit", "write", "save", "export")):
-        return "Builder"
-    return "Analyzer" if kind == "function" else "Container"
+        role, basis = "Container", "card_kind"
+    elif kind == "statement":
+        role = "Locator" if title in {"import", "import_from"} else "Statement"
+        basis = "statement_title"
+    else:
+        candidates = [
+            {"value": role, "keywords": [word for word in words if word in title]}
+            for role, words in ROLE_KEYWORDS
+            if any(word in title for word in words)
+        ]
+        role = candidates[0]["value"] if candidates else (
+            "Analyzer" if kind == "function" else "Container"
+        )
+        basis = "title_substring" if candidates else "fallback"
+    return {
+        "method": "flat_view_role_phase_v1",
+        "scope": "card_display",
+        "targetId": _string(card.get("id"), "card"),
+        "role": {
+            "value": role,
+            "status": "fallback" if basis == "fallback" else "heuristic",
+            "basis": basis,
+            "evidence": {"kind": kind, "title": _string(card.get("title"), "")},
+            "candidates": candidates,
+            "ambiguous": len(candidates) > 1,
+        },
+        "phase": {
+            "value": PHASE_BY_ROLE[role],
+            "status": "derived",
+            "basis": "role_mapping",
+            "dependsOn": "role",
+        },
+        "limitations": [
+            "Display classification does not establish behavior, intent, or symbolic identity.",
+            "Title matching uses ordered substrings; a rename may change the label.",
+            "Phase inherits the limitations of the role classification.",
+        ],
+    }
 
 
 def _module_name(card: Mapping[str, Any], path: str) -> str:

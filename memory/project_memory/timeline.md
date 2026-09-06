@@ -7,6 +7,7 @@ Detailed notes live in:
 * [chronology/2026-05.md](./chronology/2026-05.md)
 * [chronology/2026-06.md](./chronology/2026-06.md)
 * [chronology/2026-08.md](./chronology/2026-08.md)
+* [chronology/2026-09.md](./chronology/2026-09.md)
 
 ## 2026-05-16
 
@@ -116,3 +117,13 @@ Working-note milestone:
   cards-plus-DFG adapter
 * Function Mandala was kept deferred until construction rules and concept are
   stable enough for implementation
+
+## 2026-09-06
+
+Working-note milestone:
+
+* Target, claim, basis, and symbolic interpretation boundaries were clarified
+  while preserving the Observatory's ontological direction.
+* Pipeline display classifications became inspectable through their rules and
+  limitations; decoded-source fingerprints identify analyzed content.
+* See [September notes](chronology/2026-09.md).

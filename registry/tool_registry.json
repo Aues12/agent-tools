@@ -295,7 +295,8 @@
             "run"
           ]
         }
-      ]
+      ],
+      "description": "Local code analysis with decoded-source fingerprints and provenance for heuristic UI role/phase labels."
     },
     {
       "name": "ast_parsing",

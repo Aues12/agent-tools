@@ -1,3 +1,6 @@
+import copy
+import hashlib
+import tempfile
 import importlib.util
 import unittest
 from pathlib import Path
@@ -39,6 +42,78 @@ def calculate_total(price, quantity):
         self.assertGreaterEqual(len(function_card["dfg"]["nodes"]), 3)
         self.assertNotIn("statement", {card["kind"] for card in cards})
         self.assertNotIn("block", {card["kind"] for card in cards})
+
+    def test_ambiguous_names_preserve_candidates_and_existing_precedence(self):
+        result = tool.analyze_source("def read_and_build():\n    return 1\n")
+        card = next(c for c in result["ui"]["semanticCards"] if c["kind"] == "function")
+        self.assertEqual(card["role"], "Parser")
+        self.assertEqual(card["phase"], "Understanding")
+        record = card["classification"]
+        self.assertEqual(record["targetId"], card["id"])
+        self.assertTrue(record["role"]["ambiguous"])
+        self.assertEqual(record["role"]["candidates"], [
+            {"value": "Parser", "keywords": ["read"]},
+            {"value": "Builder", "keywords": ["build"]},
+        ])
+        self.assertEqual(record["phase"]["dependsOn"], "role")
+        self.assertEqual(record["phase"]["status"], "derived")
+
+    def test_rename_changes_hint_without_claiming_behavioral_evidence(self):
+        records = []
+        for name in ("mystery", "parse_value"):
+            result = tool.analyze_source(f"def {name}(value):\n    return value\n")
+            card = next(c for c in result["ui"]["semanticCards"] if c["kind"] == "function")
+            records.append(card["classification"]["role"])
+        self.assertEqual(records[0]["status"], "fallback")
+        self.assertEqual(records[0]["candidates"], [])
+        self.assertEqual(records[1]["status"], "heuristic")
+        self.assertEqual(records[1]["basis"], "title_substring")
+        self.assertEqual(records[1]["evidence"]["title"], "parse_value")
+
+    def test_adaptation_preserves_input_and_explains_structural_labels(self):
+        cards = {"type": "semantic_cards", "cards": [
+            {"id": "module:read", "kind": "module", "title": "read"},
+            {"id": "statement:import", "kind": "statement", "title": "import"},
+            {"id": "statement:return", "kind": "statement", "title": "return"},
+        ], "relations": []}
+        before = copy.deepcopy(cards)
+        result = tool.adapt_for_ui(cards)
+        self.assertEqual(cards, before)
+        self.assertEqual([c["role"] for c in result["semanticCards"]],
+                         ["Container", "Locator", "Statement"])
+        for card in result["semanticCards"]:
+            record = card["classification"]
+            self.assertEqual(record["role"]["value"], card["role"])
+            self.assertEqual(record["phase"]["value"], card["phase"])
+            self.assertFalse(record["role"]["ambiguous"])
+
+    def test_source_fingerprint_tracks_content_not_display_path(self):
+        source = "# ölçüm\ndef identity(value):\n    return value\n"
+        first = tool.analyze_source(source, path="original.py", display_path="shown.py")
+        second = tool.analyze_source(source, path="renamed.py")
+        changed = tool.analyze_source(source + "# revision\n", path="original.py")
+        self.assertEqual(first["source"]["contentHash"], hashlib.sha256(source.encode("utf-8")).hexdigest())
+        self.assertEqual(first["source"]["hashBasis"], "sha256:utf8-decoded-source")
+        self.assertEqual(first["source"]["contentHash"], second["source"]["contentHash"])
+        self.assertNotEqual(first["source"]["contentHash"], changed["source"]["contentHash"])
+        self.assertEqual(first, tool.analyze_source(source, path="original.py", display_path="shown.py"))
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "sample.py"
+            path.write_text(source, encoding="utf-8")
+            from_file = tool.analyze_file(path)
+        self.assertEqual(first["source"]["contentHash"], from_file["source"]["contentHash"])
+        self.assertNotIn("classification", first["artifacts"]["semantic_cards"]["cards"][0])
+
+    def test_file_fingerprint_uses_decoding_and_text_newline_normalization(self):
+        source = "# café\ndef identity(value):\n    return value\n"
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "sample.py"
+            path.write_bytes(source.replace("\n", "\r\n").encode("latin-1"))
+            result = tool.analyze_file(path, encoding="latin-1")
+        response = tool.run({"operation": "analyze_source", "params": {"source": source}})
+        self.assertTrue(response["success"])
+        self.assertEqual(result["source"]["contentHash"], response["result"]["source"]["contentHash"])
+        self.assertIn("classification", response["result"]["ui"]["semanticCards"][0])
 
     def test_run_returns_error_envelope_for_invalid_source(self):
         response = tool.run(

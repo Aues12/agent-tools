@@ -1,5 +1,10 @@
 # [EPR] Epistemic Phases and Roles
 
+This document preserves evolving research formulations. For engineering use,
+[Phase Interpretation Contract](phase-interpretation-contract.md) distinguishes
+epistemic activity, artifact state, and symbolic correspondence. Hidden phases
+in symbolic expansions are interpretations, not automatically extracted facts.
+
 ## Index
 
 [EPR-001] Introduction
@@ -1676,6 +1681,6 @@ CFG  DFG  Call Graph
       └── Semantic View
 ```
 
-Within this architecture, the Semantic CPG serves as the **Single Source of Truth**. Every visualization represents a deterministic projection of the same underlying analysis model, ensuring that visualization concerns remain completely separated from program analysis.
+Within this architecture, the Semantic CPG serves as the **shared analysis model for projections**. This is a scoped engineering authority, not an exhaustive account of program behavior or meaning. Every visualization represents a deterministic projection of the same underlying analysis model, ensuring that visualization concerns remain completely separated from program analysis.
 
 This separation allows multiple visual paradigms—such as flowcharts, ring layouts, semantic cards, or graph-based exploration—to coexist while remaining fully consistent with one another.
