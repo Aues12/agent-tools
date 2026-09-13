@@ -17,6 +17,8 @@ Software serves as the initial domain of exploration, but the principles describ
 ```text
 semantic_observatory/
 ├── README.md
+├── epistemic-grounding.md
+├── phase-interpretation-contract.md
 ├── epistemic-phases-and-roles.md
 ├── faz-döngüleri.md
 ├── flat-view-ui.md
@@ -27,6 +29,7 @@ semantic_observatory/
 ├── localization.md
 ├── observation-theory.md
 ├── ontological-layer.md
+├── question-centered-knowledge.md
 ├── quest-tree.md
 ├── semantic-architecture.md
 ├── semantic-cards.md
@@ -47,14 +50,16 @@ Status        Documents
 ---------------------------------------------------------------
 Active Core   foundations, observation-theory, localization,
               vertical-ontology, semantic-cards,
-              epistemic-phases-and-roles
+              epistemic-phases-and-roles, epistemic-grounding
 
 Active Bridge implementation-map, semantic-architecture,
-              semantic-ui, flat-view-ui, semantic-ui-design
+              semantic-ui, flat-view-ui, semantic-ui-design,
+              phase-interpretation-contract
 
 Experimental  symbolic-geometry, geometric-field-engine,
               function-mandala, quest-tree, semantic-workbench,
-              ontological-layer, faz-döngüleri, the-zodiac
+              ontological-layer, faz-döngüleri, the-zodiac,
+              question-centered-knowledge
 
 Future        star maps, repository-scale observatory maps,
               build mode contracts, projection-layer schemas
@@ -181,6 +186,20 @@ The UI currently emphasizes Flat View card inspection. CPG-aware artifacts are
 available for future projection layers, while geometric and mandala views remain
 conceptual until their construction rules stabilize.
 
+
+## Epistemic clarification
+
+Read [Epistemic Grounding](epistemic-grounding.md) for target/claim/basis
+distinctions and [Phase Interpretation Contract](phase-interpretation-contract.md)
+for the boundary between symbolic readings and executable phase assignments.
+These notes clarify the engineering use of the evolving research vocabulary.
+
+## Question-centered knowledge direction
+
+[Question-Centered Knowledge and Bounded Memory](question-centered-knowledge.md)
+explores source access, meaning construction, retrieval, and knowledge
+maintenance through progressive disclosure and explicit context/storage
+budgets. It is a research direction, not an implemented memory subsystem.
 
 ## Core Documents
 

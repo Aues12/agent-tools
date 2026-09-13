@@ -78,3 +78,43 @@ Builder / Renderer      -> Manifestation
 
 This is not symbolic phase inference. It is a temporary presentation adapter
 until deeper phase classification is introduced.
+
+## Classification provenance
+
+Every UI card retains its existing `role` and `phase` strings and adds
+`classification` with:
+
+* `method`: `flat_view_role_phase_v1`, identifying the ordered rule set.
+* `scope`: `card_display`; `targetId`: the associated card identifier.
+* `role`: `value`, `status` (`heuristic` or `fallback`), `basis`, `evidence`,
+  ordered `candidates`, and `ambiguous`.
+* `phase`: `value`, `status: derived`, `basis: role_mapping`, `dependsOn: role`.
+* `limitations`: statements limiting what these labels establish.
+
+Role `basis` is `card_kind`, `statement_title`, `title_substring`, or `fallback`.
+Evidence contains the supplied kind and title. Name matching retains the
+existing case-insensitive substring behavior and rule precedence. For example,
+`read_and_build` displays Parser and Understanding but records both Parser/read
+and Builder/build candidates, with `ambiguous: true`. A name with no matching
+keyword is explicitly marked as a fallback. Candidate absence is not evidence
+of an absence of meaning. No numeric confidence is asserted.
+
+Canonical `artifacts.semantic_cards` remain unannotated. The adapter does not
+mutate its inputs. These additive fields are available to API consumers; the
+current Flat View does not yet present the full classification record.
+
+## Source snapshot identity
+
+`analyze_source` and `analyze_file` include `source.contentHash`, the SHA-256 hex
+digest of the analyzed string encoded as UTF-8, and
+`source.hashBasis: sha256:utf8-decoded-source`. It is independent of display path.
+For file analysis the string follows the selected decoding and Python text
+reading's newline normalization; this is not a hash of original file bytes.
+The hash covers source text, not analysis options or tool versions.
+
+A fingerprint identifies content, not its correctness. It neither archives the
+source nor automatically checks for staleness. Consumers saving individual
+cards should retain the parent source record alongside them. Standalone
+`adapt_for_ui` has no source text and therefore emits no source fingerprint.
+
+See [Epistemic Grounding](../../memory/semantic_observatory/epistemic-grounding.md).

@@ -58,3 +58,11 @@ Canonical semantic artifacts remain:
 ## Line Numbers
 
 All line numbers are 1-based and inclusive.
+
+## Epistemic metadata contract
+
+Preserve role/phase compatibility while exposing the classification basis and
+limitations. Do not promote name hints or fallback labels to behavioral facts.
+Keep canonical artifacts separate from UI annotations. Source fingerprints
+identify decoded text, not truth or original file bytes. See the local README
+for the additive output fields and their precise semantics.

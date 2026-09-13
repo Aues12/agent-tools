@@ -1,7 +1,7 @@
 name: semantic_observatory_pipeline
 type: tool
 capability: semantic_code_observation
-purpose: Run existing semantic analysis tools, produce CPG-aware artifacts, and adapt them for Semantic Observatory UI.
+purpose: Run semantic analyses and return CPG-aware artifacts, source fingerprints, and UI cards with explicit classification provenance.
 status: experimental
 deterministic: true
 interfaces:

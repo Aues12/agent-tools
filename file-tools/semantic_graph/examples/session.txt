@@ -1,0 +1,7 @@
+new --graph-id bookbarcode-flow --title "BookBarcode flow"
+add-node @file-tools/semantic_graph/examples/add_isbn_node.json
+add-node --label "Validate ISBN" --kind step
+add-edge @file-tools/semantic_graph/examples/add_validation_edge.json
+show
+show json
+exit

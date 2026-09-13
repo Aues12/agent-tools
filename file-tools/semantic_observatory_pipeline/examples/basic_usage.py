@@ -20,4 +20,6 @@ def calculate_total(price, quantity):
 
 if __name__ == "__main__":
     analysis = tool.analyze_source(SOURCE, path="example.py")
-    print(analysis["ui"]["stats"])
+    print(analysis["source"])
+    for card in analysis["ui"]["semanticCards"]:
+        print(card["title"], card["classification"])

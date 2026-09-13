@@ -61,47 +61,56 @@ semantic_cards   = card/interface localization
 semantic_view    = presentation localization
 ```
 
-`semantic_graph` is separate from this extraction pipeline. It validates a
-small, caller-authored directed graph and does not infer graph meaning from
-source code.
+`semantic_graph` is separate from this extraction pipeline. It stores a small,
+caller-authored general graph and does not infer graph meaning from source code.
 
 ## semantic_graph Result
 
-A semantic graph represents caller-supplied concepts and directed relations.
-Only structural fields are standardized; `kind` values remain open strings so
-an LLM or workflow can introduce vocabulary as needed.
+A semantic graph represents caller-supplied entities and relations. The v0.1.0
+base model imposes no direction, acyclicity, or domain rules. Only structural
+fields are standardized; `kind` values remain open strings so an LLM or
+workflow can introduce vocabulary as needed.
 
 Required graph fields:
 
 ```text
-type      string   Must be "semantic_graph"
-directed  boolean  Must be true
-acyclic   boolean  Computed from the supplied edges
-nodes     array
-edges     array
-kinds     object   Distinct node and edge kinds used
-stats     object   Node and edge counts
+type          string   Must be "semantic_graph"
+version       string   Schema version; "0.1.0" for this contract
+graph_id      string   Stable graph identifier
+title         string or null
+attributes    object
+revision      integer  Increases after each mutation
+next_node_id  integer  Next graph-local node identity
+next_edge_id  integer  Next graph-local edge identity
+nodes         array
+edges         array
 ```
 
 Required node fields:
 
 ```text
-id     string
-label  string
-kind   string
+unique_id   integer  Positive and unique among nodes in the graph
+label       string
+kind        string
+attributes  object
 ```
 
 Required edge fields:
 
 ```text
-source  string  Existing node id
-target  string  Existing node id
-kind    string
+unique_id   integer  Positive and unique among edges in the graph
+source      integer  Existing node unique_id
+target      integer  Existing node unique_id
+kind        string
+label       string or omitted
+attributes  object
 ```
 
-Nodes and edges may include an `attributes` object. Graphs permit directed
-cycles by default. Callers may request acyclic validation when their intended
-graph is a DAG.
+Node and edge counters form separate namespaces, start at 1, and move
+monotonically. `source` and `target` preserve endpoint order, but the base model
+does not interpret this order as direction. Cycles, self-loops, and parallel
+edges are valid at this layer. Specialized graph models may add stricter rules
+in later schema versions.
 
 The expected transformations are:
 
@@ -822,3 +831,39 @@ Renaming or removing stable fields requires updating:
 
 When conceptual terminology changes, implementation schemas should change only
 after the data contract is clear.
+
+## Observatory pipeline epistemic metadata
+
+The `semantic_observatory_analysis` envelope adds a source snapshot identity:
+
+```text
+source.contentHash  SHA-256 hex digest of analyzed text encoded as UTF-8
+source.hashBasis    sha256:utf8-decoded-source
+```
+
+This identifies the decoded source, not file bytes or tool configuration. File
+reads may normalize newlines. The hash is scoped to the enclosing analysis; a
+card exported separately must retain its source context to identify a snapshot.
+
+UI cards add `classification` alongside their compatible `role`/`phase` labels:
+
+```text
+method       flat_view_role_phase_v1
+scope        card_display
+targetId     adapted card identifier
+role         value, status, basis, evidence, candidates, ambiguous
+phase        value, status, basis, dependsOn
+limitations  array of strings
+```
+
+`role.status` is `heuristic` or `fallback`. `role.basis` is `card_kind`,
+`statement_title`, `title_substring`, or `fallback`. `evidence` contains `kind`
+and `title`; each candidate contains `value` and matching `keywords`. Candidates
+are ordered by rule precedence; ambiguity means multiple candidate roles, not
+multiple verified responsibilities. `phase.status` is `derived`, with
+`basis: role_mapping` and `dependsOn: role`. Phase inherits role limitations.
+
+These are presentation records, not a universal epistemic claim schema. They
+are absent from canonical semantic cards. Standalone adaptation has no source
+text and does not fabricate snapshot identity. Consumers of older payloads
+without these fields should treat provenance as unavailable.

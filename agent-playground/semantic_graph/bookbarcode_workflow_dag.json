@@ -1,0 +1,492 @@
+{
+  "type": "semantic_graph",
+  "version": "0.1.0",
+  "graph_id": "bookbarcode-workflow-dag",
+  "title": "BookBarcode çalışma mantığı DAG",
+  "attributes": {},
+  "revision": 67,
+  "next_node_id": 30,
+  "next_edge_id": 39,
+  "nodes": [
+    {
+      "unique_id": 1,
+      "label": "İstek: ISBN-13 + display/layout/output seçenekleri",
+      "kind": "input",
+      "attributes": {}
+    },
+    {
+      "unique_id": 2,
+      "label": "Giriş yüzeyi: Python API / Human CLI / JSON adapter",
+      "kind": "entrypoint",
+      "attributes": {}
+    },
+    {
+      "unique_id": 3,
+      "label": "Argüman ayrıştırma ve operation dispatch (cli.py / tool.py)",
+      "kind": "orchestration",
+      "attributes": {}
+    },
+    {
+      "unique_id": 4,
+      "label": "LayoutSpec oluşturma: preset ve ölçü overrideları",
+      "kind": "layout",
+      "attributes": {}
+    },
+    {
+      "unique_id": 5,
+      "label": "Margin ve bar-height kaynaklarını seçme",
+      "kind": "layout",
+      "attributes": {}
+    },
+    {
+      "unique_id": 6,
+      "label": "resolve_layout: X, quiet zones, ölçüler ve constraintler",
+      "kind": "layout",
+      "attributes": {}
+    },
+    {
+      "unique_id": 7,
+      "label": "ISBN normalize et (isbn.py)",
+      "kind": "validation",
+      "attributes": {}
+    },
+    {
+      "unique_id": 8,
+      "label": "ISBN-13 doğrula: 978/979 prefix + checksum",
+      "kind": "validation",
+      "attributes": {}
+    },
+    {
+      "unique_id": 9,
+      "label": "Display text fallback üret veya doğrula",
+      "kind": "validation",
+      "attributes": {}
+    },
+    {
+      "unique_id": 10,
+      "label": "EAN-13 için 95 modüllük pattern üret",
+      "kind": "encoding",
+      "attributes": {}
+    },
+    {
+      "unique_id": 11,
+      "label": "Ortak Barcode durumu: doğrulanmış ISBN + display + layout",
+      "kind": "core",
+      "attributes": {}
+    },
+    {
+      "unique_id": 12,
+      "label": "BarcodeGeometry: title, bar rectangles ve HRI glyphs",
+      "kind": "geometry",
+      "attributes": {}
+    },
+    {
+      "unique_id": 13,
+      "label": "SVG render: editable SVG + CMYK intent",
+      "kind": "render",
+      "attributes": {}
+    },
+    {
+      "unique_id": 14,
+      "label": "PDF render: process-black CMYK PDF",
+      "kind": "render",
+      "attributes": {}
+    },
+    {
+      "unique_id": 15,
+      "label": "generate_svg sonucu: içerik ve metadata",
+      "kind": "output",
+      "attributes": {}
+    },
+    {
+      "unique_id": 16,
+      "label": "SVG temporary sibling yaz",
+      "kind": "io",
+      "attributes": {}
+    },
+    {
+      "unique_id": 17,
+      "label": "SVG artifact bağımsız doğrulaması",
+      "kind": "verification",
+      "attributes": {}
+    },
+    {
+      "unique_id": 18,
+      "label": "SVGyi atomik olarak hedefe kur",
+      "kind": "artifact",
+      "attributes": {}
+    },
+    {
+      "unique_id": 19,
+      "label": "PDF temporary sibling yaz",
+      "kind": "io",
+      "attributes": {}
+    },
+    {
+      "unique_id": 20,
+      "label": "PDF artifact bağımsız doğrulaması",
+      "kind": "verification",
+      "attributes": {}
+    },
+    {
+      "unique_id": 21,
+      "label": "PDFyi atomik olarak hedefe kur",
+      "kind": "artifact",
+      "attributes": {}
+    },
+    {
+      "unique_id": 22,
+      "label": "write_barcode: tüm hedefleri preflight et",
+      "kind": "io",
+      "attributes": {}
+    },
+    {
+      "unique_id": 23,
+      "label": "write_barcode sonuç kayıtları",
+      "kind": "output",
+      "attributes": {}
+    },
+    {
+      "unique_id": 24,
+      "label": "Human CLI: Created and verified özeti",
+      "kind": "output",
+      "attributes": {}
+    },
+    {
+      "unique_id": 25,
+      "label": "Mevcut artifact doğrulama isteği: path + ISBN/layout",
+      "kind": "input",
+      "attributes": {}
+    },
+    {
+      "unique_id": 26,
+      "label": "verify_svg: dosyayı oku ve SVG yapısını kontrol et",
+      "kind": "verification",
+      "attributes": {}
+    },
+    {
+      "unique_id": 27,
+      "label": "verify_pdf: dosyayı parse et ve PDF yapısını kontrol et",
+      "kind": "verification",
+      "attributes": {}
+    },
+    {
+      "unique_id": 28,
+      "label": "Verification sonuç kaydı: valid + errors",
+      "kind": "output",
+      "attributes": {}
+    },
+    {
+      "unique_id": 29,
+      "label": "JSON adapter standard response envelope",
+      "kind": "output",
+      "attributes": {}
+    }
+  ],
+  "edges": [
+    {
+      "unique_id": 1,
+      "source": 1,
+      "target": 2,
+      "kind": "routes",
+      "attributes": {},
+      "label": "istek giriş yüzeyine gider"
+    },
+    {
+      "unique_id": 2,
+      "source": 2,
+      "target": 3,
+      "kind": "dispatches",
+      "attributes": {},
+      "label": "CLI / JSON / Python"
+    },
+    {
+      "unique_id": 3,
+      "source": 3,
+      "target": 4,
+      "kind": "configures",
+      "attributes": {},
+      "label": "layout parametreleri"
+    },
+    {
+      "unique_id": 4,
+      "source": 3,
+      "target": 7,
+      "kind": "validates",
+      "attributes": {},
+      "label": "ISBN girdisi"
+    },
+    {
+      "unique_id": 5,
+      "source": 4,
+      "target": 5,
+      "kind": "selects",
+      "attributes": {},
+      "label": "effective margin / bar-height"
+    },
+    {
+      "unique_id": 6,
+      "source": 5,
+      "target": 6,
+      "kind": "derives",
+      "attributes": {},
+      "label": "topolojik layout çözümü"
+    },
+    {
+      "unique_id": 7,
+      "source": 7,
+      "target": 8,
+      "kind": "normalizes",
+      "attributes": {},
+      "label": "normalize_isbn()"
+    },
+    {
+      "unique_id": 8,
+      "source": 8,
+      "target": 9,
+      "kind": "validates",
+      "attributes": {},
+      "label": "prefix + length + checksum"
+    },
+    {
+      "unique_id": 9,
+      "source": 8,
+      "target": 10,
+      "kind": "encodes",
+      "attributes": {},
+      "label": "valid ISBN"
+    },
+    {
+      "unique_id": 10,
+      "source": 6,
+      "target": 11,
+      "kind": "composes",
+      "attributes": {},
+      "label": "resolved layout"
+    },
+    {
+      "unique_id": 11,
+      "source": 9,
+      "target": 11,
+      "kind": "composes",
+      "attributes": {},
+      "label": "display text"
+    },
+    {
+      "unique_id": 12,
+      "source": 8,
+      "target": 11,
+      "kind": "composes",
+      "attributes": {},
+      "label": "validated ISBN"
+    },
+    {
+      "unique_id": 13,
+      "source": 10,
+      "target": 12,
+      "kind": "derives",
+      "attributes": {},
+      "label": "95-module EAN pattern"
+    },
+    {
+      "unique_id": 14,
+      "source": 11,
+      "target": 12,
+      "kind": "derives",
+      "attributes": {},
+      "label": "shared core state"
+    },
+    {
+      "unique_id": 15,
+      "source": 12,
+      "target": 13,
+      "kind": "renders",
+      "attributes": {},
+      "label": "to_svg / render_svg"
+    },
+    {
+      "unique_id": 16,
+      "source": 12,
+      "target": 14,
+      "kind": "renders",
+      "attributes": {},
+      "label": "to_pdf / render_pdf"
+    },
+    {
+      "unique_id": 17,
+      "source": 13,
+      "target": 15,
+      "kind": "returns",
+      "attributes": {},
+      "label": "generate_svg"
+    },
+    {
+      "unique_id": 18,
+      "source": 13,
+      "target": 16,
+      "kind": "writes",
+      "attributes": {},
+      "label": "write_svg"
+    },
+    {
+      "unique_id": 19,
+      "source": 16,
+      "target": 17,
+      "kind": "verifies",
+      "attributes": {},
+      "label": "temporary sibling"
+    },
+    {
+      "unique_id": 20,
+      "source": 17,
+      "target": 18,
+      "kind": "installs",
+      "attributes": {},
+      "label": "yalnızca valid ise"
+    },
+    {
+      "unique_id": 21,
+      "source": 14,
+      "target": 19,
+      "kind": "writes",
+      "attributes": {},
+      "label": "write_pdf"
+    },
+    {
+      "unique_id": 22,
+      "source": 19,
+      "target": 20,
+      "kind": "verifies",
+      "attributes": {},
+      "label": "temporary sibling"
+    },
+    {
+      "unique_id": 23,
+      "source": 20,
+      "target": 21,
+      "kind": "installs",
+      "attributes": {},
+      "label": "yalnızca valid ise"
+    },
+    {
+      "unique_id": 24,
+      "source": 3,
+      "target": 22,
+      "kind": "preflights",
+      "attributes": {},
+      "label": "write_barcode"
+    },
+    {
+      "unique_id": 25,
+      "source": 22,
+      "target": 16,
+      "kind": "targets",
+      "attributes": {},
+      "label": "SVG hedefi"
+    },
+    {
+      "unique_id": 26,
+      "source": 22,
+      "target": 19,
+      "kind": "targets",
+      "attributes": {},
+      "label": "PDF hedefi"
+    },
+    {
+      "unique_id": 27,
+      "source": 18,
+      "target": 23,
+      "kind": "reports",
+      "attributes": {},
+      "label": "SVG artifact kaydı"
+    },
+    {
+      "unique_id": 28,
+      "source": 21,
+      "target": 23,
+      "kind": "reports",
+      "attributes": {},
+      "label": "PDF artifact kaydı"
+    },
+    {
+      "unique_id": 29,
+      "source": 18,
+      "target": 24,
+      "kind": "summarizes",
+      "attributes": {},
+      "label": "CLI çıktısı"
+    },
+    {
+      "unique_id": 30,
+      "source": 21,
+      "target": 24,
+      "kind": "summarizes",
+      "attributes": {},
+      "label": "CLI çıktısı"
+    },
+    {
+      "unique_id": 31,
+      "source": 3,
+      "target": 25,
+      "kind": "dispatches",
+      "attributes": {},
+      "label": "verify_svg / verify_pdf"
+    },
+    {
+      "unique_id": 32,
+      "source": 25,
+      "target": 26,
+      "kind": "reads",
+      "attributes": {},
+      "label": "SVG path"
+    },
+    {
+      "unique_id": 33,
+      "source": 25,
+      "target": 27,
+      "kind": "reads",
+      "attributes": {},
+      "label": "PDF path"
+    },
+    {
+      "unique_id": 34,
+      "source": 26,
+      "target": 28,
+      "kind": "returns",
+      "attributes": {},
+      "label": "valid + errors"
+    },
+    {
+      "unique_id": 35,
+      "source": 27,
+      "target": 28,
+      "kind": "returns",
+      "attributes": {},
+      "label": "valid + errors"
+    },
+    {
+      "unique_id": 36,
+      "source": 15,
+      "target": 29,
+      "kind": "envelopes",
+      "attributes": {},
+      "label": "generate response"
+    },
+    {
+      "unique_id": 37,
+      "source": 23,
+      "target": 29,
+      "kind": "envelopes",
+      "attributes": {},
+      "label": "write response"
+    },
+    {
+      "unique_id": 38,
+      "source": 28,
+      "target": 29,
+      "kind": "envelopes",
+      "attributes": {},
+      "label": "verify response"
+    }
+  ]
+}

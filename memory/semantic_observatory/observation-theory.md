@@ -1,5 +1,9 @@
 # [OBS] Observation Theory
 
+Observation Units identify targets at an inquiry-relative scope. Claims about
+them and their supporting bases are distinguished in
+[Epistemic Grounding](epistemic-grounding.md).
+
 ## Index
 
 [OBS-001] Introduction

@@ -1,69 +1,103 @@
 name: semantic_graph
+version: 0.1.0
 type: tool
 capability: semantic_graph_construction
-purpose: Build and validate small LLM-authored directed semantic graphs.
+purpose: Build a general graph incrementally in a persistent terminal session.
 status: experimental
 interfaces:
+  - name: terminal_session
+    entrypoint: semantic_graph.py session
+    transport: line_commands
   - name: stdin_json
     entrypoint: semantic_graph.py
     transport: stdin_json
   - name: python_api
     entrypoint: tool.py
     callables:
-      - build_graph
-      - validate_graph
+      - create_graph
+      - add_node
+      - add_edge
       - run
 operations:
-  - name: build_graph
+  - name: create_graph
     available_via:
+      - terminal_session
       - stdin_json
       - python_api
     params:
-      nodes:
-        type: array
-        required: true
-      edges:
-        type: array
-        required: false
-        default: []
-      name:
+      graph_id:
         type: string
-        required: false
-      description:
+        required: true
+      title:
         type: string
         required: false
       attributes:
         type: object
         required: false
-      require_acyclic:
-        type: boolean
-        required: false
-        default: false
     returns:
       type: object
-      description: Normalized directed semantic graph.
-  - name: validate_graph
+      description: Empty serialized general graph.
+  - name: add_node
     available_via:
+      - terminal_session
       - stdin_json
       - python_api
     params:
       graph:
         type: object
         required: true
-      require_acyclic:
-        type: boolean
+        note: Supplied by the active graph in terminal sessions.
+      label:
+        type: string
+        required: true
+      kind:
+        type: string
         required: false
-        default: false
+        default: node
+      attributes:
+        type: object
+        required: false
     returns:
       type: object
-      description: Validated and normalized directed semantic graph.
+      description: Updated graph and created node.
+  - name: add_edge
+    available_via:
+      - terminal_session
+      - stdin_json
+      - python_api
+    params:
+      graph:
+        type: object
+        required: true
+        note: Supplied by the active graph in terminal sessions.
+      source:
+        type: integer
+        required: true
+      target:
+        type: integer
+        required: true
+      kind:
+        type: string
+        required: false
+        default: edge
+      label:
+        type: string
+        required: false
+      attributes:
+        type: object
+        required: false
+    returns:
+      type: object
+      description: Updated graph and created edge.
 side_effects:
-  reads: []
-  writes: []
+  reads:
+    - graph JSON files requested by open
+    - JSON parameter packets referenced with @path
+  writes:
+    - graph JSON files requested by save
 validation:
-  - node ids are unique non-empty strings
+  - graph_id is a non-empty string
+  - node and edge identities are separate graph-local positive integers
   - edge endpoints refer to existing nodes
-  - duplicate edges are rejected
-  - kinds remain caller-defined strings
-  - cycles are rejected only when require_acyclic is true
+  - counters are monotonic and identities are assigned by the tool
   - python3 -m unittest discover -s file-tools/semantic_graph/tests

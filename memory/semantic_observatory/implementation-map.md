@@ -159,3 +159,18 @@ Geometric Field        conceptual, should consume cards/semantic_cpg
 Function Mandala       research note; construction rules deferred
 Build Mode             future architecture-editing workflow
 ```
+
+## Epistemic metadata now implemented
+
+The Flat View adapter retains `role` and `phase` for compatibility and emits a
+`classification` record on each UI card: method, display scope, target, actual
+name/kind hints, competing keyword matches, fallback status, and the role rule
+from which phase follows. These records do not modify canonical card artifacts.
+
+Analysis payloads include `source.contentHash` and `source.hashBasis` for the
+decoded source text. Standalone `adapt_for_ui` cannot reconstruct that snapshot
+from cards and does not fabricate a source fingerprint.
+
+A general claim store, revision operations, runtime corroboration, and symbolic
+phase inference remain deferred. See [Epistemic Grounding](epistemic-grounding.md)
+and [Phase Interpretation Contract](phase-interpretation-contract.md).

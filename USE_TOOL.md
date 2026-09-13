@@ -149,6 +149,16 @@ printf '%s' '{
 }' | python3 file-tools/isbn_barcode/isbn_barcode.py
 ```
 
+### `semantic_graph` — persistent graph authoring
+
+```bash
+python3 file-tools/semantic_graph/semantic_graph.py session
+```
+
+The session accepts short commands such as `new`, `add-node`, `add-edge`,
+`show`, and `save`. See the tool-local README for the complete v0.1.0 command
+set.
+
 ## 5) Validation Pattern
 
 Before relying on a tool, run its tests:
@@ -167,6 +177,7 @@ python3 -m unittest discover -s file-tools/<tool_name>/tests
 - Use `semantic_cards` for semantic navigation cards and separate relations.
 - Use `ast_dump` for Python-native AST fidelity (`ast.dump`) and low-level AST checks.
 - Use `isbn_barcode` for verified ISBN-13 SVG and process-black CMYK PDF output.
+- Use `semantic_graph` for incremental, LLM-authored general graphs.
 
 ## 7) Notes
 

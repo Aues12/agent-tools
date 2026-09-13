@@ -10,11 +10,12 @@ the tool's `README.md`, `SKILL.yaml`, tests, and the repository standards.
 ## Reading order
 
 1. [FIRST_NOTES.md](FIRST_NOTES.md) — current shared context and provisional direction
-2. [GRAPH_MODELS.md](GRAPH_MODELS.md) — structural graph models to investigate
-3. [AGENT_WORKFLOW.md](AGENT_WORKFLOW.md) — incremental authoring and inspection
-4. [PROFILES.md](PROFILES.md) — domain-oriented constraints over models
-5. [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md) — unresolved decisions
-6. [DECISIONS.md](DECISIONS.md) — decisions promoted from research
+2. [GRAPH_MODELS.md](GRAPH_MODELS.md) — working composable model taxonomy
+3. [USE_CASES.md](USE_CASES.md) — coding and non-coding pressure tests
+4. [AGENT_WORKFLOW.md](AGENT_WORKFLOW.md) — incremental authoring and inspection
+5. [PROFILES.md](PROFILES.md) — domain-oriented constraints over models
+6. [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md) — unresolved decisions
+7. [DECISIONS.md](DECISIONS.md) — decisions promoted from research
 
 ## Research order
 
@@ -24,8 +25,9 @@ ensure that the core model does not block them later.
 
 ```text
 ordinary graph
-    -> directed / undirected graph
-    -> DAG and other structural specializations
+    -> structural axes: direction, multiplicity, loops
+    -> shape constraints: DAG, tree, bipartite, connected
+    -> enrichments: properties, weight, time, confidence
     -> profiles
     -> agent protocols and higher-level workflows
 ```

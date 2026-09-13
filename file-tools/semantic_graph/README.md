@@ -1,70 +1,90 @@
 # semantic_graph
 
-`semantic_graph` builds and validates small directed graphs supplied by an LLM
-or another caller. It is a graph-construction aid, not a source-code analyzer
-and not a complete context-graph generator.
+`semantic_graph` v0.1.0 is a minimal graph-writing workspace for agents. Start
+it once, send short commands to the same terminal process, and inspect or save
+the graph whenever needed.
 
-The broader model, persistent agent session, profiles, and protocol ideas are
-being explored in the [research notebook](research/README.md). Research notes
-are not yet part of the stable tool contract.
+The tool deliberately has no DAG, directed-graph, dependency-graph, or domain
+model. Its `Graph`, `Node`, and `Edge` classes only maintain identities and
+endpoint integrity. Future graph models and profiles remain research topics.
 
-The prototype intentionally has a small contract:
+## Terminal session
 
-```text
-node: id, optional label/kind/attributes
-edge: source, target, optional kind/label/attributes
+Start a persistent session from the repository root:
+
+```bash
+python3 file-tools/semantic_graph/semantic_graph.py session
 ```
 
-Node and edge kinds are open strings. The tool supplies convenient defaults
-but does not maintain a fixed ontology.
+Then build a graph incrementally:
 
-## Example
+```text
+new --graph-id bookbarcode-flow --title "BookBarcode flow"
+add-node --label "ISBN input" --kind input
+add-node --label "Validate ISBN" --kind step
+add-edge --source 1 --target 2 --kind next
+show
+show json
+save /tmp/bookbarcode-flow.json
+exit
+```
+
+Typical compact responses are:
+
+```text
+ok graph bookbarcode-flow
+ok node 1 revision 1
+ok node 2 revision 2
+ok edge 1 revision 3
+graph bookbarcode-flow revision 3 nodes 2 edges 1
+```
+
+Node and edge IDs have separate graph-local counters. Both start at `1` and are
+assigned by the tool.
+
+## JSON parameter packets
+
+Longer or reusable arguments may be stored in a JSON object:
 
 ```json
 {
-  "operation": "build_graph",
-  "params": {
-    "name": "BookBarcode flow",
-    "nodes": [
-      {"id": "input", "label": "ISBN input", "kind": "input"},
-      {"id": "validate", "label": "Validate ISBN", "kind": "step"},
-      {"id": "render", "label": "Render barcode", "kind": "step"},
-      {"id": "artifact", "label": "SVG/PDF", "kind": "output"}
-    ],
-    "edges": [
-      {"source": "input", "target": "validate", "kind": "next"},
-      {"source": "validate", "target": "render", "kind": "next"},
-      {"source": "render", "target": "artifact", "kind": "produces"}
-    ],
-    "require_acyclic": true
-  }
+  "label": "ISBN input",
+  "kind": "input",
+  "attributes": {"format": "ISBN-13"}
 }
 ```
 
-Run through stdin/stdout:
+Pass the packet without embedding JSON in the shell command:
 
-```bash
-python3 file-tools/semantic_graph/semantic_graph.py < request.json
+```text
+add-node @file-tools/semantic_graph/examples/add_isbn_node.json
 ```
 
-Python API:
+An edge packet uses `source`, `target`, and optional `kind`, `label`, and
+`attributes` fields.
 
-```python
-from tool import build_graph
+## General model behavior
 
-graph = build_graph(
-    nodes=[{"id": "input"}, {"id": "output"}],
-    edges=[{"source": "input", "target": "output"}],
-    require_acyclic=True,
-)
-```
+The base graph accepts cycles, self-loops, and parallel edges. It does not infer
+semantics or decide whether endpoint order means direction. Only these core
+invariants are enforced:
 
-Cycles are accepted by default. Set `require_acyclic=True` when the intended
-result must be a DAG. The tool validates structure but does not decide whether
-the graph is a semantically correct description of the subject.
+* `graph_id` is non-empty;
+* node and edge identities are positive and unique in their own namespaces;
+* an edge references two existing nodes;
+* counters never move backwards.
+
+## Python and stdin JSON interfaces
+
+The model classes are available from `model.py`. `tool.run()` additionally
+supports the stateless operations `create_graph`, `add_node`, and `add_edge` for
+runtime integrations. Each mutation returns the complete updated graph.
 
 ## Validation
 
 ```bash
 python3 -m unittest discover -s file-tools/semantic_graph/tests -v
 ```
+
+Research notes and the prospective graph-model taxonomy live in
+[`research/`](research/README.md).

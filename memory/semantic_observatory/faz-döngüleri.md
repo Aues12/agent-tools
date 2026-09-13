@@ -1,5 +1,9 @@
 # Semantic Observatory – Faz Döngüsü, Semantic Ring ve Mananın Lokalizasyonu
 
+Bu araştırma notundaki referans çevrim sembolik okuma çerçevesidir. Araçların
+gözlemlediği aşamalar ile yorum yoluyla tamamlanan aşamalar için
+[Phase Interpretation Contract](phase-interpretation-contract.md) ayrımını kullanın.
+
 ## Temel Tez
 
 Semantic Observatory'nin amacı yalnızca kodu görselleştirmek değildir.

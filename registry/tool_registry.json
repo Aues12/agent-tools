@@ -168,13 +168,20 @@
       "capability": "semantic_graph_construction",
       "path": "file-tools/semantic_graph",
       "entrypoint": "semantic_graph.py",
-      "transport": "stdin_json",
+      "transport": "line_commands",
       "status": "experimental",
+      "version": "0.1.0",
       "operations": [
-        "build_graph",
-        "validate_graph"
+        "create_graph",
+        "add_node",
+        "add_edge"
       ],
       "interfaces": [
+        {
+          "name": "terminal_session",
+          "entrypoint": "semantic_graph.py session",
+          "transport": "line_commands"
+        },
         {
           "name": "stdin_json",
           "entrypoint": "semantic_graph.py",
@@ -184,8 +191,9 @@
           "name": "python_api",
           "entrypoint": "tool.py",
           "callables": [
-            "build_graph",
-            "validate_graph",
+            "create_graph",
+            "add_node",
+            "add_edge",
             "run"
           ]
         }
@@ -287,7 +295,8 @@
             "run"
           ]
         }
-      ]
+      ],
+      "description": "Local code analysis with decoded-source fingerprints and provenance for heuristic UI role/phase labels."
     },
     {
       "name": "ast_parsing",

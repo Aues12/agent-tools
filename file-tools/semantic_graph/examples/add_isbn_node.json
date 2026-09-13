@@ -1,0 +1,7 @@
+{
+  "label": "ISBN input",
+  "kind": "input",
+  "attributes": {
+    "format": "ISBN-13"
+  }
+}

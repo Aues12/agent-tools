@@ -1,0 +1,76 @@
+{
+  "type": "semantic_graph",
+  "version": "0.1.0",
+  "graph_id": "software-delivery-flow",
+  "title": "Basit yazılım akışı",
+  "attributes": {},
+  "revision": 9,
+  "next_node_id": 6,
+  "next_edge_id": 5,
+  "nodes": [
+    {
+      "unique_id": 1,
+      "label": "Fikir",
+      "kind": "stage",
+      "attributes": {}
+    },
+    {
+      "unique_id": 2,
+      "label": "Tasarım",
+      "kind": "stage",
+      "attributes": {}
+    },
+    {
+      "unique_id": 3,
+      "label": "Geliştirme",
+      "kind": "stage",
+      "attributes": {}
+    },
+    {
+      "unique_id": 4,
+      "label": "Test",
+      "kind": "stage",
+      "attributes": {}
+    },
+    {
+      "unique_id": 5,
+      "label": "Yayın",
+      "kind": "stage",
+      "attributes": {}
+    }
+  ],
+  "edges": [
+    {
+      "unique_id": 1,
+      "source": 1,
+      "target": 2,
+      "kind": "next",
+      "attributes": {},
+      "label": "tasarlanır"
+    },
+    {
+      "unique_id": 2,
+      "source": 2,
+      "target": 3,
+      "kind": "next",
+      "attributes": {},
+      "label": "geliştirilir"
+    },
+    {
+      "unique_id": 3,
+      "source": 3,
+      "target": 4,
+      "kind": "next",
+      "attributes": {},
+      "label": "test edilir"
+    },
+    {
+      "unique_id": 4,
+      "source": 4,
+      "target": 5,
+      "kind": "next",
+      "attributes": {},
+      "label": "yayınlanır"
+    }
+  ]
+}
