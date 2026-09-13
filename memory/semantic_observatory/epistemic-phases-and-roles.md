@@ -33,6 +33,8 @@ in symbolic expansions are interpretations, not automatically extracted facts.
 
 [EPR-013] — Semantic CPG and the Projection Layer
 
+[EPR-014] Geometric Cohesion and Edge Integrity
+
 ---
 
 # [EPR-001] Introduction
@@ -1684,3 +1686,29 @@ CFG  DFG  Call Graph
 Within this architecture, the Semantic CPG serves as the **shared analysis model for projections**. This is a scoped engineering authority, not an exhaustive account of program behavior or meaning. Every visualization represents a deterministic projection of the same underlying analysis model, ensuring that visualization concerns remain completely separated from program analysis.
 
 This separation allows multiple visual paradigms—such as flowcharts, ring layouts, semantic cards, or graph-based exploration—to coexist while remaining fully consistent with one another.
+
+# [EPR-014] Geometric Cohesion and Edge Integrity
+
+In the Semantic Observatory, the primary carrier of meaning is not the individual node, but the relationships between nodes. A graph derives its semantic integrity from the correctness and consistency of its connections.
+
+Every semantic connection should satisfy the following principles:
+
+- **Explicit** — Every relationship should be represented directly rather than inferred from hidden state or implicit behavior.
+- **Deterministic** — Given the same source program, the same semantic relationship should always be produced.
+- **Locally Consistent** — Every connection should obey the structural rules of its immediate neighborhood. Global correctness emerges from locally valid relationships.
+- **Verifiable** — Every connection should be independently checkable against the graph's structural rules.
+
+This principle is referred to as **Geometric Cohesion**: the integrity of the whole system emerges from the integrity of its connections.
+
+Accordingly, the Semantic Observatory should validate not only individual nodes but also the semantic correctness of edges. Invalid transitions, inconsistent relationships, or broken structural rules should be treated as first-class graph validation errors.
+
+Examples include:
+
+- Invalid control-flow transitions.
+- Invalid data dependencies.
+- Illegal phase transitions.
+- Broken element ordering.
+- Missing structural links.
+- Inconsistent semantic relationships.
+
+Geometric Cohesion extends traditional program analysis from *node correctness* toward *relationship correctness*. The graph is considered structurally sound only when both its entities and their connections satisfy deterministic and verifiable rules.
