@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Semantic Graph Viewer</title>
+    <style>
+      body { margin: 0; background: #0b101a; color: #e8edf7; font: 15px/1.6 system-ui, sans-serif; }
+      .launch-help { max-width: 560px; margin: 12vh auto; padding: 28px; background: #101824; border: 1px solid #304157; border-radius: 14px; }
+      .launch-help h1 { margin: 0 0 12px; font-size: 23px; }
+      .launch-help p { color: #aebed3; }
+      .launch-help pre { overflow-x: auto; padding: 14px; border-radius: 8px; background: #0d1521; color: #a8d0ff; }
+    </style>
+  </head>
+  <body>
+    <div id="root"><main class="launch-help"><h1>Start the Semantic Graph Viewer</h1><p>This source page needs the Vite development server. Run these commands from the repository root, then open the local URL printed by Vite:</p><pre>cd visual-tools/semantic_graph_viewer
+npm ci
+npm run dev</pre><p>Opening <code>index.html</code> directly as a file cannot run the React application.</p></main></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

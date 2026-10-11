@@ -1,0 +1,492 @@
+{
+  "type": "semantic_graph",
+  "version": "0.1.0",
+  "graph_id": "bookbarcode-workflow-dag",
+  "title": "BookBarcode workflow graph",
+  "attributes": {},
+  "revision": 67,
+  "next_node_id": 30,
+  "next_edge_id": 39,
+  "nodes": [
+    {
+      "unique_id": 1,
+      "label": "Request: ISBN-13 plus display, layout, and output options",
+      "kind": "input",
+      "attributes": {}
+    },
+    {
+      "unique_id": 2,
+      "label": "Entry points: Python API, human CLI, or JSON adapter",
+      "kind": "entrypoint",
+      "attributes": {}
+    },
+    {
+      "unique_id": 3,
+      "label": "Parse arguments and dispatch operations (cli.py / tool.py)",
+      "kind": "orchestration",
+      "attributes": {}
+    },
+    {
+      "unique_id": 4,
+      "label": "Create LayoutSpec from preset and measurement overrides",
+      "kind": "layout",
+      "attributes": {}
+    },
+    {
+      "unique_id": 5,
+      "label": "Select margin and bar-height sources",
+      "kind": "layout",
+      "attributes": {}
+    },
+    {
+      "unique_id": 6,
+      "label": "resolve_layout: X dimension, quiet zones, sizes, and constraints",
+      "kind": "layout",
+      "attributes": {}
+    },
+    {
+      "unique_id": 7,
+      "label": "Normalize ISBN (isbn.py)",
+      "kind": "validation",
+      "attributes": {}
+    },
+    {
+      "unique_id": 8,
+      "label": "Validate ISBN-13: 978/979 prefix and checksum",
+      "kind": "validation",
+      "attributes": {}
+    },
+    {
+      "unique_id": 9,
+      "label": "Generate or validate fallback display text",
+      "kind": "validation",
+      "attributes": {}
+    },
+    {
+      "unique_id": 10,
+      "label": "Generate the 95-module EAN-13 pattern",
+      "kind": "encoding",
+      "attributes": {}
+    },
+    {
+      "unique_id": 11,
+      "label": "Shared Barcode state: validated ISBN, display text, and layout",
+      "kind": "core",
+      "attributes": {}
+    },
+    {
+      "unique_id": 12,
+      "label": "BarcodeGeometry: title, bar rectangles, and HRI glyphs",
+      "kind": "geometry",
+      "attributes": {}
+    },
+    {
+      "unique_id": 13,
+      "label": "Render SVG: editable SVG with CMYK intent",
+      "kind": "render",
+      "attributes": {}
+    },
+    {
+      "unique_id": 14,
+      "label": "Render PDF: process-black CMYK PDF",
+      "kind": "render",
+      "attributes": {}
+    },
+    {
+      "unique_id": 15,
+      "label": "generate_svg result: content and metadata",
+      "kind": "output",
+      "attributes": {}
+    },
+    {
+      "unique_id": 16,
+      "label": "Write SVG to a temporary sibling file",
+      "kind": "io",
+      "attributes": {}
+    },
+    {
+      "unique_id": 17,
+      "label": "Independently verify the SVG artifact",
+      "kind": "verification",
+      "attributes": {}
+    },
+    {
+      "unique_id": 18,
+      "label": "Atomically install the SVG at its destination",
+      "kind": "artifact",
+      "attributes": {}
+    },
+    {
+      "unique_id": 19,
+      "label": "Write PDF to a temporary sibling file",
+      "kind": "io",
+      "attributes": {}
+    },
+    {
+      "unique_id": 20,
+      "label": "Independently verify the PDF artifact",
+      "kind": "verification",
+      "attributes": {}
+    },
+    {
+      "unique_id": 21,
+      "label": "Atomically install the PDF at its destination",
+      "kind": "artifact",
+      "attributes": {}
+    },
+    {
+      "unique_id": 22,
+      "label": "write_barcode: preflight all destinations",
+      "kind": "io",
+      "attributes": {}
+    },
+    {
+      "unique_id": 23,
+      "label": "write_barcode result records",
+      "kind": "output",
+      "attributes": {}
+    },
+    {
+      "unique_id": 24,
+      "label": "Human CLI: created-and-verified summary",
+      "kind": "output",
+      "attributes": {}
+    },
+    {
+      "unique_id": 25,
+      "label": "Existing artifact verification request: path plus ISBN/layout",
+      "kind": "input",
+      "attributes": {}
+    },
+    {
+      "unique_id": 26,
+      "label": "verify_svg: read the file and check its SVG structure",
+      "kind": "verification",
+      "attributes": {}
+    },
+    {
+      "unique_id": 27,
+      "label": "verify_pdf: parse the file and check its PDF structure",
+      "kind": "verification",
+      "attributes": {}
+    },
+    {
+      "unique_id": 28,
+      "label": "Verification result record: validity and errors",
+      "kind": "output",
+      "attributes": {}
+    },
+    {
+      "unique_id": 29,
+      "label": "JSON adapter standard response envelope",
+      "kind": "output",
+      "attributes": {}
+    }
+  ],
+  "edges": [
+    {
+      "unique_id": 1,
+      "source": 1,
+      "target": 2,
+      "kind": "routes",
+      "attributes": {},
+      "label": "request reaches an entry point"
+    },
+    {
+      "unique_id": 2,
+      "source": 2,
+      "target": 3,
+      "kind": "dispatches",
+      "attributes": {},
+      "label": "CLI / JSON / Python"
+    },
+    {
+      "unique_id": 3,
+      "source": 3,
+      "target": 4,
+      "kind": "configures",
+      "attributes": {},
+      "label": "layout parameters"
+    },
+    {
+      "unique_id": 4,
+      "source": 3,
+      "target": 7,
+      "kind": "validates",
+      "attributes": {},
+      "label": "ISBN input"
+    },
+    {
+      "unique_id": 5,
+      "source": 4,
+      "target": 5,
+      "kind": "selects",
+      "attributes": {},
+      "label": "effective margin and bar height"
+    },
+    {
+      "unique_id": 6,
+      "source": 5,
+      "target": 6,
+      "kind": "derives",
+      "attributes": {},
+      "label": "resolved layout geometry"
+    },
+    {
+      "unique_id": 7,
+      "source": 7,
+      "target": 8,
+      "kind": "normalizes",
+      "attributes": {},
+      "label": "normalize_isbn()"
+    },
+    {
+      "unique_id": 8,
+      "source": 8,
+      "target": 9,
+      "kind": "validates",
+      "attributes": {},
+      "label": "prefix, length, and checksum"
+    },
+    {
+      "unique_id": 9,
+      "source": 8,
+      "target": 10,
+      "kind": "encodes",
+      "attributes": {},
+      "label": "valid ISBN"
+    },
+    {
+      "unique_id": 10,
+      "source": 6,
+      "target": 11,
+      "kind": "composes",
+      "attributes": {},
+      "label": "resolved layout"
+    },
+    {
+      "unique_id": 11,
+      "source": 9,
+      "target": 11,
+      "kind": "composes",
+      "attributes": {},
+      "label": "display text"
+    },
+    {
+      "unique_id": 12,
+      "source": 8,
+      "target": 11,
+      "kind": "composes",
+      "attributes": {},
+      "label": "validated ISBN"
+    },
+    {
+      "unique_id": 13,
+      "source": 10,
+      "target": 12,
+      "kind": "derives",
+      "attributes": {},
+      "label": "95-module EAN pattern"
+    },
+    {
+      "unique_id": 14,
+      "source": 11,
+      "target": 12,
+      "kind": "derives",
+      "attributes": {},
+      "label": "shared core state"
+    },
+    {
+      "unique_id": 15,
+      "source": 12,
+      "target": 13,
+      "kind": "renders",
+      "attributes": {},
+      "label": "to_svg / render_svg"
+    },
+    {
+      "unique_id": 16,
+      "source": 12,
+      "target": 14,
+      "kind": "renders",
+      "attributes": {},
+      "label": "to_pdf / render_pdf"
+    },
+    {
+      "unique_id": 17,
+      "source": 13,
+      "target": 15,
+      "kind": "returns",
+      "attributes": {},
+      "label": "generate_svg"
+    },
+    {
+      "unique_id": 18,
+      "source": 13,
+      "target": 16,
+      "kind": "writes",
+      "attributes": {},
+      "label": "write_svg"
+    },
+    {
+      "unique_id": 19,
+      "source": 16,
+      "target": 17,
+      "kind": "verifies",
+      "attributes": {},
+      "label": "temporary sibling file"
+    },
+    {
+      "unique_id": 20,
+      "source": 17,
+      "target": 18,
+      "kind": "installs",
+      "attributes": {},
+      "label": "only if valid"
+    },
+    {
+      "unique_id": 21,
+      "source": 14,
+      "target": 19,
+      "kind": "writes",
+      "attributes": {},
+      "label": "write_pdf"
+    },
+    {
+      "unique_id": 22,
+      "source": 19,
+      "target": 20,
+      "kind": "verifies",
+      "attributes": {},
+      "label": "temporary sibling file"
+    },
+    {
+      "unique_id": 23,
+      "source": 20,
+      "target": 21,
+      "kind": "installs",
+      "attributes": {},
+      "label": "only if valid"
+    },
+    {
+      "unique_id": 24,
+      "source": 3,
+      "target": 22,
+      "kind": "preflights",
+      "attributes": {},
+      "label": "write_barcode"
+    },
+    {
+      "unique_id": 25,
+      "source": 22,
+      "target": 16,
+      "kind": "targets",
+      "attributes": {},
+      "label": "SVG destination"
+    },
+    {
+      "unique_id": 26,
+      "source": 22,
+      "target": 19,
+      "kind": "targets",
+      "attributes": {},
+      "label": "PDF destination"
+    },
+    {
+      "unique_id": 27,
+      "source": 18,
+      "target": 23,
+      "kind": "reports",
+      "attributes": {},
+      "label": "SVG artifact record"
+    },
+    {
+      "unique_id": 28,
+      "source": 21,
+      "target": 23,
+      "kind": "reports",
+      "attributes": {},
+      "label": "PDF artifact record"
+    },
+    {
+      "unique_id": 29,
+      "source": 18,
+      "target": 24,
+      "kind": "summarizes",
+      "attributes": {},
+      "label": "CLI output"
+    },
+    {
+      "unique_id": 30,
+      "source": 21,
+      "target": 24,
+      "kind": "summarizes",
+      "attributes": {},
+      "label": "CLI output"
+    },
+    {
+      "unique_id": 31,
+      "source": 3,
+      "target": 25,
+      "kind": "dispatches",
+      "attributes": {},
+      "label": "verify_svg / verify_pdf"
+    },
+    {
+      "unique_id": 32,
+      "source": 25,
+      "target": 26,
+      "kind": "reads",
+      "attributes": {},
+      "label": "SVG path"
+    },
+    {
+      "unique_id": 33,
+      "source": 25,
+      "target": 27,
+      "kind": "reads",
+      "attributes": {},
+      "label": "PDF path"
+    },
+    {
+      "unique_id": 34,
+      "source": 26,
+      "target": 28,
+      "kind": "returns",
+      "attributes": {},
+      "label": "validity and errors"
+    },
+    {
+      "unique_id": 35,
+      "source": 27,
+      "target": 28,
+      "kind": "returns",
+      "attributes": {},
+      "label": "validity and errors"
+    },
+    {
+      "unique_id": 36,
+      "source": 15,
+      "target": 29,
+      "kind": "envelopes",
+      "attributes": {},
+      "label": "generate response"
+    },
+    {
+      "unique_id": 37,
+      "source": 23,
+      "target": 29,
+      "kind": "envelopes",
+      "attributes": {},
+      "label": "write response"
+    },
+    {
+      "unique_id": 38,
+      "source": 28,
+      "target": 29,
+      "kind": "envelopes",
+      "attributes": {},
+      "label": "verify response"
+    }
+  ]
+}
