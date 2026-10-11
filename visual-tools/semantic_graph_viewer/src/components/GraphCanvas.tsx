@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent, type WheelEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent, type WheelEvent } from "react";
 import type { SemanticGraph } from "../data/graph.ts";
 import { colorForKind } from "../data/graph.ts";
 import { layoutGraph, NODE_HEIGHT, NODE_WIDTH } from "../data/layout.ts";
+import { nextNodeId, type ArrowDirection } from "../data/navigation.ts";
 
 interface Viewport { x: number; y: number; width: number; height: number }
 interface Props {
@@ -27,13 +28,16 @@ export function GraphCanvas({ graph, selectedId, matchedIds, onSelect, focus }: 
   const layout = useMemo(() => layoutGraph(graph), [graph]);
   const container = useRef<HTMLDivElement>(null);
   const drag = useRef<{ x: number; y: number; view: Viewport } | null>(null);
-  const [size, setSize] = useState({ width: 900, height: 600 });
+  const [size, setSize] = useState({ width: 0, height: 0 });
+  const previousSize = useRef<{ width: number; height: number } | null>(null);
+  const previousLayout = useRef<typeof layout | null>(null);
   const [view, setView] = useState<Viewport>({ x: 0, y: 0, width: layout.width, height: layout.height });
   const positions = layout.positions;
   const activeEdges = useMemo(() => new Set(graph.edges.filter((edge) => edge.source === selectedId || edge.target === selectedId).map((edge) => edge.unique_id)), [graph, selectedId]);
   const neighbors = useMemo(() => new Set(graph.edges.flatMap((edge) => edge.source === selectedId ? [edge.target] : edge.target === selectedId ? [edge.source] : [])), [graph, selectedId]);
 
   const fit = useCallback(() => {
+    if (size.width <= 0 || size.height <= 0) return;
     const aspect = size.width / Math.max(1, size.height);
     const width = Math.max(layout.width, layout.height * aspect);
     const height = width / aspect;
@@ -47,7 +51,27 @@ export function GraphCanvas({ graph, selectedId, matchedIds, onSelect, focus }: 
     observer.observe(element);
     return () => observer.disconnect();
   }, []);
-  useEffect(() => { fit(); }, [fit]);
+  useEffect(() => {
+    if (size.width <= 0 || size.height <= 0) return;
+    const oldSize = previousSize.current;
+    if (previousLayout.current !== layout || !oldSize) {
+      fit();
+    } else if (oldSize.width !== size.width || oldSize.height !== size.height) {
+      setView((current) => {
+        const scale = current.width / oldSize.width;
+        const width = size.width * scale;
+        const height = size.height * scale;
+        return {
+          x: current.x + (current.width - width) / 2,
+          y: current.y + (current.height - height) / 2,
+          width,
+          height,
+        };
+      });
+    }
+    previousSize.current = size;
+    previousLayout.current = layout;
+  }, [fit, layout, size]);
   useEffect(() => {
     if (focus === null) return;
     const point = positions.get(focus.id);
@@ -58,6 +82,35 @@ export function GraphCanvas({ graph, selectedId, matchedIds, onSelect, focus }: 
       return { x: point.x + NODE_WIDTH / 2 - width / 2, y: point.y + NODE_HEIGHT / 2 - height / 2, width, height };
     });
   }, [focus, positions]);
+
+  function revealNode(id: number) {
+    const point = positions.get(id);
+    if (!point) return;
+    setView((current) => {
+      const marginX = Math.max(0, Math.min(24, (current.width - NODE_WIDTH) / 2));
+      const marginY = Math.max(0, Math.min(24, (current.height - NODE_HEIGHT) / 2));
+      let x = current.x;
+      let y = current.y;
+      if (point.x < x + marginX) x = point.x - marginX;
+      else if (point.x + NODE_WIDTH > x + current.width - marginX) x = point.x + NODE_WIDTH + marginX - current.width;
+      if (point.y < y + marginY) y = point.y - marginY;
+      else if (point.y + NODE_HEIGHT > y + current.height - marginY) y = point.y + NODE_HEIGHT + marginY - current.height;
+      return x === current.x && y === current.y ? current : { ...current, x, y };
+    });
+  }
+
+  function keyDown(event: KeyboardEvent<HTMLDivElement>) {
+    const directions: ArrowDirection[] = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"];
+    if (!directions.includes(event.key as ArrowDirection)) return;
+    event.preventDefault();
+    const next = nextNodeId(positions, matchedIds, selectedId, event.key as ArrowDirection, {
+      x: view.x + view.width / 2 - NODE_WIDTH / 2,
+      y: view.y + view.height / 2 - NODE_HEIGHT / 2,
+    });
+    if (next === null) return;
+    onSelect(next);
+    revealNode(next);
+  }
 
   function zoom(factor: number, clientX?: number, clientY?: number) {
     setView((previous) => {
@@ -73,6 +126,7 @@ export function GraphCanvas({ graph, selectedId, matchedIds, onSelect, focus }: 
   function down(event: PointerEvent<HTMLDivElement>) {
     if (event.button !== 0) return;
     drag.current = { x: event.clientX, y: event.clientY, view };
+    event.currentTarget.focus({ preventScroll: true });
     event.currentTarget.setPointerCapture(event.pointerId);
   }
   function move(event: PointerEvent<HTMLDivElement>) {
@@ -92,7 +146,7 @@ export function GraphCanvas({ graph, selectedId, matchedIds, onSelect, focus }: 
         <button onClick={() => { onSelect(null); fit(); }}>Reset</button>
       </div>
     </div>
-    <div className="canvas" ref={container} onWheel={wheel} onPointerDown={down} onPointerMove={move} onPointerUp={end} onPointerCancel={end}>
+    <div className="canvas" ref={container} tabIndex={0} role="group" aria-label="Graph navigation" aria-keyshortcuts="ArrowLeft ArrowRight ArrowUp ArrowDown" onKeyDown={keyDown} onWheel={wheel} onPointerDown={down} onPointerMove={move} onPointerUp={end} onPointerCancel={end}>
       <svg viewBox={`${view.x} ${view.y} ${view.width} ${view.height}`} role="img" aria-label={`${graph.nodes.length} nodes and ${graph.edges.length} directed relationships`}>
         <defs><marker id="edge-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth"><path d="M0 0 L8 4 L0 8 Z" fill="context-stroke" /></marker></defs>
         <g className="edges">{graph.edges.map((edge) => {
@@ -117,7 +171,7 @@ export function GraphCanvas({ graph, selectedId, matchedIds, onSelect, focus }: 
           const point = positions.get(node.unique_id)!;
           const color = colorForKind(node.kind);
           const dim = !matchedIds.has(node.unique_id) || (selectedId !== null && selectedId !== node.unique_id && !neighbors.has(node.unique_id));
-          return <g key={node.unique_id} transform={`translate(${point.x} ${point.y})`} className={`graph-node ${selectedId === node.unique_id ? "selected" : ""} ${dim ? "dim" : ""}`} onPointerDown={(event) => event.stopPropagation()} onClick={() => onSelect(node.unique_id)} role="button" tabIndex={0} aria-label={`Node ${node.unique_id}: ${node.label}`} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); onSelect(node.unique_id); } }}>
+          return <g key={node.unique_id} transform={`translate(${point.x} ${point.y})`} className={`graph-node ${selectedId === node.unique_id ? "selected" : ""} ${dim ? "dim" : ""}`} onPointerDown={(event) => event.stopPropagation()} onClick={() => { onSelect(node.unique_id); container.current?.focus({ preventScroll: true }); }} role="button" tabIndex={0} aria-label={`Node ${node.unique_id}: ${node.label}`} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); onSelect(node.unique_id); container.current?.focus({ preventScroll: true }); } }}>
             <rect className="node-body" width={NODE_WIDTH} height={NODE_HEIGHT} rx="12" />
             <rect x="0" y="13" width="4" height="58" rx="2" fill={color} />
             <text className="node-kind" x="16" y="22" fill={color}>{node.kind.toLocaleUpperCase()}</text>
@@ -127,7 +181,7 @@ export function GraphCanvas({ graph, selectedId, matchedIds, onSelect, focus }: 
           </g>;
         })}</g>
       </svg>
-      <div className="canvas-hint">Drag to pan · Scroll to zoom · Select a node to inspect</div>
+      <div className="canvas-hint">Drag to pan · Scroll to zoom · Arrow keys to move between nodes</div>
     </div>
   </section>;
 }

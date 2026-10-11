@@ -14,6 +14,9 @@ npm run dev
 
 Open the `http://127.0.0.1:...` URL printed by Vite. Do not open `index.html` as a `file://` URL; browsers cannot run the uncompiled TypeScript entry point that way. Use **Load JSON graph** to inspect another artifact. File contents stay in the browser.
 
+Click or tab into the graph canvas to use the arrow keys to select nearby nodes. The Index and Inspector buttons in the header can hide either side panel to give the canvas more space.
+Click a **Node kinds** or **Node index** heading or item, then use the arrow keys to move to the previous or next item and apply it. Focus stays in the list so you can keep navigating.
+
 ## Validate and build
 
 ```bash

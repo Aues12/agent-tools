@@ -26,6 +26,35 @@ test("example preserves all records and directed endpoints", () => {
   assert.equal(layoutGraph(example).positions.size, 29);
 });
 
+test("every edge appears once in its target's incoming and source's outgoing list", () => {
+  const view = adaptGraph(englishExample);
+  for (const node of englishExample.nodes) {
+    const incoming = view.incoming.get(node.unique_id)!;
+    const outgoing = view.outgoing.get(node.unique_id)!;
+    assert.ok(incoming.every((edge) => edge.target === node.unique_id));
+    assert.ok(outgoing.every((edge) => edge.source === node.unique_id));
+  }
+  for (const edge of englishExample.edges) {
+    assert.equal(view.incoming.get(edge.target)!.filter((item) => item.unique_id === edge.unique_id).length, 1);
+    assert.equal(view.outgoing.get(edge.source)!.filter((item) => item.unique_id === edge.unique_id).length, 1);
+  }
+  assert.equal([...view.incoming.values()].reduce((sum, edges) => sum + edges.length, 0), 38);
+  assert.equal([...view.outgoing.values()].reduce((sum, edges) => sum + edges.length, 0), 38);
+  assert.deepEqual(view.incoming.get(12)!.map((edge) => edge.source), [10, 11]);
+  assert.deepEqual(view.outgoing.get(12)!.map((edge) => edge.target), [13, 14]);
+});
+
+test("a self-loop is both incoming and outgoing for its node", () => {
+  const graph = parseSemanticGraph({ type: "semantic_graph", version: "0.1.0", graph_id: "loop", attributes: {}, nodes: [
+    { unique_id: 1, label: "One", kind: "node", attributes: {} }
+  ], edges: [
+    { unique_id: 1, source: 1, target: 1, kind: "loop", attributes: {} }
+  ] });
+  const view = adaptGraph(graph);
+  assert.deepEqual(view.incoming.get(1)?.map((edge) => edge.unique_id), [1]);
+  assert.deepEqual(view.outgoing.get(1)?.map((edge) => edge.unique_id), [1]);
+});
+
 test("open kinds and non-DAG graphs remain valid", () => {
   const graph = parseSemanticGraph({ type: "semantic_graph", version: "0.1.0", graph_id: "cycle", attributes: {}, nodes: [
     { unique_id: 1, label: "One", kind: "new kind", attributes: {} },
