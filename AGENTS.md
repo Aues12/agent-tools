@@ -86,6 +86,7 @@ agent-tools/
 ├── templates/          # starter templates for tools/skills
 ├── meta-skills/        # skills that create/maintain ecosystem assets
 ├── file-tools/         # deterministic tool implementations
+├── visual-tools/       # independently runnable artifact visualization apps
 ├── runtime/            # orchestration runtime
 ├── registry/           # discoverability and metadata registries
 ├── memory/             # long-lived memory categories
