@@ -23,6 +23,29 @@ and model sizes.
 This separation keeps reasoning with the agent and repeatable operations in
 small, testable components. See [AGENTS.md](AGENTS.md) for the full design.
 
+## Tools at a glance
+
+The [tool registry](registry/tool_registry.json) lists these capabilities and
+their interfaces. The three indented AST entries are also available through
+`semantic_ast`.
+
+| Tool | What it does |
+| --- | --- |
+| [copy_paste](file-tools/copy_paste/README.md) | Reads, finds, extracts, and inserts text. |
+| [rename_files](file-tools/rename_files/README.md) | Plans or applies filename changes. |
+| [ast_dump](file-tools/ast_dump/README.md) | Produces Python's native AST dump. |
+| [isbn_barcode](file-tools/isbn_barcode/README.md) | Generates and verifies ISBN-13 barcodes. |
+| [semantic_graph](file-tools/semantic_graph/README.md) | Builds and saves general graphs. |
+| [semantic_ast](file-tools/semantic_ast/README.md) | Dispatches Python parsing, compression, and call graphs. |
+| ↳ [ast_parsing](file-tools/semantic_ast/ast_parsing/README.md) | Parses Python into a semantic AST. |
+| ↳ [compression](file-tools/semantic_ast/compression/README.md) | Reduces semantic AST detail. |
+| ↳ [call_graph](file-tools/semantic_ast/call_graph/README.md) | Extracts local function-call relations. |
+| [semantic_cards](file-tools/semantic_cards/README.md) | Builds navigable code cards and relations. |
+| [semantic_cfg](file-tools/semantic_cfg/README.md) | Builds local control-flow graphs. |
+| [semantic_dfg](file-tools/semantic_dfg/README.md) | Builds local data-flow graphs. |
+| [semantic_cpg](file-tools/semantic_cpg/README.md) | Merges AST, control, data, and call graphs. |
+| [semantic_observatory_pipeline](file-tools/semantic_observatory_pipeline/README.md) | Prepares analysis artifacts and UI data. |
+
 ## A first tool call
 
 From the repository root, this Python 3 command asks `copy_paste` to locate a
