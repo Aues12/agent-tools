@@ -1,20 +1,16 @@
 # agent-tools
 
-`agent-tools` explores a reusable capability layer for AI agents. The idea is
-simple: let a model reason about a task, call a bounded tool for a concrete
-operation, and use a skill when the same workflow is worth repeating. Tools
-should have inspectable inputs, outputs, and side effects so the approach can
-work with different agent frameworks and model sizes.
+`agent-tools` is a collection of reusable capabilities for AI agents. Models
+handle reasoning; small tools perform bounded operations; skills describe
+workflows worth repeating. The aim is an inspectable, agent-agnostic layer that
+can work with different models and runtimes.
 
-Today, the repository contains independently runnable Python tools, a graph
-viewer, contracts, and research notes. It is a development environment, not a
-single finished application. The proposed orchestration runtime is documented
-but not implemented here; the meta-skills are drafts.
+This repository currently contains standalone Python tools and a graph viewer.
+The orchestration runtime is planned, and the meta-skills are drafts.
 
-## Try a tool
+## Try it
 
-From the repository root, create a small graph with the `semantic_graph`
-terminal interface. Python 3 is required; this example needs no install step.
+From the repository root, use Python 3 to create a graph:
 
 ```bash
 python3 file-tools/semantic_graph/semantic_graph.py session <<'GRAPH'
@@ -27,50 +23,18 @@ exit
 GRAPH
 ```
 
-The last line should be `graph hello revision 3 nodes 2 edges 1`. The tool
-assigns node and edge IDs and can save the result as JSON. Its
-[README](file-tools/semantic_graph/README.md) explains the full command set;
-the [semantic graph viewer](visual-tools/semantic_graph_viewer/README.md) can
-open saved v0.1.0 graphs and includes a bundled example.
+The final line is `graph hello revision 3 nodes 2 edges 1`. See the
+[graph tool](file-tools/semantic_graph/README.md) for saving JSON and the
+[viewer](visual-tools/semantic_graph_viewer/README.md) for opening it.
 
-## Choose a reading path
+## Find your way
 
-- **I want to understand the design.** Start with [AGENTS.md](AGENTS.md) for
-  the architecture and repository contracts, then [standards/](standards/) for
-  formal specifications. [FUTURE_IMPROVEMENTS.md](FUTURE_IMPROVEMENTS.md)
-  records planned work.
-- **I want to call a tool.** Use [USE_TOOL.md](USE_TOOL.md) for the request and
-  response convention, then the [tool registry](registry/tool_registry.json)
-  to find an operation and its entrypoint. Follow the tool's local README for
-  parameters and validation.
-- **I want to analyze Python code.** Begin with
-  [semantic AST](file-tools/semantic_ast/README.md) for structure and
-  [semantic cards](file-tools/semantic_cards/README.md) for navigable units.
-  For local control and data flow, see [CFG](file-tools/semantic_cfg/README.md),
-  [DFG](file-tools/semantic_dfg/README.md), and
-  [CPG](file-tools/semantic_cpg/README.md). These are separate, tested tools
-  with documented limits, not one required pipeline.
-- **I want to explore a UI or an earlier idea.** See the
-  [Semantic Observatory pipeline](file-tools/semantic_observatory_pipeline/README.md)
-  and [UI prototype](file-tools/semantic_observatory_ui/AGENTS.md). The
-  [experiments](experiments/README.md) area holds older applications with
-  different input contracts; [agent-playground](agent-playground/README.md)
-  holds small examples and archived analyses.
-- **I want to add a capability.** Read the [tool](standards/TOOL_SPEC.md) or
-  [skill](standards/SKILL_SPEC.md) contract, then the
-  [templates](templates/) and [draft meta-skills](meta-skills/). The
-  [skill registry](registry/skill_registry.json) records their current status.
+- **Use a tool:** [Usage contract](USE_TOOL.md) → [tool registry](registry/tool_registry.json) → the tool's README.
+- **Analyze Python:** [AST](file-tools/semantic_ast/README.md), [cards](file-tools/semantic_cards/README.md), [CFG](file-tools/semantic_cfg/README.md), [DFG](file-tools/semantic_dfg/README.md), and [CPG](file-tools/semantic_cpg/README.md) are separate, tested tools. The [Observatory pipeline](file-tools/semantic_observatory_pipeline/README.md) and [UI prototype](file-tools/semantic_observatory_ui/AGENTS.md) explore their presentation.
+- **Understand or extend the project:** Start with [AGENTS.md](AGENTS.md), then consult the [standards](standards/) and [templates](templates/). [Future improvements](FUTURE_IMPROVEMENTS.md) records planned work.
+- **Explore earlier ideas:** [Experiments](experiments/README.md), [playground](agent-playground/README.md), and [research notes](file-tools/semantic_graph/research/README.md) provide context, not implementation contracts.
 
-The [memory](memory/README.md) and
-[semantic graph research](file-tools/semantic_graph/research/README.md) areas
-provide design context. They are not implementation contracts. The registry
-currently marks tools as `experimental`, including `semantic_graph`; this is a
-release-status label, not a claim that their tested operations are unreliable.
-No cross-version API stability promise has been declared.
-
-## Publication status
-
-This repository is being prepared for public visibility. Earlier Git commits
-still contain generated artifacts and machine-specific paths, so history needs
-review before the source repository is made public. A license, CI, packaging
-review, and a test-coverage gate are also future publication work.
+Registry status is currently `experimental`, including for tested tools; no
+cross-version API stability is promised. Before public release, the source
+repository's Git history still needs a privacy review, plus licensing, CI,
+packaging, and test-coverage decisions.
