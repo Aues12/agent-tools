@@ -1,7 +1,7 @@
 # Semantic AST Output: `runtime/executor.py`
 
 Source:
-- `/workspace/agent-tools/runtime/executor.py`
+- `runtime/executor.py`
 
 Tool:
 - `semantic_ast`

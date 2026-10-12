@@ -1,7 +1,7 @@
 # Semantic AST Raw Output: `file-tools/semantic_ast/tool.py`
 
 Source:
-- `/workspace/agent-tools/file-tools/semantic_ast/tool.py`
+- `file-tools/semantic_ast/tool.py`
 
 Tool:
 - `semantic_ast`
@@ -10,14 +10,14 @@ Tool:
 ## Response
 
 - `success`: `true`
-- `message`: `Parsed Python file /workspace/agent-tools/file-tools/semantic_ast/tool.py`
+- `message`: `Parsed Python file file-tools/semantic_ast/tool.py`
 - `meta.operation`: `parse_file`
 
 ## Result
 
 - `type`: `module`
 - `language`: `python`
-- `path`: `/workspace/agent-tools/file-tools/semantic_ast/tool.py`
+- `path`: `file-tools/semantic_ast/tool.py`
 - `line`: `1`
 - `end_line`: `229`
 - `line_count`: `229`

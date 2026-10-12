@@ -1,7 +1,7 @@
 # Call Graph Output: `runtime/executor.py`
 
 Source:
-- `/workspace/agent-tools/runtime/executor.py`
+- `runtime/executor.py`
 
 Generated with:
 - `semantic_ast.parse_file`
@@ -39,4 +39,4 @@ execute_tool
 - `_parse_response`: `TypeError`, `isinstance`, `json.loads`, `stdout.decode`
 
 Full JSON:
-- `agent-playground/executor_call_graph.json`
+- `agent-playground/archive/executor/executor_call_graph.json`

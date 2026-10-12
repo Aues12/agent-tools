@@ -1,13 +1,13 @@
 {
   "type": "data_flow_graph",
   "language": "python",
-  "path": "/workspace/agent-tools/file-tools/semantic_dfg/examples/simple_pipeline.py",
+  "path": "file-tools/semantic_dfg/examples/simple_pipeline.py",
   "functions": [
     {
       "id": "function:simple_pipeline.calculate_total",
       "name": "calculate_total",
       "qualified_name": "simple_pipeline.calculate_total",
-      "path": "/workspace/agent-tools/file-tools/semantic_dfg/examples/simple_pipeline.py",
+      "path": "file-tools/semantic_dfg/examples/simple_pipeline.py",
       "line": 1,
       "end_line": 5,
       "nodes": [

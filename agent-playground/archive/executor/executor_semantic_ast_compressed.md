@@ -1,10 +1,10 @@
 # Compressed Semantic AST Output: `runtime/executor.py`
 
 Source:
-- `/workspace/agent-tools/runtime/executor.py`
+- `runtime/executor.py`
 
 Applied on:
-- `agent-playground/executor_semantic_ast_raw.json`
+- previously generated `executor_semantic_ast_raw.json` (removed)
 
 Compression result:
 - `type`: `module`

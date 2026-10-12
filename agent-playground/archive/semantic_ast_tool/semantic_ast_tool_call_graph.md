@@ -1,7 +1,7 @@
 # Call Graph Output: `file-tools/semantic_ast/tool.py`
 
 Source:
-- `/workspace/agent-tools/file-tools/semantic_ast/tool.py`
+- `file-tools/semantic_ast/tool.py`
 
 Generated with:
 - `semantic_ast.parse_file`
@@ -60,4 +60,4 @@ main
 - `_exit_code`: `error.get, response.get`
 
 Full JSON:
-- `agent-playground/semantic_ast_tool_call_graph.json`
+- `agent-playground/archive/semantic_ast_tool/semantic_ast_tool_call_graph.json`

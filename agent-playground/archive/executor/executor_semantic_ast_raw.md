@@ -1,7 +1,7 @@
 # Semantic AST Raw Output: `runtime/executor.py`
 
 Source:
-- `/workspace/agent-tools/runtime/executor.py`
+- `runtime/executor.py`
 
 Tool:
 - `semantic_ast`
@@ -10,14 +10,14 @@ Tool:
 ## Response
 
 - `success`: `true`
-- `message`: `Parsed Python file /workspace/agent-tools/runtime/executor.py`
+- `message`: `Parsed Python file runtime/executor.py`
 - `meta.operation`: `parse_file`
 
 ## Result
 
 - `type`: `module`
 - `language`: `python`
-- `path`: `/workspace/agent-tools/runtime/executor.py`
+- `path`: `runtime/executor.py`
 - `line`: `1`
 - `end_line`: `117`
 - `line_count`: `117`

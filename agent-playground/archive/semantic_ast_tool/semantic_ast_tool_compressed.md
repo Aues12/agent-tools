@@ -1,10 +1,10 @@
 # Compressed Semantic AST Output: `file-tools/semantic_ast/tool.py`
 
 Source:
-- `/workspace/agent-tools/file-tools/semantic_ast/tool.py`
+- `file-tools/semantic_ast/tool.py`
 
 Applied on:
-- `agent-playground/semantic_ast_tool_raw.json`
+- previously generated `semantic_ast_tool_raw.json` (removed)
 
 Compression result:
 - `type`: `module`
