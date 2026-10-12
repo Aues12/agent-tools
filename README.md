@@ -18,7 +18,7 @@ using the commands in their READMEs.
 | --- | --- | --- |
 | [`file-tools/semantic_graph/`](file-tools/semantic_graph/) | v0.1 | Persistent graph authoring and JSON contract |
 | [`visual-tools/semantic_graph_viewer/`](visual-tools/semantic_graph_viewer/) | v0.1 companion | Viewer for that contract |
-| [`semantic_ast/`](file-tools/semantic_ast/), [`semantic_cards/`](file-tools/semantic_cards/), [`semantic_cfg/`](file-tools/semantic_cfg/), [`semantic_dfg/`](file-tools/semantic_dfg/), [`semantic_cpg/`](file-tools/semantic_cpg/) | Experimental | Separate code-analysis tools with distinct outputs |
+| [`semantic_ast/`](file-tools/semantic_ast/), [`semantic_cards/`](file-tools/semantic_cards/), [`semantic_cfg/`](file-tools/semantic_cfg/), [`semantic_dfg/`](file-tools/semantic_dfg/), [`semantic_cpg/`](file-tools/semantic_cpg/) | Tested, bounded tools | Independently usable Python code-analysis tools with distinct outputs and documented limits |
 | [`semantic_observatory_pipeline/`](file-tools/semantic_observatory_pipeline/), [`semantic_observatory_ui/`](file-tools/semantic_observatory_ui/) | Experimental | Observatory pipeline and UI prototype |
 | [`file-tools/`](file-tools/) | Mixed | Other bounded tools, including copy/paste, rename, AST dump, and ISBN barcode |
 | [`experiments/`](experiments/) | Legacy experiments | Earlier schema-specific applications; not v0.1 examples |
@@ -31,6 +31,12 @@ for invocation, and [registry/tool_registry.json](registry/tool_registry.json)
 for the actual tool interfaces and status. Run each area independently as its
 README describes. Research notes and older generated analyses are informative,
 not evidence that the corresponding features are implemented.
+
+The registry currently marks all these tools, including `semantic_graph`, as
+`experimental`. That is a release-status label, not a claim that their tested
+operations are unreliable. The five code-analysis tools above are usable
+within their documented Python and local-analysis scope. No stable API or
+cross-version compatibility promise has been made for them yet.
 
 ## Before public visibility
 

@@ -28,13 +28,15 @@ The session accepts `new`, `add-node`, `add-edge`, `show`, and `save`. See the
 The [viewer](visual-tools/semantic_graph_viewer/README.md) accepts saved
 v0.1.0 graph JSON and includes its own runnable example.
 
-## Experimental tools
+## Other tested tools
 
 `semantic_ast`, `semantic_cards`, CFG, DFG, CPG, and the observatory pipeline
-are separate experiments. Their output formats and readiness differ; the
-registry and local READMEs specify each interface. They are not one completed
-pipeline. The legacy writing timeline under `experiments/` uses a different
-JSON schema and does not consume v0.1.0 `semantic_graph` files.
+have separate entrypoints and output formats; the registry and local READMEs
+specify each interface and its limits. The registry currently labels them
+`experimental`, which does not prevent using their tested operations. It means
+their APIs have no declared cross-version stability promise. The legacy
+writing timeline under `experiments/` uses a different JSON schema and does
+not consume v0.1.0 `semantic_graph` files.
 
 Before relying on a tool, run its local tests where present:
 
