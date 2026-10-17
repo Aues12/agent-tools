@@ -456,6 +456,156 @@
           ]
         }
       ]
+    },
+    {
+      "name": "manuscript_inventory",
+      "capability": "manuscript_structure_extraction",
+      "path": "book-editing-tools/manuscript_inventory",
+      "entrypoint": "tool.py",
+      "transport": "stdin_json",
+      "status": "experimental",
+      "operations": [
+        "manuscript_inventory"
+      ],
+      "interfaces": [
+        {
+          "name": "stdin_json",
+          "entrypoint": "tool.py",
+          "transport": "stdin_json"
+        },
+        {
+          "name": "python_api",
+          "entrypoint": "tool.py",
+          "callables": [
+            "run"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "index_audit",
+      "capability": "book_index_audit",
+      "path": "book-editing-tools/index_audit",
+      "entrypoint": "tool.py",
+      "transport": "stdin_json",
+      "status": "experimental",
+      "operations": [
+        "index_audit"
+      ],
+      "interfaces": [
+        {
+          "name": "stdin_json",
+          "entrypoint": "tool.py",
+          "transport": "stdin_json"
+        },
+        {
+          "name": "python_api",
+          "entrypoint": "tool.py",
+          "callables": [
+            "run"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "chronology_audit",
+      "capability": "manuscript_chronology_audit",
+      "path": "book-editing-tools/chronology_audit",
+      "entrypoint": "tool.py",
+      "transport": "stdin_json",
+      "status": "experimental",
+      "operations": [
+        "chronology_audit"
+      ],
+      "interfaces": [
+        {
+          "name": "stdin_json",
+          "entrypoint": "tool.py",
+          "transport": "stdin_json"
+        },
+        {
+          "name": "python_api",
+          "entrypoint": "tool.py",
+          "callables": [
+            "run"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "overlap_audit",
+      "capability": "cross_book_title_audit",
+      "path": "book-editing-tools/overlap_audit",
+      "entrypoint": "tool.py",
+      "transport": "stdin_json",
+      "status": "experimental",
+      "operations": [
+        "overlap_audit"
+      ],
+      "interfaces": [
+        {
+          "name": "stdin_json",
+          "entrypoint": "tool.py",
+          "transport": "stdin_json"
+        },
+        {
+          "name": "python_api",
+          "entrypoint": "tool.py",
+          "callables": [
+            "run"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "edition_diff",
+      "capability": "manuscript_version_comparison",
+      "path": "book-editing-tools/edition_diff",
+      "entrypoint": "tool.py",
+      "transport": "stdin_json",
+      "status": "experimental",
+      "operations": [
+        "edition_diff"
+      ],
+      "interfaces": [
+        {
+          "name": "stdin_json",
+          "entrypoint": "tool.py",
+          "transport": "stdin_json"
+        },
+        {
+          "name": "python_api",
+          "entrypoint": "tool.py",
+          "callables": [
+            "run"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ebook_preflight",
+      "capability": "docx_ebook_preflight",
+      "path": "book-editing-tools/ebook_preflight",
+      "entrypoint": "tool.py",
+      "transport": "stdin_json",
+      "status": "experimental",
+      "operations": [
+        "ebook_preflight"
+      ],
+      "interfaces": [
+        {
+          "name": "stdin_json",
+          "entrypoint": "tool.py",
+          "transport": "stdin_json"
+        },
+        {
+          "name": "python_api",
+          "entrypoint": "tool.py",
+          "callables": [
+            "run"
+          ]
+        }
+      ]
     }
   ]
 }

@@ -1,0 +1,35 @@
+name: overlap_audit
+type: tool
+capability: cross_book_title_audit
+purpose: Find exact title overlaps across two or more manuscripts or Markdown collections.
+status: experimental
+deterministic: true
+interfaces:
+  - name: stdin_json
+    entrypoint: tool.py
+    transport: stdin_json
+  - name: python_api
+    entrypoint: tool.py
+    callables:
+      - run
+operations:
+  - name: overlap_audit
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      paths:
+        type: array[string]
+        required: true
+      recursive:
+        type: boolean
+        required: false
+    returns:
+      type: object
+      description: Candidate title overlaps with source locations.
+side_effects:
+  reads:
+    - reads only the requested manuscript or Markdown sources.
+  writes: []
+validation:
+  - python3 -m unittest discover -s book-editing-tools/overlap_audit/tests

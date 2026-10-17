@@ -36,6 +36,7 @@ their interfaces. The three indented AST entries are also available through
 | [ast_dump](file-tools/ast_dump/README.md) | Produces Python's native AST dump. |
 | [isbn_barcode](file-tools/isbn_barcode/README.md) | Generates and verifies ISBN-13 barcodes. |
 | [semantic_graph](file-tools/semantic_graph/README.md) | Builds and saves general graphs. |
+| [book-editing-tools](book-editing-tools/README.md) | Audits manuscript structure, indices, chronology, edition changes, overlaps, and EPUB source files. |
 | [semantic_ast](file-tools/semantic_ast/README.md) | Dispatches Python parsing, compression, and call graphs. |
 | ↳ [ast_parsing](file-tools/semantic_ast/ast_parsing/README.md) | Parses Python into a semantic AST. |
 | ↳ [compression](file-tools/semantic_ast/compression/README.md) | Reduces semantic AST detail. |

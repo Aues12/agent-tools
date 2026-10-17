@@ -1,0 +1,35 @@
+name: ebook_preflight
+type: tool
+capability: docx_ebook_preflight
+purpose: Flag DOCX spacing, image format, and floating-image issues before EPUB conversion.
+status: experimental
+deterministic: true
+interfaces:
+  - name: stdin_json
+    entrypoint: tool.py
+    transport: stdin_json
+  - name: python_api
+    entrypoint: tool.py
+    callables:
+      - run
+operations:
+  - name: ebook_preflight
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      path:
+        type: string
+        required: true
+      blank_threshold:
+        type: integer
+        required: false
+    returns:
+      type: object
+      description: Issues and document metadata; rendered EPUB still requires review.
+side_effects:
+  reads:
+    - reads only the requested manuscript or Markdown sources.
+  writes: []
+validation:
+  - python3 -m unittest discover -s book-editing-tools/ebook_preflight/tests

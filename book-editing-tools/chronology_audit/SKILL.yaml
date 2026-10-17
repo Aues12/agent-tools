@@ -1,0 +1,35 @@
+name: chronology_audit
+type: tool
+capability: manuscript_chronology_audit
+purpose: Find out-of-order dated articles without changing their order.
+status: experimental
+deterministic: true
+interfaces:
+  - name: stdin_json
+    entrypoint: tool.py
+    transport: stdin_json
+  - name: python_api
+    entrypoint: tool.py
+    callables:
+      - run
+operations:
+  - name: chronology_audit
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      path:
+        type: string
+        required: true
+      recursive:
+        type: boolean
+        required: false
+    returns:
+      type: object
+      description: Date inversions and undated articles.
+side_effects:
+  reads:
+    - reads only the requested manuscript or Markdown sources.
+  writes: []
+validation:
+  - python3 -m unittest discover -s book-editing-tools/chronology_audit/tests

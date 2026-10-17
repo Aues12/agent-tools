@@ -1,0 +1,6 @@
+{
+  "operation": "manuscript_inventory",
+  "params": {
+    "path": "/absolute/path/book.docx"
+  }
+}

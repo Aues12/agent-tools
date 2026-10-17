@@ -1,0 +1,7 @@
+{
+  "operation": "edition_diff",
+  "params": {
+    "old_path": "/absolute/path/book-old.docx",
+    "new_path": "/absolute/path/book-new.docx"
+  }
+}

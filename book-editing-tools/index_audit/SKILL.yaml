@@ -1,0 +1,38 @@
+name: index_audit
+type: tool
+capability: book_index_audit
+purpose: Compare a DOCX article list with its series index and calculate coverage.
+status: experimental
+deterministic: true
+interfaces:
+  - name: stdin_json
+    entrypoint: tool.py
+    transport: stdin_json
+  - name: python_api
+    entrypoint: tool.py
+    callables:
+      - run
+operations:
+  - name: index_audit
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      path:
+        type: string
+        required: true
+      index_path:
+        type: string
+        required: false
+      index_heading:
+        type: string
+        required: false
+    returns:
+      type: object
+      description: Coverage, unlisted articles, unresolved entries, duplicates, and reviewed aliases.
+side_effects:
+  reads:
+    - reads only the requested manuscript or Markdown sources.
+  writes: []
+validation:
+  - python3 -m unittest discover -s book-editing-tools/index_audit/tests

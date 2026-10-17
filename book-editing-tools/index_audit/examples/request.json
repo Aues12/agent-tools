@@ -1,0 +1,6 @@
+{
+  "operation": "index_audit",
+  "params": {
+    "path": "/absolute/path/book-with-index.docx"
+  }
+}

@@ -86,6 +86,7 @@ agent-tools/
 ├── templates/          # starter templates for tools/skills
 ├── meta-skills/        # skills that create/maintain ecosystem assets
 ├── file-tools/         # deterministic tool implementations
+├── book-editing-tools/ # deterministic manuscript audits
 ├── visual-tools/       # current artifact visualization apps
 ├── experiments/        # legacy apps with separate input contracts
 ├── runtime/            # orchestration runtime
