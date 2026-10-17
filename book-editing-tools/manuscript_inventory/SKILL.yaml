@@ -1,0 +1,43 @@
+name: manuscript_inventory
+type: tool
+capability: manuscript_structure_extraction
+purpose: Extract article titles, dates, order, and source positions from DOCX or Markdown.
+status: experimental
+deterministic: true
+interfaces:
+  - name: stdin_json
+    entrypoint: tool.py
+    transport: stdin_json
+  - name: python_api
+    entrypoint: tool.py
+    callables:
+      - run
+operations:
+  - name: manuscript_inventory
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      path:
+        type: string
+        required: true
+      recursive:
+        type: boolean
+        required: false
+        default: false
+      offset:
+        type: integer
+        required: false
+        default: 0
+      limit:
+        type: integer
+        required: false
+    returns:
+      type: object
+      description: Article inventory with dates, source locations, body digests, and warnings.
+side_effects:
+  reads:
+    - reads only the requested manuscript or Markdown sources.
+  writes: []
+validation:
+  - python3 -m unittest discover -s book-editing-tools/manuscript_inventory/tests

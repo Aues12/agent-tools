@@ -4,13 +4,13 @@
   "result": {
     "type": "control_flow_graph",
     "language": "python",
-    "path": "/workspace/agent-tools/agent-playground/semantic_cfg/branch_loop_try_example.py",
+    "path": "agent-playground/semantic_cfg/branch_loop_try_example.py",
     "functions": [
       {
         "id": "function:branch_loop_try_example.evaluate_items",
         "name": "evaluate_items",
         "qualified_name": "branch_loop_try_example.evaluate_items",
-        "path": "/workspace/agent-tools/agent-playground/semantic_cfg/branch_loop_try_example.py",
+        "path": "agent-playground/semantic_cfg/branch_loop_try_example.py",
         "line": 1,
         "end_line": 15,
         "entry": "function:branch_loop_try_example.evaluate_items:entry",

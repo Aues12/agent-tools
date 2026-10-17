@@ -1,0 +1,9 @@
+{
+  "operation": "overlap_audit",
+  "params": {
+    "paths": [
+      "/absolute/path/book-a.docx",
+      "/absolute/path/book-b.docx"
+    ]
+  }
+}

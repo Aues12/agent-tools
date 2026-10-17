@@ -3,6 +3,10 @@
 This directory contains human-facing visualization applications for artifacts
 produced by deterministic tools.
 
+The current v0.1 companion is `semantic_graph_viewer`. The older
+`writing_timeline` application lives in `experiments/` because it uses a
+different JSON contract.
+
 Visual tools must not infer or mutate semantic claims. They consume validated
 artifacts, adapt them for presentation, and keep display-specific state local
 to the application.

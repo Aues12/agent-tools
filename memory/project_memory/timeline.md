@@ -8,6 +8,7 @@ Detailed notes live in:
 * [chronology/2026-06.md](./chronology/2026-06.md)
 * [chronology/2026-08.md](./chronology/2026-08.md)
 * [chronology/2026-09.md](./chronology/2026-09.md)
+* [chronology/2026-10.md](./chronology/2026-10.md)
 
 ## 2026-05-16
 
@@ -127,3 +128,21 @@ Working-note milestone:
 * Pipeline display classifications became inspectable through their rules and
   limitations; decoded-source fingerprints identify analyzed content.
 * See [September notes](chronology/2026-09.md).
+
+## 2026-10-11–12
+
+Commit-backed milestones:
+
+* Standalone Semantic Graph Viewer and a separate writing timeline experiment
+  were added; viewer navigation was improved.
+* The v0.1 graph path was distinguished from the legacy timeline, which moved
+  under `experiments/`, and the repository's tool documentation was clarified.
+* See [October notes](chronology/2026-10.md).
+
+## 2026-10-17
+
+Commit-backed milestone (`50136c6`):
+
+* Six read-only book-editing micro-tools were added at the repository root for
+  manuscript extraction and recurring editorial audits.
+* See [October notes](chronology/2026-10.md).

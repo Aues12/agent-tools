@@ -1,0 +1,6 @@
+{
+  "operation": "chronology_audit",
+  "params": {
+    "path": "/absolute/path/book.docx"
+  }
+}

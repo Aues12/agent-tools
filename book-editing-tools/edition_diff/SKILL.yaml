@@ -1,0 +1,35 @@
+name: edition_diff
+type: tool
+capability: manuscript_version_comparison
+purpose: Compare article additions, removals, positions, and body hashes across two editions.
+status: experimental
+deterministic: true
+interfaces:
+  - name: stdin_json
+    entrypoint: tool.py
+    transport: stdin_json
+  - name: python_api
+    entrypoint: tool.py
+    callables:
+      - run
+operations:
+  - name: edition_diff
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      old_path:
+        type: string
+        required: true
+      new_path:
+        type: string
+        required: true
+    returns:
+      type: object
+      description: Structural and body-change report with ambiguous titles.
+side_effects:
+  reads:
+    - reads only the requested manuscript or Markdown sources.
+  writes: []
+validation:
+  - python3 -m unittest discover -s book-editing-tools/edition_diff/tests

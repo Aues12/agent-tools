@@ -1,0 +1,6 @@
+{
+  "operation": "ebook_preflight",
+  "params": {
+    "path": "/absolute/path/ebook-master.docx"
+  }
+}

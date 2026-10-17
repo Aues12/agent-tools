@@ -86,11 +86,13 @@ agent-tools/
 ├── templates/          # starter templates for tools/skills
 ├── meta-skills/        # skills that create/maintain ecosystem assets
 ├── file-tools/         # deterministic tool implementations
-├── visual-tools/       # independently runnable artifact visualization apps
+├── book-editing-tools/ # deterministic manuscript audits
+├── visual-tools/       # current artifact visualization apps
+├── experiments/        # legacy apps with separate input contracts
 ├── runtime/            # orchestration runtime
 ├── registry/           # discoverability and metadata registries
 ├── memory/             # long-lived memory categories
-├── agent-playground/   # analysis outputs and experiment artifacts
+├── agent-playground/   # small examples and historical analysis notes
 └── test-data/          # test fixtures/sample inputs
 ```
 
