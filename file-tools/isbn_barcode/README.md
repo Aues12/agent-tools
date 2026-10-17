@@ -160,5 +160,6 @@ python3 -m twine check dist/*
 ```
 
 The distribution version is read from `bookbarcode.__version__`. Before public
-release, confirm the package name, choose an explicit license, test the built
-wheel in a clean environment, and publish to TestPyPI first.
+release, confirm the package name, ensure the repository's MIT license is
+included in the distribution, test the built wheel in a clean environment, and
+publish to TestPyPI first.

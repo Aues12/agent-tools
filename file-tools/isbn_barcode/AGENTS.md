@@ -197,7 +197,8 @@ it dynamically. Follow semantic versioning:
 Before publishing:
 
 1. Confirm the distribution name is available on the target package index.
-2. Select and add an explicit license; public release is blocked until then.
+2. Ensure the repository's MIT license and matching package metadata are
+   included in the built distribution.
 3. Run the complete quality gates.
 4. Build wheel and source distribution from this directory.
 5. Inspect archive contents and ensure `py.typed` is included.

@@ -91,5 +91,6 @@ called through `semantic_ast`; the manuscript tools share the
 
 The registry labels tools `experimental`, including tested ones; it does not
 promise cross-version API stability. Before public visibility, Git history
-still needs a privacy review, plus licensing, CI, packaging, and test coverage
-decisions.
+still needs a privacy review, plus CI, packaging, and test coverage decisions.
+
+The repository is licensed under the [MIT License](LICENSE).
