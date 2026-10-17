@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=61"]
+requires = ["setuptools>=77.0.3"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -8,6 +8,8 @@ dynamic = ["version"]
 description = "Deterministic, print-ready ISBN-13 barcode generation for SVG and CMYK PDF"
 readme = "README.md"
 requires-python = ">=3.9"
+license = "MIT"
+license-files = ["LICENSE"]
 dependencies = []
 classifiers = [
   "Development Status :: 3 - Alpha",

@@ -11,6 +11,9 @@ authoring, and read-only manuscript audits. The repository also includes a
 graph viewer, specifications, examples, and research notes. These are separate
 capabilities, not one finished application.
 
+The repository root is a development workspace, not an installable aggregate
+Python package. Use each tool through its documented interface.
+
 ## How the system fits together
 
 - **Tools** perform narrow jobs through explicit interfaces. Most accept an
@@ -91,6 +94,6 @@ called through `semantic_ast`; the manuscript tools share the
 
 The registry labels tools `experimental`, including tested ones; it does not
 promise cross-version API stability. Before public visibility, Git history
-still needs a privacy review, plus CI, packaging, and test coverage decisions.
+still needs a privacy review.
 
 The repository is licensed under the [MIT License](LICENSE).
