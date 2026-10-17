@@ -1,33 +1,49 @@
 # agent-tools
 
 `agent-tools` is an experimental capability layer for AI agents. Instead of
-asking a model to recreate every procedure, it gives the agent bounded tools
-for concrete operations and skills for repeatable workflows. The model decides
-what to do and supplies parameters; the tools return results that can be
-inspected and composed. The design is intended to work across agent frameworks
-and model sizes.
+recreating each procedure from scratch, an agent can select a bounded tool,
+supply its parameters, and inspect the result. Skills describe workflows worth
+repeating. The design aims to make capabilities reusable across agent
+frameworks and model sizes.
+
+Current tools cover text and file operations, Python code analysis, graph
+authoring, and read-only manuscript audits. The repository also includes a
+graph viewer, specifications, examples, and research notes. These are separate
+capabilities, not one finished application.
 
 ## How the system fits together
 
-- **Tools** perform narrow jobs through explicit interfaces. Most Python tools
-  accept an `operation` and `params` as JSON and return a structured result.
-  They are designed for an agent to select and call, but can also be run by a
-  person from the terminal.
-- **Skills** describe procedures: inputs, steps, tools to call, outputs, and
-  validation. The current [meta-skills](meta-skills/) are drafts.
-- **Standards** define the contracts for tools, skills, agents, and schemas;
-  the [registries](registry/) make available capabilities discoverable.
-- **Runtime** coordination is the architectural direction. This repository
-  does not yet contain an implemented orchestration runtime.
+- **Tools** perform narrow jobs through explicit interfaces. Most accept an
+  `operation` and `params` as JSON and return a structured result. They are
+  designed for agents to call and remain usable from a terminal.
+- **Skills** describe procedures: inputs, steps, tools, outputs, and validation.
+  The current [meta-skills](meta-skills/) are drafts.
+- **Standards** define contracts; [registries](registry/) make capabilities
+  discoverable. Runtime coordination is a design direction, not an implemented
+  component here.
 
-This separation keeps reasoning with the agent and repeatable operations in
-small, testable components. See [AGENTS.md](AGENTS.md) for the full design.
+See [AGENTS.md](AGENTS.md) for the architecture and [USE_TOOL.md](USE_TOOL.md)
+for the invocation contract.
+
+## A first tool call
+
+From the repository root, this Python 3.11+ command finds a heading without
+changing any files:
+
+```bash
+printf '%s' '{"operation":"find_text","params":{"file":"AGENTS.md","text":"Agent-Agnostic Principle"}}' | python3 file-tools/copy_paste/copy_paste.py
+```
+
+The JSON response contains `success: true` and a 1-based line and column in
+`result`. The [tool registry](registry/tool_registry.json) lists other
+operations and entrypoints; each tool's documentation supplies its parameters
+and limits.
 
 ## Tools at a glance
 
-The [tool registry](registry/tool_registry.json) lists these capabilities and
-their interfaces. The three indented AST entries are also available through
-`semantic_ast`.
+These are the registered capabilities. The indented AST tools can also be
+called through `semantic_ast`; the manuscript tools share the
+[`book-editing-tools` guide](book-editing-tools/README.md).
 
 | Tool | What it does |
 | --- | --- |
@@ -36,7 +52,6 @@ their interfaces. The three indented AST entries are also available through
 | [ast_dump](file-tools/ast_dump/README.md) | Produces Python's native AST dump. |
 | [isbn_barcode](file-tools/isbn_barcode/README.md) | Generates and verifies ISBN-13 barcodes. |
 | [semantic_graph](file-tools/semantic_graph/README.md) | Builds and saves general graphs. |
-| [book-editing-tools](book-editing-tools/README.md) | Audits manuscript structure, indices, chronology, edition changes, overlaps, and EPUB source files. |
 | [semantic_ast](file-tools/semantic_ast/README.md) | Dispatches Python parsing, compression, and call graphs. |
 | ↳ [ast_parsing](file-tools/semantic_ast/ast_parsing/README.md) | Parses Python into a semantic AST. |
 | ↳ [compression](file-tools/semantic_ast/compression/README.md) | Reduces semantic AST detail. |
@@ -46,40 +61,35 @@ their interfaces. The three indented AST entries are also available through
 | [semantic_dfg](file-tools/semantic_dfg/README.md) | Builds local data-flow graphs. |
 | [semantic_cpg](file-tools/semantic_cpg/README.md) | Merges AST, control, data, and call graphs. |
 | [semantic_observatory_pipeline](file-tools/semantic_observatory_pipeline/README.md) | Prepares analysis artifacts and UI data. |
-
-## A first tool call
-
-From the repository root, this Python 3 command asks `copy_paste` to locate a
-heading without changing any files:
-
-```bash
-printf '%s' '{"operation":"find_text","params":{"file":"AGENTS.md","text":"Agent-Agnostic Principle"}}' | python3 file-tools/copy_paste/copy_paste.py
-```
-
-The response contains `success: true` and a 1-based line and column in
-`result`. An agent can use the same request shape after finding the operation
-in the [tool registry](registry/tool_registry.json). See
-[USE_TOOL.md](USE_TOOL.md) for the shared invocation convention.
+| [book-editing-tools](book-editing-tools/README.md) | Groups six read-only manuscript audits. |
+| ↳ [manuscript_inventory](book-editing-tools/manuscript_inventory/SKILL.yaml) | Inventories articles, dates, and order. |
+| ↳ [index_audit](book-editing-tools/index_audit/SKILL.yaml) | Checks article coverage in an index. |
+| ↳ [chronology_audit](book-editing-tools/chronology_audit/SKILL.yaml) | Finds out-of-order and undated articles. |
+| ↳ [overlap_audit](book-editing-tools/overlap_audit/SKILL.yaml) | Finds matching titles across manuscripts. |
+| ↳ [edition_diff](book-editing-tools/edition_diff/SKILL.yaml) | Flags added, removed, moved, and changed articles. |
+| ↳ [ebook_preflight](book-editing-tools/ebook_preflight/SKILL.yaml) | Flags DOCX layout and image candidates for review. |
 
 ## Where to go next
 
-- **Use a capability:** Browse the [tool registry](registry/tool_registry.json),
-  then open a tool's local README for parameters and tests. The
-  [semantic graph tool](file-tools/semantic_graph/README.md) and its
-  [viewer](visual-tools/semantic_graph_viewer/README.md) form one v0.1.0 path.
-- **Understand Python code:** Start with [semantic AST](file-tools/semantic_ast/README.md)
-  and [semantic cards](file-tools/semantic_cards/README.md); follow
+- **Use or extend a tool:** Follow its README, then the relevant
+  [tool](standards/TOOL_SPEC.md) or [skill](standards/SKILL_SPEC.md) contract and
+  [templates](templates/). [Future improvements](FUTURE_IMPROVEMENTS.md)
+  records planned work.
+- **Work with code or graphs:** See [semantic AST](file-tools/semantic_ast/README.md),
+  [semantic cards](file-tools/semantic_cards/README.md), and the distinct
   [CFG](file-tools/semantic_cfg/README.md), [DFG](file-tools/semantic_dfg/README.md),
-  or [CPG](file-tools/semantic_cpg/README.md) for different analyses. These
-  are separate, tested tools with documented limits.
-- **Build a tool or skill:** Read the [standards](standards/) and
-  [templates](templates/) before the draft [meta-skills](meta-skills/).
-  [Future improvements](FUTURE_IMPROVEMENTS.md) records planned work.
-- **Explore research and prototypes:** See the [Observatory pipeline](file-tools/semantic_observatory_pipeline/README.md),
-  [experiments](experiments/README.md), [playground](agent-playground/README.md),
-  and [memory](memory/README.md). Research notes provide context, not contracts.
+  and [CPG](file-tools/semantic_cpg/README.md) analyses. The
+  [semantic graph viewer](visual-tools/semantic_graph_viewer/README.md) opens
+  v0.1.0 graphs from [semantic_graph](file-tools/semantic_graph/README.md).
+- **Audit a manuscript:** Start with the [book-editing guide](book-editing-tools/README.md).
+  Its tools report evidence and uncertainty; editorial decisions remain with
+  the user or agent.
+- **Explore context:** [Experiments](experiments/README.md),
+  [playground](agent-playground/README.md), and [memory](memory/README.md)
+  record prototypes, examples, and research. For documentation work, see the
+  [documentation principles](memory/procedural/DOCUMENTATION_PRINCIPLES.md).
 
-The registry currently labels tools `experimental`, including tested ones; it
-does not promise cross-version API stability. Before public visibility, Git
-history still needs a privacy review, plus licensing, CI, packaging, and test
-coverage decisions.
+The registry labels tools `experimental`, including tested ones; it does not
+promise cross-version API stability. Before public visibility, Git history
+still needs a privacy review, plus licensing, CI, packaging, and test coverage
+decisions.
