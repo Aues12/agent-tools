@@ -1,10 +1,7 @@
 # Purpose
 
-This document defines the communication interface between:
-- runtime
-- agents
-- tools
-- external executors
+This document defines how executable tools communicate with callers such as
+humans, agents, and external orchestration systems.
 
 The preferred executable transport model is:
 
@@ -37,7 +34,7 @@ The communication layer should remain minimal.
 # Standard Execution Flow
 
 ```text
-Runtime
+Caller (human, agent, or host runtime)
   ↓
 subprocess / shell / executor
   ↓

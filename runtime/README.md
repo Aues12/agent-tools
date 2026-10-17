@@ -1,15 +1,12 @@
-# Runtime
+# Runtime integration notes
 
-The runtime coordinates skills, tools, state, and memory.
+This directory contains design guidance, not an executable runtime. The
+repository's working capabilities are independent tools with documented
+interfaces. Agents can invoke them directly; an external orchestration system
+can integrate them through the same contracts.
 
-Responsibilities:
-
-* dispatch tool calls.
-* execute skill steps.
-* record events.
-* update state through a central path.
-* leave tools deterministic and inspectable.
-
-The runtime intentionally does not implement tool-specific behavior. Tool
-capabilities stay inside `file-tools/`; the runtime only discovers and invokes
-them through the registry contract.
+An optional future adapter could discover tools through the registry and
+coordinate calls or workflows. It should leave tool-specific behavior in each
+tool and should not be required to use a tool on its own. See
+[`USE_TOOL.md`](../USE_TOOL.md) for the current invocation contract and
+[`FUTURE_IMPROVEMENTS.md`](../FUTURE_IMPROVEMENTS.md) for deferred ideas.

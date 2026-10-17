@@ -1,10 +1,10 @@
 # agent-tools
 
-`agent-tools` is an experimental capability layer for AI agents. Instead of
-recreating each procedure from scratch, an agent can select a bounded tool,
-supply its parameters, and inspect the result. Skills describe workflows worth
-repeating. The design aims to make capabilities reusable across agent
-frameworks and model sizes.
+`agent-tools` is an experimental repository of independent tools with shared,
+agent-compatible contracts. Instead of recreating each procedure from scratch,
+an agent can select a bounded tool, supply its parameters, and inspect the
+result. Skills describe workflows worth repeating. The tools also remain usable
+on their own, across agent frameworks and model sizes.
 
 Current tools cover text and file operations, Python code analysis, graph
 authoring, and read-only manuscript audits. The repository also includes a
@@ -19,8 +19,8 @@ capabilities, not one finished application.
 - **Skills** describe procedures: inputs, steps, tools, outputs, and validation.
   The current [meta-skills](meta-skills/) are drafts.
 - **Standards** define contracts; [registries](registry/) make capabilities
-  discoverable. Runtime coordination is a design direction, not an implemented
-  component here.
+  discoverable. An agent or external runtime can use these interfaces; this
+  repository does not provide an execution runtime.
 
 See [AGENTS.md](AGENTS.md) for the architecture and [USE_TOOL.md](USE_TOOL.md)
 for the invocation contract.

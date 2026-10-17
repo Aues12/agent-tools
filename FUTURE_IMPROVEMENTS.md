@@ -7,76 +7,42 @@ architecture, and long-term improvement ideas.
 
 # Repository Priorities
 
-Current implementation priorities:
+Current priorities are to make independently usable tools easier to understand,
+integrate, and validate:
 
-1. `standards/`
-2. template system
-3. meta-skill system
-4. `create_tool` / `create_skill` execution workflows
-5. registry maturity
-6. tool chaining and orchestration
+1. Clarify and apply the contracts in `standards/` across existing tools.
+2. Improve tool documentation, examples, and verification.
+3. Mature registry metadata and discovery for tools and skills.
+4. Improve templates and the draft `create_tool` / `create_skill` workflows.
+5. Explore chaining or host integrations only where a concrete use case needs
+   them.
 
-Permission systems remain intentionally postponed until runtime contracts
-stabilize.
+Permission policies for agent hosts remain deferred. They should not be a
+prerequisite for running a standalone tool.
 
 ---
 
 # Architecture Direction
 
-## Runtime
+## Optional host integration
 
-The runtime is expected to become the orchestration kernel for skills, tools,
-state, and memory.
+There is no executable runtime in this repository. An agent or host can call
+tools through their documented interfaces without adopting a project-specific
+runtime. A future adapter could use registry metadata for discovery and tool
+invocation, or coordinate a documented skill workflow. Such an adapter should
+remain optional and keep tool behavior in the tools themselves.
 
-Expected responsibilities:
-
-* skill execution
-* tool dispatching
-* executor management
-* task lifecycle handling
-* event processing
-* state updates through a central path
-
-Possible structure:
-
-```text
-runtime/
-├── engine.py
-├── planner.py
-├── dispatcher.py
-├── executor_manager.py
-├── task_queue.py
-├── event_bus.py
-├── state_manager.py
-└── memory_manager.py
-```
-
-Planned components:
-
-* `engine.py`: receive goals/tasks, request plans from the planner, coordinate
-  execution, and return results.
-* `planner.py`: generate ordered execution plans from user goals or task
-  descriptions. It may start with simple rule-based logic and later evolve into
-  an LLM-assisted planner.
-* `executor.py`: load tools, execute tool interfaces, collect results, and
-  handle execution errors without containing planning logic.
-
-Long-term runtime goals:
-
-* workflow orchestration
-* autonomous execution
-* memory-aware planning
-* multi-step reasoning pipelines
-* stateful orchestration
-* registry-backed discoverability
-* execution history
-* permission systems
-* multi-model coordination
+Ideas such as planning, task queues, event processing, execution history,
+permission policy, memory-aware workflows, and multi-model coordination belong
+to possible host integrations. They are not commitments or requirements of the
+current tool layer. Start with a concrete integration need before defining an
+engine or executor architecture.
 
 ## Registry
 
-The registry should mature into the capability map for tools, skills,
-executors, metadata, and versions.
+The registry should mature as a discoverable map for independent tools, skills,
+their interfaces, metadata, and versions. Executor metadata is optional future
+work.
 
 Possible structure:
 
@@ -88,12 +54,13 @@ registry/
 └── loader.py
 ```
 
-`loader.py` can become the single access layer for validation, discovery, and
-version handling.
+The existing `loader.py` can be extended for validation, discovery, and version
+handling where a caller needs those functions.
 
 ## Memory
 
-Memory should store longer-lived information separately from runtime state.
+Repository memory stores longer-lived project information. Host-specific memory
+and execution state, if added later, should be kept separate from tool logic.
 
 Potential categories:
 
@@ -112,7 +79,7 @@ Focus area:
 
 ## State
 
-State should represent current runtime conditions.
+An integrating host may need transient execution state.
 
 Examples:
 
@@ -121,9 +88,7 @@ Examples:
 * recent tool usage
 * last modified files
 
-Preferred direction:
-
-* event-driven state updates from tool and runtime events
+One possible host design is event-driven state updates from tool calls.
 
 Example event:
 
@@ -136,7 +101,8 @@ Example event:
 
 ## Executors and Model Coordination
 
-Potential executor families:
+Potential host adapters or executor families, if a concrete integration needs
+them:
 
 * Python
 * Bash
@@ -148,9 +114,8 @@ Potential executor families:
 
 # Meta-Skills
 
-Long-term expectation:
-
-* meta-skills become executable pipelines, not only documentation.
+The current meta-skills are drafts. A future workflow runner could make some of
+them executable without making a central runtime mandatory for tools.
 
 ---
 

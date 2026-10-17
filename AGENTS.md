@@ -2,14 +2,19 @@
 
 ## Purpose
 
-This repository is an experimental agent-tools development environment.
+This repository develops independent tools with contracts that make them usable
+by AI agents. It is an experimental collection of capabilities, specifications,
+and examples, not a single agent application.
 
-The goal is to build a modular capability layer where:
+The goal is a modular capability layer where:
 
 * LLMs focus on reasoning, planning, and parameter generation.
 * Tools provide reusable, bounded capabilities.
-* Skills provide reusable workflows.
-* A runtime coordinates execution.
+* Shared contracts make tools discoverable and predictable to callers.
+* Skills describe reusable workflows; the current meta-skills are drafts.
+
+Agents and external orchestration environments can call these tools. This
+repository does not currently implement an execution runtime.
 
 The system is designed to support both:
 
@@ -48,7 +53,7 @@ Instead:
 
 * reusable capabilities should exist as tools
 * reusable procedures should exist as skills
-* the model should orchestrate and parameterize them
+* an agent should select and parameterize them as needed
 
 Tools are treated as capabilities/faculties (Turkish: "Meleke, Kuvvet") rather than generic helper code.
 
@@ -56,17 +61,20 @@ Tools are treated as capabilities/faculties (Turkish: "Meleke, Kuvvet") rather t
 
 # Architectural Direction
 
-Intended flow:
+Current tool-use model:
 
 ```text
-LLM
+Human or agent
+  ↓ discovers a capability through documentation or registry
+Tool interface (documented request and response)
   ↓
-Planner / Agent
+Independent tool implementation
   ↓
-Skills or Tools
-  ↓
-Execution Runtime
+Structured result
 ```
+
+Skills may guide multi-step use. A host runtime may invoke tools, but it is
+not a required layer or an implemented component of this repository.
 
 The architecture is intentionally:
 
@@ -89,7 +97,7 @@ agent-tools/
 ├── book-editing-tools/ # deterministic manuscript audits
 ├── visual-tools/       # current artifact visualization apps
 ├── experiments/        # legacy apps with separate input contracts
-├── runtime/            # orchestration runtime
+├── runtime/            # notes on possible runtime integration; no implementation
 ├── registry/           # discoverability and metadata registries
 ├── memory/             # long-lived memory categories
 ├── agent-playground/   # small examples and historical analysis notes
@@ -198,4 +206,5 @@ The ecosystem should optimize for:
 
 The goal is not only code generation.
 
-The goal is orchestrated, reusable, inspectable intelligent behavior.
+The goal is reusable, inspectable capabilities that agents can invoke without
+depending on one orchestration system.

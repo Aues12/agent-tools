@@ -1,6 +1,7 @@
 # Registry
 
-The registry is the capability map for tools, skills, and executors.
+The registry maps the tools and skills currently described by this repository.
+Executor metadata is a possible future extension.
 
 `registry/` is the canonical home for registry data in this repository.
 
