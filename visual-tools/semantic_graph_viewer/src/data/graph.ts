@@ -1,3 +1,5 @@
+import { parseCardContent } from "./card.ts";
+
 export interface GraphNode {
   unique_id: number;
   label: string;
@@ -39,7 +41,7 @@ function nonempty(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
 }
 
-function attributes(value: unknown, path: string): void {
+function attributes(value: unknown, path: string): asserts value is Record<string, unknown> {
   if (!record(value)) throw new Error(`${path} must be a JSON object.`);
 }
 
@@ -63,6 +65,7 @@ export function parseSemanticGraph(value: unknown): SemanticGraph {
     if (!nonempty(node.label)) throw new Error(`${path}.label must be a non-empty string.`);
     if (!nonempty(node.kind)) throw new Error(`${path}.kind must be a non-empty string.`);
     attributes(node.attributes, `${path}.attributes`);
+    parseCardContent(node.attributes.card, `${path}.attributes.card`);
     nodeIds.add(node.unique_id);
   });
   value.edges.forEach((edge: unknown, index: number) => {

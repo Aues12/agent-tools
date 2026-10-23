@@ -1,0 +1,101 @@
+{
+  "type": "semantic_graph",
+  "version": "0.1.0",
+  "graph_id": "working-memory-study-demo",
+  "title": "Working memory — study example",
+  "attributes": {
+    "note": "Illustrative graph based on the cited publications; it is not course material."
+  },
+  "nodes": [
+    {
+      "unique_id": 1,
+      "label": "Alan Baddeley",
+      "kind": "thinker",
+      "attributes": {
+        "card": {
+          "summary": "With Graham Hitch, proposed a three-component model of working memory in 1974; later proposed the episodic buffer.",
+          "sections": [
+            {
+              "heading": "Why this person is here",
+              "body": "The graph links Baddeley to the original multicomponent model and to the later episodic-buffer proposal. The latter was introduced to account for phenomena the original model did not readily capture."
+            }
+          ],
+          "sources": [
+            { "label": "Baddeley (2000), PubMed", "url": "https://pubmed.ncbi.nlm.nih.gov/11058819/" }
+          ]
+        }
+      }
+    },
+    {
+      "unique_id": 2,
+      "label": "Graham Hitch",
+      "kind": "thinker",
+      "attributes": {
+        "card": {
+          "summary": "Co-proposed the original three-component working memory model with Alan Baddeley in 1974.",
+          "sections": [
+            {
+              "heading": "Connection in this graph",
+              "body": "The authorship edge points to the model they proposed together. This card does not stand for every contribution in Hitch's research."
+            }
+          ],
+          "sources": [
+            { "label": "Baddeley (2000), PubMed", "url": "https://pubmed.ncbi.nlm.nih.gov/11058819/" }
+          ]
+        }
+      }
+    },
+    {
+      "unique_id": 3,
+      "label": "Multicomponent working memory model",
+      "kind": "model",
+      "attributes": {
+        "card": {
+          "summary": "Baddeley and Hitch's 1974 proposal described working memory as a system with three components.",
+          "sections": [
+            {
+              "heading": "Original proposal",
+              "body": "The model was proposed by Baddeley and Hitch in 1974. It provided an integrated account of findings from several lines of research, while later work identified phenomena the original version did not readily explain."
+            },
+            {
+              "heading": "Later revision",
+              "body": "Baddeley proposed the episodic buffer as a fourth component in 2000. In this graph, that proposal is a separate node so the historical relation remains visible."
+            }
+          ],
+          "sources": [
+            { "label": "Baddeley (2000), PubMed", "url": "https://pubmed.ncbi.nlm.nih.gov/11058819/" }
+          ]
+        }
+      }
+    },
+    {
+      "unique_id": 4,
+      "label": "Episodic buffer",
+      "kind": "component",
+      "attributes": {
+        "card": {
+          "summary": "A fourth component proposed in 2000 to temporarily hold integrated information in a multimodal code.",
+          "sections": [
+            {
+              "heading": "What it adds",
+              "body": "Baddeley described a limited-capacity system able to bind information from subsidiary systems and long-term memory into a unitary episodic representation."
+            },
+            {
+              "heading": "Why the revision matters",
+              "body": "The proposal shifted attention toward how information is integrated across systems, rather than treating each subsidiary system in isolation."
+            }
+          ],
+          "sources": [
+            { "label": "Baddeley (2000), PubMed", "url": "https://pubmed.ncbi.nlm.nih.gov/11058819/" }
+          ]
+        }
+      }
+    }
+  ],
+  "edges": [
+    { "unique_id": 1, "source": 1, "target": 3, "kind": "co_proposed", "label": "1974", "attributes": {} },
+    { "unique_id": 2, "source": 2, "target": 3, "kind": "co_proposed", "label": "1974", "attributes": {} },
+    { "unique_id": 3, "source": 1, "target": 4, "kind": "proposed", "label": "2000", "attributes": {} },
+    { "unique_id": 4, "source": 3, "target": 4, "kind": "later_extended_with", "label": "2000 revision", "attributes": {} }
+  ]
+}

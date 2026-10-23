@@ -1,9 +1,13 @@
-import { useMemo, useRef, useState, type ChangeEvent, type KeyboardEvent, type MouseEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type ChangeEvent, type KeyboardEvent, type MouseEvent } from "react";
 import exampleData from "../public/graphs/bookbarcode_workflow_dag_en.json";
+import studyExampleData from "../public/graphs/working_memory_study_demo.json";
 import { adaptGraph, colorForKind, matchingNodeIds, parseSemanticGraph, type GraphEdge, type SemanticGraph } from "./data/graph.ts";
 import { GraphCanvas } from "./components/GraphCanvas";
+import { StudyCardDialog } from "./components/StudyCardDialog";
 
 const example = parseSemanticGraph(exampleData);
+const studyExample = parseSemanticGraph(studyExampleData);
+type ViewProfile = "classic" | "study";
 
 function moveInList(event: KeyboardEvent<HTMLDivElement>) {
   const step = event.key === "ArrowDown" || event.key === "ArrowRight" ? 1
@@ -45,16 +49,57 @@ export function App() {
   const [focus, setFocus] = useState<{ id: number; serial: number } | null>(null);
   const [indexOpen, setIndexOpen] = useState(true);
   const [inspectorOpen, setInspectorOpen] = useState(true);
+  const [optionsOpen, setOptionsOpen] = useState(false);
+  const [profile, setProfile] = useState<ViewProfile>("classic");
+  const [studyCardId, setStudyCardId] = useState<number | null>(null);
   const fileInput = useRef<HTMLInputElement>(null);
   const kindList = useRef<HTMLDivElement>(null);
   const nodeList = useRef<HTMLDivElement>(null);
+  const optionsAnchor = useRef<HTMLDivElement>(null);
+  const optionsButton = useRef<HTMLButtonElement>(null);
   const view = useMemo(() => adaptGraph(graph), [graph]);
   const matchedIds = useMemo(() => matchingNodeIds(graph, query, kind), [graph, query, kind]);
   const selected = selectedId === null ? null : view.byId.get(selectedId) ?? null;
+  const studyCard = studyCardId === null ? null : view.byId.get(studyCardId) ?? null;
+
+  useEffect(() => {
+    if (!optionsOpen) return;
+    function closeOnOutsideClick(event: PointerEvent) {
+      if (!optionsAnchor.current?.contains(event.target as Node)) setOptionsOpen(false);
+    }
+    function closeOnEscape(event: globalThis.KeyboardEvent) {
+      if (event.key !== "Escape") return;
+      setOptionsOpen(false);
+      optionsButton.current?.focus();
+    }
+    document.addEventListener("pointerdown", closeOnOutsideClick);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("pointerdown", closeOnOutsideClick);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [optionsOpen]);
 
   function navigate(id: number) {
     setSelectedId(id);
     setFocus((previous) => ({ id, serial: (previous?.serial ?? 0) + 1 }));
+    if (profile === "study") setStudyCardId(id);
+  }
+
+  function showGraph(loaded: SemanticGraph, name: string) {
+    setGraph(loaded);
+    setFileName(name);
+    setError(null);
+    setQuery("");
+    setKind(null);
+    setSelectedId(null);
+    setStudyCardId(null);
+    setFocus(null);
+  }
+
+  function closeStudyCard() {
+    setStudyCardId(null);
+    requestAnimationFrame(() => document.querySelector<HTMLElement>(".canvas")?.focus({ preventScroll: true }));
   }
 
   async function loadFile(event: ChangeEvent<HTMLInputElement>) {
@@ -63,13 +108,7 @@ export function App() {
     try {
       const value = JSON.parse(await file.text()) as unknown;
       const loaded = parseSemanticGraph(value);
-      setGraph(loaded);
-      setFileName(file.name);
-      setError(null);
-      setQuery("");
-      setKind(null);
-      setSelectedId(null);
-      setFocus(null);
+      showGraph(loaded, file.name);
     } catch (cause) {
       setError(`${file.name}: ${cause instanceof Error ? cause.message : "Unable to read this file."}`);
     }
@@ -95,6 +134,18 @@ export function App() {
       <div className="panel-toggles" aria-label="Panel visibility">
         <button className={`panel-toggle ${indexOpen ? "active" : ""}`} onClick={() => setIndexOpen((open) => !open)} aria-controls="semantic-index" aria-expanded={indexOpen} aria-label={indexOpen ? "Hide semantic index" : "Show semantic index"} title={indexOpen ? "Hide semantic index" : "Show semantic index"}><span aria-hidden="true">◧</span><span className="toggle-text">Index</span></button>
         <button className={`panel-toggle ${inspectorOpen ? "active" : ""}`} onClick={() => setInspectorOpen((open) => !open)} aria-controls="semantic-inspector" aria-expanded={inspectorOpen} aria-label={inspectorOpen ? "Hide semantic inspector" : "Show semantic inspector"} title={inspectorOpen ? "Hide semantic inspector" : "Show semantic inspector"}><span aria-hidden="true">◨</span><span className="toggle-text">Inspector</span></button>
+      </div>
+      <div className="options-anchor" ref={optionsAnchor}>
+        <button ref={optionsButton} className={`options-button ${optionsOpen ? "active" : ""}`} aria-haspopup="dialog" aria-expanded={optionsOpen} aria-controls="viewer-options" onClick={() => setOptionsOpen((open) => !open)}><span aria-hidden="true">⚙</span><span>Options</span></button>
+        {optionsOpen && <div id="viewer-options" className="options-popover" role="dialog" aria-label="Viewer options">
+          <div className="options-header"><div><span className="panel-kicker">PREFERENCES</span><h2>Options</h2></div><button className="options-close" onClick={() => { setOptionsOpen(false); optionsButton.current?.focus(); }} aria-label="Close options">×</button></div>
+          <div className="options-section"><h3>View profile</h3>
+            <label className={`profile-card ${profile === "classic" ? "active" : ""}`}><input type="radio" name="view-profile" value="classic" checked={profile === "classic"} onChange={() => { setProfile("classic"); setStudyCardId(null); }} /><span><strong>Classic</strong><small>Original graph view</small></span></label>
+            <label className={`profile-card ${profile === "study" ? "active" : ""}`}><input type="radio" name="view-profile" value="study" checked={profile === "study"} onChange={() => setProfile("study")} /><span><strong>Study</strong><small>Preview and open information cards</small></span></label>
+            <button className="study-example-button" onClick={() => { showGraph(studyExample, "Working memory study example"); setProfile("study"); setOptionsOpen(false); }}>Open study example ↗</button>
+          </div>
+          <div className="options-section"><h3>Panels</h3><label className="options-row"><span>Show index</span><input type="checkbox" checked={indexOpen} onChange={(event) => setIndexOpen(event.target.checked)} /></label><label className="options-row"><span>Show inspector</span><input type="checkbox" checked={inspectorOpen} onChange={(event) => setInspectorOpen(event.target.checked)} /></label></div>
+        </div>}
       </div>
       <span className="topbar-stats">{graph.nodes.length} nodes <i /> {graph.edges.length} relations</span>
     </header>
@@ -122,7 +173,7 @@ export function App() {
       <div ref={nodeList} className="node-list" role="group" aria-label="Node index" aria-keyshortcuts="ArrowUp ArrowDown ArrowLeft ArrowRight" tabIndex={-1} onClick={focusListOnClick} onKeyDown={moveInList}>{graph.nodes.filter((node) => matchedIds.has(node.unique_id)).map((node) => <button key={node.unique_id} className={`node-list-item ${selectedId === node.unique_id ? "active" : ""}`} onClick={() => navigate(node.unique_id)}><span className="node-list-id">#{node.unique_id}</span><span>{node.label}</span></button>)}</div>
     </aside>
 
-    <main className="main-panel"><GraphCanvas graph={graph} selectedId={selectedId} matchedIds={matchedIds} onSelect={setSelectedId} focus={focus} key={graph.graph_id + fileName} /></main>
+    <main className="main-panel"><GraphCanvas graph={graph} selectedId={selectedId} matchedIds={matchedIds} onSelect={setSelectedId} onOpenCard={setStudyCardId} profile={profile} focus={focus} key={graph.graph_id + fileName} /></main>
 
     <aside id="semantic-inspector" className="inspector-panel" aria-label="Semantic inspector" hidden={!inspectorOpen}>
       {selected ? <>
@@ -138,5 +189,6 @@ export function App() {
         {(view.outgoing.get(selected.unique_id) ?? []).length ? view.outgoing.get(selected.unique_id)!.map((edge) => relationship(edge, edge.target)) : <p className="empty-copy">No outgoing relationships.</p>}
       </> : <div className="inspector-empty"><div className="empty-icon">◇</div><div className="panel-kicker">SEMANTIC INSPECTOR</div><h2>Select a node to explore its relationships</h2><p>Choose a node in the graph or index to see its original ID, attributes, incoming links, and outgoing links.</p></div>}
     </aside>
+    {profile === "study" && studyCard && <StudyCardDialog node={studyCard} view={view} onClose={closeStudyCard} onNavigate={navigate} />}
   </div>;
 }

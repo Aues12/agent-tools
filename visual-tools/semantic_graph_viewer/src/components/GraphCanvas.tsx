@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent, type WheelEvent } from "react";
 import type { SemanticGraph } from "../data/graph.ts";
 import { colorForKind } from "../data/graph.ts";
+import { cardForNode } from "../data/card.ts";
 import { layoutGraph, NODE_HEIGHT, NODE_WIDTH } from "../data/layout.ts";
 import { nextNodeId, type ArrowDirection } from "../data/navigation.ts";
 
@@ -10,6 +11,8 @@ interface Props {
   selectedId: number | null;
   matchedIds: Set<number>;
   onSelect: (id: number | null) => void;
+  onOpenCard: (id: number) => void;
+  profile: "classic" | "study";
   focus: { id: number; serial: number } | null;
 }
 
@@ -24,17 +27,30 @@ function lines(label: string): string[] {
   return result.slice(0, 2).map((part, index) => index === 1 && result.length > 2 ? `${part.slice(0, 29)}…` : part);
 }
 
-export function GraphCanvas({ graph, selectedId, matchedIds, onSelect, focus }: Props) {
+export function GraphCanvas({ graph, selectedId, matchedIds, onSelect, onOpenCard, profile, focus }: Props) {
   const layout = useMemo(() => layoutGraph(graph), [graph]);
   const container = useRef<HTMLDivElement>(null);
   const drag = useRef<{ x: number; y: number; view: Viewport } | null>(null);
+  const nodePress = useRef<{ id: number; x: number; y: number } | null>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
   const previousSize = useRef<{ width: number; height: number } | null>(null);
   const previousLayout = useRef<typeof layout | null>(null);
   const [view, setView] = useState<Viewport>({ x: 0, y: 0, width: layout.width, height: layout.height });
+  const [hoveredId, setHoveredId] = useState<number | null>(null);
   const positions = layout.positions;
   const activeEdges = useMemo(() => new Set(graph.edges.filter((edge) => edge.source === selectedId || edge.target === selectedId).map((edge) => edge.unique_id)), [graph, selectedId]);
   const neighbors = useMemo(() => new Set(graph.edges.flatMap((edge) => edge.source === selectedId ? [edge.target] : edge.target === selectedId ? [edge.source] : [])), [graph, selectedId]);
+  const hovered = profile === "study" ? graph.nodes.find((node) => node.unique_id === hoveredId) : undefined;
+  const hoveredPoint = hovered ? positions.get(hovered.unique_id) : undefined;
+  const hoveredCard = hovered ? cardForNode(hovered) : null;
+  const canvasBounds = hoveredPoint ? container.current?.getBoundingClientRect() : null;
+  const previewWidth = Math.min(300, window.innerWidth - 24);
+  const anchorX = hoveredPoint && canvasBounds ? canvasBounds.left + (hoveredPoint.x + NODE_WIDTH / 2 - view.x) / view.width * size.width : 0;
+  const anchorY = hoveredPoint && canvasBounds ? canvasBounds.top + (hoveredPoint.y - view.y) / view.height * size.height : 0;
+  const hoverX = Math.max(previewWidth / 2 + 12, Math.min(window.innerWidth - previewWidth / 2 - 12, anchorX));
+  const nodePixelHeight = NODE_HEIGHT * size.height / view.height;
+  const previewAbove = anchorY + nodePixelHeight + 150 > window.innerHeight && anchorY > 150;
+  const hoverY = previewAbove ? anchorY - 10 : anchorY + nodePixelHeight + 10;
 
   const fit = useCallback(() => {
     if (size.width <= 0 || size.height <= 0) return;
@@ -136,6 +152,14 @@ export function GraphCanvas({ graph, selectedId, matchedIds, onSelect, focus }: 
   }
   function end() { drag.current = null; }
 
+  function activateNode(id: number) {
+    onSelect(id);
+    if (profile === "study") {
+      setHoveredId(null);
+      onOpenCard(id);
+    } else container.current?.focus({ preventScroll: true });
+  }
+
   return <section className="canvas-section" aria-label="Directed graph canvas">
     <div className="canvas-toolbar">
       <div><strong>Graph canvas</strong><span className="toolbar-sub">{layout.cyclic ? "Cycles shown in layout" : "Layered directed layout"}</span></div>
@@ -171,7 +195,7 @@ export function GraphCanvas({ graph, selectedId, matchedIds, onSelect, focus }: 
           const point = positions.get(node.unique_id)!;
           const color = colorForKind(node.kind);
           const dim = !matchedIds.has(node.unique_id) || (selectedId !== null && selectedId !== node.unique_id && !neighbors.has(node.unique_id));
-          return <g key={node.unique_id} transform={`translate(${point.x} ${point.y})`} className={`graph-node ${selectedId === node.unique_id ? "selected" : ""} ${dim ? "dim" : ""}`} onPointerDown={(event) => event.stopPropagation()} onClick={() => { onSelect(node.unique_id); container.current?.focus({ preventScroll: true }); }} role="button" tabIndex={0} aria-label={`Node ${node.unique_id}: ${node.label}`} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); onSelect(node.unique_id); container.current?.focus({ preventScroll: true }); } }}>
+          return <g key={node.unique_id} transform={`translate(${point.x} ${point.y})`} className={`graph-node ${selectedId === node.unique_id ? "selected" : ""} ${dim ? "dim" : ""}`} onPointerDown={(event) => { event.stopPropagation(); nodePress.current = { id: node.unique_id, x: event.clientX, y: event.clientY }; }} onPointerCancel={() => { nodePress.current = null; }} onPointerEnter={(event) => { if (profile === "study" && event.pointerType !== "touch") setHoveredId(node.unique_id); }} onPointerLeave={() => setHoveredId((current) => current === node.unique_id ? null : current)} onClick={(event) => { const press = nodePress.current; nodePress.current = null; if (event.detail > 0 && press?.id === node.unique_id && Math.hypot(event.clientX - press.x, event.clientY - press.y) > 6) return; activateNode(node.unique_id); }} role="button" tabIndex={0} aria-label={`Node ${node.unique_id}: ${node.label}`} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.stopPropagation(); activateNode(node.unique_id); } }}>
             <rect className="node-body" width={NODE_WIDTH} height={NODE_HEIGHT} rx="12" />
             <rect x="0" y="13" width="4" height="58" rx="2" fill={color} />
             <text className="node-kind" x="16" y="22" fill={color}>{node.kind.toLocaleUpperCase()}</text>
@@ -181,7 +205,13 @@ export function GraphCanvas({ graph, selectedId, matchedIds, onSelect, focus }: 
           </g>;
         })}</g>
       </svg>
-      <div className="canvas-hint">Drag to pan · Scroll to zoom · Arrow keys to move between nodes</div>
+      {hovered && hoveredPoint && <div className={`study-preview ${previewAbove ? "above" : "below"}`} style={{ left: hoverX, top: hoverY }}>
+        <span className="study-preview-kind" style={{ color: colorForKind(hovered.kind) }}>{hovered.kind} · #{hovered.unique_id}</span>
+        <strong>{hovered.label}</strong>
+        <p>{hoveredCard?.summary ?? "Open this card to inspect its details and connections."}</p>
+        <span className="study-preview-hint">Click to open card ↗</span>
+      </div>}
+      <div className="canvas-hint">Drag to pan · Scroll to zoom · {profile === "study" ? "Hover to preview · Click to open a card" : "Arrow keys to move between nodes"}</div>
     </div>
   </section>;
 }
