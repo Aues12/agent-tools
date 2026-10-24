@@ -98,6 +98,7 @@ agent-tools/
 ├── standards/          # specs and naming rules
 ├── templates/          # starter templates for tools/skills
 ├── meta-skills/        # skills that create/maintain ecosystem assets
+├── meta-tools/         # contract validation and registry synchronization
 ├── file-tools/         # deterministic tool implementations
 ├── book-editing-tools/ # manuscript audits, plan validation, safe DOCX assembly
 ├── visual-tools/       # current artifact visualization apps

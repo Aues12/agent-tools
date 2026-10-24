@@ -10,6 +10,7 @@ dependencies = []
 
 [project.optional-dependencies]
 book-editing = ["python-docx>=1.2,<2"]
+meta-tools = ["PyYAML>=6,<7"]
 
 [dependency-groups]
 dev = ["pyright>=1.1.409"]

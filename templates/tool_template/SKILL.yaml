@@ -4,8 +4,17 @@ capability: example
 purpose: Replace this with a one-sentence capability description.
 status: draft
 interfaces:
-  - name: run
-    description: Accept a structured operation/params payload and return a success/error envelope.
+  - name: stdin_json
+    entrypoint: tool.py
+    transport: stdin_json
+  - name: python_api
+    entrypoint: tool.py
+    callables: [run]
+operations:
+  - name: example_operation
+    available_via: [stdin_json, python_api]
+    params: {}
+    returns: {type: object, description: Replace with the operation result.}
 side_effects:
   reads: []
   writes: []

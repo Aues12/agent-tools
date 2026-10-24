@@ -1,0 +1,25 @@
+name: contract_validator
+type: tool
+capability: tool_contract_validation
+purpose: Statically check one tool package against its declared interface and metadata.
+status: experimental
+interfaces:
+  - name: stdin_json
+    entrypoint: tool.py
+    transport: stdin_json
+  - name: python_api
+    entrypoint: tool.py
+    callables: [validate, run]
+operations:
+  - name: validate
+    available_via: [stdin_json, python_api]
+    params:
+      path: {type: string, required: true}
+    returns: {type: object, description: Structured errors, warnings, and validity.}
+side_effects:
+  reads: [target tool metadata, entrypoints, and JSON examples]
+  writes: []
+dependencies:
+  optional_extra: meta-tools
+validation:
+  - python3 -m unittest discover -s meta-tools/contract_validator/tests

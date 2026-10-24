@@ -13,7 +13,7 @@ def test_directories() -> list[Path]:
     """Find every self-contained Python test suite in the tool families."""
     return sorted(
         path
-        for family in (ROOT / "file-tools", ROOT / "book-editing-tools")
+        for family in (ROOT / "file-tools", ROOT / "book-editing-tools", ROOT / "meta-tools")
         for path in family.rglob("tests")
         if any(path.glob("test*.py"))
     )

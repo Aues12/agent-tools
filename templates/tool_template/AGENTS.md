@@ -9,4 +9,4 @@ Before marking a tool ready:
 * document all file writes and side effects.
 * add tests for normal, invalid, and boundary behavior.
 * add at least one example.
-* register the tool in `registry/tool_registry.json`.
+* run `contract_validator`, then use `registry_sync` to review and apply its registry entry.
