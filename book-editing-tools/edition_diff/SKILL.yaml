@@ -21,9 +21,17 @@ operations:
       old_path:
         type: string
         required: true
+      old_article_level:
+        type: integer
+        required: false
+        default: 1
       new_path:
         type: string
         required: true
+      new_article_level:
+        type: integer
+        required: false
+        default: 1
     returns:
       type: object
       description: Structural and body-change report with ambiguous titles.

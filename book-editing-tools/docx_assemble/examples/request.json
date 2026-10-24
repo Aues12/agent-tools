@@ -1,0 +1,9 @@
+{
+  "operation": "docx_assemble",
+  "params": {
+    "path": "/absolute/path/book.docx",
+    "output_path": "/absolute/path/book-with-parts.docx",
+    "parts": [{"title": "Part One", "articles": [1, 2]}],
+    "dry_run": true
+  }
+}

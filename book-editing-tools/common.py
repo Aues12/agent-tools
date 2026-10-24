@@ -18,7 +18,7 @@ import xml.etree.ElementTree as ET
 
 W = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
 WP = "{http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing}"
-DATE_LINE = re.compile(r"^\s*(\d{1,2})[./-](\d{1,2})[./-](\d{4})\s*$")
+DATE_LINE = re.compile(r"^\s*(\d{1,2})[./-](\d{1,2})[./-](\d{4})(?:\s*\[(yaklaşık tarih|y\.t\.)\])?\s*$", re.I)
 ISO_DATE = re.compile(r"^\s*(\d{4})-(\d{2})-(\d{2})(?:[T ].*)?$", re.I)
 
 
@@ -113,54 +113,78 @@ def read_docx(path: str | Path) -> dict:
 
 
 def _is_heading_one(paragraph: dict) -> bool:
+    return _heading_level(paragraph) == 1
+
+
+def _heading_level(paragraph: dict) -> int | None:
     style = normalize(paragraph["style_name"])
-    return style in {"heading1", "baslik1"} or paragraph["outline_level"] == "0"
+    for level in (1, 2, 3):
+        if style in {f"heading{level}", f"baslik{level}"}:
+            return level
+    outline = paragraph["outline_level"]
+    if outline in {"0", "1", "2"}:
+        return int(outline) + 1
+    return None
 
 
-def _date_from_text(text: str) -> str | None:
+def _date_details(text: str) -> tuple[str | None, str | None]:
     match = ISO_DATE.match(text)
     if match:
         y, m, d = map(int, match.groups())
+        status = "exact"
     else:
         match = DATE_LINE.match(text)
         if not match:
-            return None
-        d, m, y = map(int, match.groups())
+            return None, None
+        d, m, y = map(int, match.groups()[:3])
+        status = "approximate" if match.group(4) else "exact"
     try:
-        return date(y, m, d).isoformat()
+        return date(y, m, d).isoformat(), status
     except ValueError:
-        return None
+        return None, None
+
+
+def _date_from_text(text: str) -> str | None:
+    return _date_details(text)[0]
 
 
 def _item(title: str, source: str, ordinal: int, paragraph: int | None,
-          body: list[str], when: str | None) -> dict:
+          body: list[str], when: str | None, *, date_status: str | None = None,
+          part: str | None = None, heading_level: int | None = None) -> dict:
     content = "\n".join(s.strip() for s in body if s.strip())
     return {"id": f"{source}#{ordinal}", "title": title.strip(), "date": when,
+            "date_status": date_status, "part": part, "heading_level": heading_level,
             "source": source, "ordinal": ordinal, "paragraph": paragraph,
             "body_sha256": sha256(content.encode("utf-8")).hexdigest(),
             "body_characters": len(content)}
 
 
-def _docx_items(path: Path) -> tuple[list[dict], list[str]]:
+def _docx_items(path: Path, *, article_level: int = 1) -> tuple[list[dict], list[str]]:
     doc = read_docx(path)
     paragraphs = doc["paragraphs"]
     boundary = next((i for i, p in enumerate(paragraphs)
                      if normalize(p["text"]) == normalize("Yazı Serileri Dizini")), len(paragraphs))
-    heads = [i for i, p in enumerate(paragraphs[:boundary]) if _is_heading_one(p)]
+    heads = [i for i, p in enumerate(paragraphs[:boundary]) if _heading_level(p) == article_level]
     warnings = []
     if not heads:
-        warnings.append("No Heading 1 paragraphs found; check the DOCX heading styles")
+        warnings.append(f"No Heading {article_level} paragraphs found; check the DOCX heading styles")
     items = []
     for n, start in enumerate(heads):
-        stop = heads[n + 1] if n + 1 < len(heads) else boundary
+        next_head = heads[n + 1] if n + 1 < len(heads) else boundary
+        stop = next((i for i in range(start + 1, next_head)
+                     if (_heading_level(paragraphs[i]) or 99) < article_level), next_head)
         section = paragraphs[start + 1:stop]
-        dates = [_date_from_text(p["text"]) for p in section if p["text"].strip()]
-        dates = [x for x in dates if x]
-        if len(set(dates)) > 1:
+        dates = [_date_details(p["text"]) for p in section if p["text"].strip()]
+        dates = [x for x in dates if x[0]]
+        if len({x[0] for x in dates}) > 1:
             warnings.append(f"Multiple standalone dates under heading {n + 1}: {paragraphs[start]['text']}")
         body = [p["text"] for p in section]
+        part = next((p["text"].strip() for p in reversed(paragraphs[:start])
+                     if _heading_level(p) == article_level - 1), None) if article_level > 1 else None
         items.append(_item(paragraphs[start]["text"], str(path), n + 1,
-                           paragraphs[start]["index"], body, dates[-1] if dates else None))
+                           paragraphs[start]["index"], body, dates[-1][0] if dates else None,
+                           date_status=dates[-1][1] if dates else None,
+                           part=part, heading_level=article_level))
     return items, warnings
 
 
@@ -190,15 +214,18 @@ def _markdown_item(path: Path, ordinal: int) -> tuple[dict, list[str]]:
                            if (x := _date_from_text(line))), None)
     warnings = [] if meta.get("title") or heading else [f"Title from filename: {path}"]
     return _item(title, str(path), ordinal, 1 if heading else None,
-                 text.splitlines(), date_value), warnings
+                 text.splitlines(), date_value, date_status="exact" if date_value else None), warnings
 
 
 def inventory(path: str, *, recursive: bool = False,
-              offset: int = 0, limit: int | None = None) -> dict:
+              offset: int = 0, limit: int | None = None,
+              article_level: int = 1) -> dict:
     if not isinstance(offset, int) or offset < 0:
         raise ValueError("offset must be a non-negative integer")
     if limit is not None and (not isinstance(limit, int) or limit < 1):
         raise ValueError("limit must be a positive integer")
+    if article_level not in (1, 2):
+        raise ValueError("article_level must be 1 or 2")
     source = Path(path).expanduser().resolve() if isinstance(path, str) else require_path(path)
     warnings = []
     if source.is_dir():
@@ -214,7 +241,7 @@ def inventory(path: str, *, recursive: bool = False,
         item, warnings = _markdown_item(source, 1)
         items = [item]
     elif source.is_file() and source.suffix.lower() == ".docx":
-        items, warnings = _docx_items(source)
+        items, warnings = _docx_items(source, article_level=article_level)
     else:
         raise ValueError(f"Expected an existing .docx, .md, or Markdown directory: {source}")
     counts = Counter(normalize(x["title"]) for x in items)
@@ -223,7 +250,8 @@ def inventory(path: str, *, recursive: bool = False,
     next_offset = offset + len(selected) if offset + len(selected) < len(items) else None
     return {"source": str(source), "count": len(items), "items": selected,
             "offset": offset, "next_offset": next_offset,
-            "duplicate_titles": sorted(set(duplicates)), "warnings": warnings}
+            "duplicate_titles": sorted(set(duplicates)), "article_level": article_level,
+            "warnings": warnings}
 
 
 def index_audit(path: str, *, index_path: str | None = None,
@@ -275,8 +303,8 @@ def index_audit(path: str, *, index_path: str | None = None,
             "warnings": main["warnings"]}
 
 
-def chronology_audit(path: str, *, recursive: bool = False) -> dict:
-    data = inventory(path, recursive=recursive)
+def chronology_audit(path: str, *, recursive: bool = False, article_level: int = 1) -> dict:
+    data = inventory(path, recursive=recursive, article_level=article_level)
     items = data["items"]
     undated = [{"title": x["title"], "ordinal": x["ordinal"]} for x in items if not x["date"]]
     inversions = []
@@ -309,8 +337,10 @@ def overlap_audit(paths: list[str], *, recursive: bool = False) -> dict:
             "note": "Title matches are candidates; this does not prove identical text or editorial intent."}
 
 
-def edition_diff(old_path: str, new_path: str) -> dict:
-    old, new = inventory(old_path), inventory(new_path)
+def edition_diff(old_path: str, new_path: str, *, old_article_level: int = 1,
+                 new_article_level: int = 1) -> dict:
+    old = inventory(old_path, article_level=old_article_level)
+    new = inventory(new_path, article_level=new_article_level)
     def keyed(items):
         result = defaultdict(list)
         for item in items:

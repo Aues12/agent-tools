@@ -1,0 +1,44 @@
+name: chapter_plan
+type: tool
+capability: manuscript_chapter_plan_validation
+purpose: Validate complete, unique, chronological article coverage in a caller-authored chapter plan.
+status: experimental
+deterministic: true
+interfaces:
+  - name: stdin_json
+    entrypoint: tool.py
+    transport: stdin_json
+  - name: python_api
+    entrypoint: tool.py
+    callables:
+      - run
+operations:
+  - name: chapter_plan
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      path:
+        type: string
+        required: true
+      parts:
+        type: array[object]
+        required: true
+        description: Each object has a title and an articles list of source ordinals or unique titles.
+      article_level:
+        type: integer
+        required: false
+        default: 1
+      strict_chronology:
+        type: boolean
+        required: false
+        default: true
+    returns:
+      type: object
+      description: Resolved plan, source digest, validity, errors, and warnings.
+side_effects:
+  reads:
+    - reads only the requested manuscript.
+  writes: []
+validation:
+  - python3 -m unittest discover -s book-editing-tools/chapter_plan/tests
