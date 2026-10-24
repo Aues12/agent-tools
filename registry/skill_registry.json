@@ -10,6 +10,11 @@
       "name": "create_skill",
       "path": "meta-skills/create_skill",
       "status": "draft"
+    },
+    {
+      "name": "notes_to_semantic_graph",
+      "path": "skills/notes_to_semantic_graph",
+      "status": "experimental"
     }
   ]
 }
