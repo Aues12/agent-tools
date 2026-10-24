@@ -14,6 +14,15 @@ notes. These are separate capabilities, not one finished application.
 The repository root is a development workspace, not an installable aggregate
 Python package. Use each tool through its documented interface.
 
+## Agent fast path
+
+If asked to use this repository, start with the [tool table](#tools-at-a-glance)
+or search the [registry](registry/tool_registry.json) for the task keyword.
+Then read only the selected tool's local contract and example. For
+implementation work, follow that tool's `AGENTS.md` and tests. The root
+architecture, standards, roadmap, and other tools are not prerequisites for
+ordinary use.
+
 ## How the system fits together
 
 - **Tools** perform narrow jobs through explicit interfaces. Most accept an
@@ -25,8 +34,8 @@ Python package. Use each tool through its documented interface.
   discoverable. An agent or external runtime can use these interfaces; this
   repository does not provide an execution runtime.
 
-See [AGENTS.md](AGENTS.md) for the architecture and [USE_TOOL.md](USE_TOOL.md)
-for the invocation contract.
+See [AGENTS.md](AGENTS.md) for architecture and selective navigation, and
+[USE_TOOL.md](USE_TOOL.md) when the shared invocation contract is needed.
 
 ## A first tool call
 
@@ -76,10 +85,11 @@ called through `semantic_ast`; the manuscript tools share the
 
 ## Where to go next
 
-- **Use or extend a tool:** Follow its README, then the relevant
-  [tool](standards/TOOL_SPEC.md) or [skill](standards/SKILL_SPEC.md) contract and
-  [templates](templates/). [Future improvements](FUTURE_IMPROVEMENTS.md)
-  records planned work.
+- **Use a tool:** Read its local contract and example. **Extend one:** Read
+  its local instructions and tests; consult the
+  [tool](standards/TOOL_SPEC.md) or [skill](standards/SKILL_SPEC.md) contract
+  and [templates](templates/) only when changing the interface or adding a
+  capability. [Future improvements](FUTURE_IMPROVEMENTS.md) is for roadmap work.
 - **Work with code or graphs:** See [semantic AST](file-tools/semantic_ast/README.md),
   [semantic cards](file-tools/semantic_cards/README.md), and the distinct
   [CFG](file-tools/semantic_cfg/README.md), [DFG](file-tools/semantic_dfg/README.md),
