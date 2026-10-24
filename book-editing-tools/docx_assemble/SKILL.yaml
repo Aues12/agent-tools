@@ -44,6 +44,11 @@ operations:
         type: string
         required: false
         default: static_unpaged
+      contents_title:
+        type: string
+        required: false
+        default: Contents
+        description: Localizable heading for the static contents list.
     returns:
       type: object
       description: Dry-run or output report including digests, counts, and warnings.

@@ -36,7 +36,7 @@ Index matching allows only unique, conservative aliases: a numbered “İlke” 
 
 DOCX does not contain trustworthy final page positions. Page-number checks therefore require a rendered PDF and are outside this toolset. `ebook_preflight` finds candidates in source DOCX; the resulting EPUB must still be visually checked. Editorial decisions belong in the book's `AGENTS.md` or editorial notes rather than an automatic log.
 
-`docx_assemble` rearranges article XML blocks without editing article prose, demotes article headings under new Heading 1 part headings, and verifies article titles/body hashes. Its optional contents list is static and deliberately has no page numbers. Existing contents lists/automatic TOCs and unsupported multiple-section layouts are rejected at write time. Other complex front matter, headers, footers, bookmarks, and cross-references require manual inspection. It does not replace visual proofing or editorial review.
+`docx_assemble` rearranges article XML blocks without editing article prose, demotes article headings under new Heading 1 part headings, and verifies article titles/body hashes. Its optional contents list is static and deliberately has no page numbers; set `contents_title` for the document language. A single Word automatic TOC before the first article is removed and replaced; manually typed contents lists and unsupported multiple-section layouts are rejected at write time. Other complex front matter, headers, footers, bookmarks, and cross-references require manual inspection. It does not replace visual proofing or editorial review.
 
 ## Tests
 

@@ -12,7 +12,8 @@ from common import inventory, normalize, require_path
 
 def assemble(path: str, parts: list[dict], *, output_path: str | None = None,
              expected_source_sha256: str | None = None, article_level: int = 1,
-             dry_run: bool = True, toc_mode: str = "static_unpaged") -> dict:
+             dry_run: bool = True, toc_mode: str = "static_unpaged",
+             contents_title: str = "Contents") -> dict:
     """Return a dry-run report or write a new file using exclusive creation.
 
     `toc_mode=static_unpaged` makes a contents list without misleading page numbers.
@@ -22,6 +23,8 @@ def assemble(path: str, parts: list[dict], *, output_path: str | None = None,
         raise ValueError("dry_run must be a boolean")
     if toc_mode not in {"none", "static_unpaged"}:
         raise ValueError("toc_mode must be none or static_unpaged")
+    if not isinstance(contents_title, str) or not contents_title.strip():
+        raise ValueError("contents_title must be non-empty text")
     plan = validate_plan(path, parts, article_level=article_level)
     if not plan["valid"]:
         raise ValueError(f"Invalid chapter plan: {plan['errors']}")
@@ -90,12 +93,18 @@ def assemble(path: str, parts: list[dict], *, output_path: str | None = None,
             current.append(element)
     if len(groups) != plan["source_count"]:
         raise ValueError("DOCX article headings do not match the validated inventory")
+    preface = list(body)[:list(body).index(groups[0][0])] if groups else []
     if groups:
-        for element in list(body)[:list(body).index(groups[0][0])]:
-            if element.tag == paragraph_tag and normalize(Paragraph(element, doc._body).text) in {"contents", "icindekiler"}:
+        for element in preface:
+            if element.tag == paragraph_tag and normalize(Paragraph(element, doc._body).text) in {
+                    "contents", "tableofcontents", "icindekiler", "icindekilertablosu"}:
                 raise ValueError("Existing contents list requires manual review before assembly")
-    if any(element.tag == qn("w:sdt") and "TOC " in element.xml for element in body):
-        raise ValueError("Existing automatic table of contents requires manual review before assembly")
+    toc_blocks = [element for element in body if element.tag == qn("w:sdt")
+                  and any("TOC " in (node.text or "") for node in element.iter(qn("w:instrText")))]
+    if any(element not in preface for element in toc_blocks):
+        raise ValueError("Automatic table of contents outside the preface requires manual review")
+    if len(toc_blocks) > 1:
+        raise ValueError("Multiple automatic tables of contents require manual review")
     source_items = inventory(str(source), article_level=article_level)["items"]
     for item, group in zip(source_items, groups):
         if Paragraph(group[0], doc._body).text != item["title"]:
@@ -115,9 +124,12 @@ def assemble(path: str, parts: list[dict], *, output_path: str | None = None,
     for element in old_part_heads:
         if element.getparent() is body:
             body.remove(element)
+    for element in toc_blocks:
+        body.remove(element)
 
     if toc_mode == "static_unpaged":
-        _add_contents(doc, body, plan["parts"], OxmlElement, Paragraph, WD_STYLE_TYPE, Pt, RGBColor)
+        _add_contents(doc, body, plan["parts"], contents_title.strip(),
+                      OxmlElement, Paragraph, WD_STYLE_TYPE, Pt, RGBColor)
 
     insertion = len(body) - 1
     for part in plan["parts"]:
@@ -159,7 +171,8 @@ def assemble(path: str, parts: list[dict], *, output_path: str | None = None,
     return {"dry_run": False, "source": str(source), "source_sha256": plan["source_sha256"],
             "output_path": str(destination), "output_sha256": sha256(destination.read_bytes()).hexdigest(),
             "article_count": len(after), "part_count": len(plan["parts"]), "toc_mode": toc_mode,
-            "warnings": plan["warnings"] + ["Render the DOCX for visual and pagination review"]}
+            "warnings": plan["warnings"] + (["Replaced source automatic TOC"] if toc_blocks else [])
+            + ["Render the DOCX for visual and pagination review"]}
 
 
 def _paragraph_heading_level(paragraph) -> int | None:
@@ -183,7 +196,7 @@ def _ensure_heading_styles(doc, style_type, pt, rgb):
         style.paragraph_format.keep_with_next = True
 
 
-def _add_contents(doc, body, parts, element_class, paragraph_class, style_type, pt, rgb):
+def _add_contents(doc, body, parts, contents_title, element_class, paragraph_class, style_type, pt, rgb):
     heading = doc.styles.add_style("Book Contents Title", style_type.PARAGRAPH)
     heading.font.name = "Cambria"
     heading.font.size = pt(16)
@@ -194,7 +207,7 @@ def _add_contents(doc, body, parts, element_class, paragraph_class, style_type, 
     lines.font.size = pt(10)
     lines.font.color.rgb = rgb(0, 0, 0)
     lines.paragraph_format.space_after = pt(2)
-    entries = [("Contents", True)]
+    entries = [(contents_title, True)]
     for part in parts:
         entries.append((part["title"], True))
         entries.extend((article["title"], False) for article in part["articles"])

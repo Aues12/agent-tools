@@ -32,18 +32,21 @@ class AssembleTests(unittest.TestCase):
     def test_dry_run_and_exclusive_output(self):
         output = Path(self.temp.name) / "compiled.docx"
         source_bytes = self.source.read_bytes()
-        preview = assemble(str(self.source), self.parts, output_path=str(output))
+        preview = assemble(str(self.source), self.parts, output_path=str(output), contents_title="İçindekiler")
         self.assertTrue(preview["dry_run"])
         self.assertFalse(output.exists())
         with self.assertRaisesRegex(ValueError, "expected_source_sha256"):
             assemble(str(self.source), self.parts, output_path=str(output),
                      expected_source_sha256="stale", dry_run=False)
         result = assemble(str(self.source), self.parts, output_path=str(output),
-                          expected_source_sha256=preview["source_sha256"], dry_run=False)
+                          expected_source_sha256=preview["source_sha256"], dry_run=False,
+                          contents_title="İçindekiler")
         self.assertEqual(result["article_count"], 2)
         self.assertEqual(self.source.read_bytes(), source_bytes)
         before = inventory(str(self.source))["items"]
         after = inventory(str(output), article_level=2)["items"]
+        from docx import Document
+        self.assertEqual(Document(output).paragraphs[0].text, "İçindekiler")
         self.assertEqual([item["title"] for item in after], ["Earlier", "Later"])
         self.assertEqual([item["body_sha256"] for item in after],
                          [before[1]["body_sha256"], before[0]["body_sha256"]])
@@ -68,6 +71,31 @@ class AssembleTests(unittest.TestCase):
             assemble(str(self.source), self.parts,
                      output_path=str(Path(self.temp.name) / "compiled.docx"),
                      expected_source_sha256=preview["source_sha256"], dry_run=False)
+
+    def test_automatic_toc_is_replaced(self):
+        from docx import Document
+        from docx.oxml import OxmlElement
+        from docx.oxml.ns import qn
+        doc = Document(self.source)
+        sdt = OxmlElement("w:sdt")
+        content = OxmlElement("w:sdtContent")
+        para = OxmlElement("w:p")
+        run = OxmlElement("w:r")
+        field = OxmlElement("w:instrText")
+        field.text = ' TOC \\o "1-3" '
+        run.append(field)
+        para.append(run)
+        content.append(para)
+        sdt.append(content)
+        doc.element.body.insert(0, sdt)
+        doc.save(self.source)
+        output = Path(self.temp.name) / "compiled.docx"
+        preview = assemble(str(self.source), self.parts, output_path=str(output))
+        result = assemble(str(self.source), self.parts, output_path=str(output),
+                          expected_source_sha256=preview["source_sha256"], dry_run=False)
+        self.assertIn("Replaced source automatic TOC", result["warnings"])
+        assembled = Document(output)
+        self.assertFalse(any(element.tag == qn("w:sdt") for element in assembled.element.body))
 
 
 if __name__ == "__main__":
