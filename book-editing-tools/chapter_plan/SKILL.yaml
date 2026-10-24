@@ -23,8 +23,12 @@ operations:
         required: true
       parts:
         type: array[object]
-        required: true
-        description: Each object has a title and an articles list of source ordinals or unique titles.
+        required: false
+        description: Grouped layout. Each object has a title and an articles list. Supply parts or articles, not both.
+      articles:
+        type: array[integer|string]
+        required: false
+        description: Flat layout with no parts. Source ordinals or unique titles. Supply articles or parts, not both.
       article_level:
         type: integer
         required: false
@@ -35,7 +39,7 @@ operations:
         default: true
     returns:
       type: object
-      description: Resolved plan, source digest, validity, errors, and warnings.
+      description: Layout, resolved plan, source digest, validity, errors, and warnings.
 side_effects:
   reads:
     - reads only the requested manuscript.

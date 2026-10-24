@@ -23,15 +23,20 @@ operations:
         required: true
       parts:
         type: array[object]
-        required: true
+        required: false
+        description: Grouped layout; supply parts or articles, not both.
+      articles:
+        type: array[integer|string]
+        required: false
+        description: Flat layout; supply articles or parts, not both.
       output_path:
         type: string
         required: false
         description: Required when dry_run is false; must not already exist.
-      expected_source_sha256:
+      expected_preview_sha256:
         type: string
         required: false
-        description: Required when dry_run is false; obtained from a prior dry-run.
+        description: Required when dry_run is false; binds source, resolved plan, destination, and options to a prior dry-run.
       article_level:
         type: integer
         required: false
@@ -51,7 +56,7 @@ operations:
         description: Localizable heading for the static contents list.
     returns:
       type: object
-      description: Dry-run or output report including digests, counts, and warnings.
+      description: Preflight dry-run or output report including preview digest, counts, and warnings.
 side_effects:
   reads:
     - reads the source DOCX and validates the plan.

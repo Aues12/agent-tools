@@ -7,9 +7,9 @@ result. Skills describe workflows worth repeating. The tools also remain usable
 on their own, across agent frameworks and model sizes.
 
 Current tools cover text and file operations, Python code analysis, graph
-authoring, and read-only manuscript audits. The repository also includes a
-graph viewer, specifications, examples, and research notes. These are separate
-capabilities, not one finished application.
+authoring, manuscript audits, plan validation, and guarded DOCX assembly. The
+repository also includes a graph viewer, specifications, examples, and research
+notes. These are separate capabilities, not one finished application.
 
 The repository root is a development workspace, not an installable aggregate
 Python package. Use each tool through its documented interface.
@@ -64,13 +64,15 @@ called through `semantic_ast`; the manuscript tools share the
 | [semantic_dfg](file-tools/semantic_dfg/README.md) | Builds local data-flow graphs. |
 | [semantic_cpg](file-tools/semantic_cpg/README.md) | Merges AST, control, data, and call graphs. |
 | [semantic_observatory_pipeline](file-tools/semantic_observatory_pipeline/README.md) | Prepares analysis artifacts and UI data. |
-| [book-editing-tools](book-editing-tools/README.md) | Groups six read-only manuscript audits. |
+| [book-editing-tools](book-editing-tools/README.md) | Groups manuscript audits, plan validation, and guarded DOCX assembly. |
 | ↳ [manuscript_inventory](book-editing-tools/manuscript_inventory/SKILL.yaml) | Inventories articles, dates, and order. |
 | ↳ [index_audit](book-editing-tools/index_audit/SKILL.yaml) | Checks article coverage in an index. |
 | ↳ [chronology_audit](book-editing-tools/chronology_audit/SKILL.yaml) | Finds out-of-order and undated articles. |
 | ↳ [overlap_audit](book-editing-tools/overlap_audit/SKILL.yaml) | Finds matching titles across manuscripts. |
 | ↳ [edition_diff](book-editing-tools/edition_diff/SKILL.yaml) | Flags added, removed, moved, and changed articles. |
 | ↳ [ebook_preflight](book-editing-tools/ebook_preflight/SKILL.yaml) | Flags DOCX layout and image candidates for review. |
+| ↳ [chapter_plan](book-editing-tools/chapter_plan/SKILL.yaml) | Validates complete chronological plans, with or without parts. |
+| ↳ [docx_assemble](book-editing-tools/docx_assemble/SKILL.yaml) | Previews and creates a new DOCX from a validated plan. |
 
 ## Where to go next
 
