@@ -1,0 +1,130 @@
+{
+  "type": "semantic_graph",
+  "version": "0.1.0",
+  "graph_id": "example-lecture-notes",
+  "title": "Example lecture notes",
+  "attributes": {
+    "sources": [
+      {
+        "id": "note_1",
+        "type": "file",
+        "label": "Example lecture notes",
+        "path": "lecture_notes.md"
+      }
+    ]
+  },
+  "revision": 5,
+  "next_node_id": 4,
+  "next_edge_id": 3,
+  "nodes": [
+    {
+      "unique_id": 1,
+      "label": "Central executive",
+      "kind": "component",
+      "attributes": {
+        "source_refs": [
+          {
+            "source_id": "note_1",
+            "locator": {
+              "heading": "Model",
+              "line_start": 5,
+              "line_end": 5
+            },
+            "excerpt": "The central executive coordinates the phonological loop and visuospatial sketchpad."
+          }
+        ],
+        "card": {
+          "summary": "Coordinates the phonological loop and visuospatial sketchpad.",
+          "sections": [],
+          "sources": []
+        }
+      }
+    },
+    {
+      "unique_id": 2,
+      "label": "Phonological loop",
+      "kind": "component",
+      "attributes": {
+        "source_refs": [
+          {
+            "source_id": "note_1",
+            "locator": {
+              "heading": "Model",
+              "line_start": 6,
+              "line_end": 6
+            },
+            "excerpt": "The phonological loop holds verbal and acoustic information briefly."
+          }
+        ],
+        "card": {
+          "summary": "Holds verbal and acoustic information briefly.",
+          "sections": [],
+          "sources": []
+        }
+      }
+    },
+    {
+      "unique_id": 3,
+      "label": "Visuospatial sketchpad",
+      "kind": "component",
+      "attributes": {
+        "source_refs": [
+          {
+            "source_id": "note_1",
+            "locator": {
+              "heading": "Model",
+              "line_start": 7,
+              "line_end": 7
+            },
+            "excerpt": "The visuospatial sketchpad holds visual and spatial information briefly."
+          }
+        ],
+        "card": {
+          "summary": "Holds visual and spatial information briefly.",
+          "sections": [],
+          "sources": []
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "unique_id": 1,
+      "source": 1,
+      "target": 2,
+      "kind": "coordinates",
+      "attributes": {
+        "source_refs": [
+          {
+            "source_id": "note_1",
+            "locator": {
+              "heading": "Model",
+              "line_start": 5,
+              "line_end": 5
+            },
+            "excerpt": "The central executive coordinates the phonological loop and visuospatial sketchpad."
+          }
+        ]
+      }
+    },
+    {
+      "unique_id": 2,
+      "source": 1,
+      "target": 3,
+      "kind": "coordinates",
+      "attributes": {
+        "source_refs": [
+          {
+            "source_id": "note_1",
+            "locator": {
+              "heading": "Model",
+              "line_start": 5,
+              "line_end": 5
+            },
+            "excerpt": "The central executive coordinates the phonological loop and visuospatial sketchpad."
+          }
+        ]
+      }
+    }
+  ]
+}
