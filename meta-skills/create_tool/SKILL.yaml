@@ -14,7 +14,9 @@ inputs:
 outputs:
   - tool_directory
   - registry_update
-tools: []
+tools:
+  - contract_validator
+  - registry_sync
 steps:
   - validate the tool name against standards/naming.yaml
   - copy the tool template into the target category directory
@@ -24,10 +26,11 @@ steps:
   - implement the narrow public interface in tool.py
   - add tests for normal, invalid, and boundary behavior
   - add at least one example
-  - update registry/tool_registry.json using the same operations/interfaces separation
+  - run contract_validator on the new tool and review all findings
+  - run registry_sync plan, review its diff, then apply with the matching plan_sha256
 validation:
   - tool metadata is complete
   - interfaces describe access surfaces rather than operation names
   - operations define invocation params and returns
   - tests pass
-  - registry entry exists
+  - registry_sync reports no pending changes for the new tool

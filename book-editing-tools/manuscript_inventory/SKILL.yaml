@@ -21,6 +21,11 @@ operations:
       path:
         type: string
         required: true
+      article_level:
+        type: integer
+        required: false
+        default: 1
+        description: DOCX article heading level; use 2 when Heading 1 denotes parts.
       recursive:
         type: boolean
         required: false

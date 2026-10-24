@@ -26,6 +26,21 @@ class ToolTests(unittest.TestCase):
             page = inventory(str(doc), limit=1)
             self.assertEqual((page["count"], len(page["items"]), page["next_offset"]), (2, 1, 1))
 
+    def test_chaptered_docx_and_approximate_date(self):
+        from common import inventory
+        with tempfile.TemporaryDirectory() as tmp:
+            doc = make_docx(Path(tmp) / "chaptered.docx", [
+                ("h1", "Part One"), ("h2", "First Essay"), ("", "01.02.2024"),
+                ("h1", "Part Two"), ("h2", "Second Essay"),
+                ("", "03.02.2024 [yaklaşık tarih]"),
+            ])
+            result = inventory(str(doc), article_level=2)
+            self.assertEqual(result["count"], 2)
+            self.assertEqual([x["part"] for x in result["items"]], ["Part One", "Part Two"])
+            self.assertEqual([x["date_status"] for x in result["items"]], ["exact", "approximate"])
+            self.assertEqual(result["items"][0]["body_characters"], len("01.02.2024"))
+            self.assertEqual(inventory(str(doc))["count"], 2)
+
 
 if __name__ == "__main__":
     unittest.main()

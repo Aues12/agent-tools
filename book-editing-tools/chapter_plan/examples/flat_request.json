@@ -1,0 +1,7 @@
+{
+  "operation": "chapter_plan",
+  "params": {
+    "path": "/absolute/path/book.docx",
+    "articles": [1, 2, 3]
+  }
+}

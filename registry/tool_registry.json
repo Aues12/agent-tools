@@ -583,6 +583,32 @@
       ]
     },
     {
+      "name": "chapter_plan",
+      "capability": "manuscript_chapter_plan_validation",
+      "path": "book-editing-tools/chapter_plan",
+      "entrypoint": "tool.py",
+      "transport": "stdin_json",
+      "status": "experimental",
+      "operations": ["chapter_plan"],
+      "interfaces": [
+        {"name": "stdin_json", "entrypoint": "tool.py", "transport": "stdin_json"},
+        {"name": "python_api", "entrypoint": "tool.py", "callables": ["run"]}
+      ]
+    },
+    {
+      "name": "docx_assemble",
+      "capability": "safe_docx_chapter_assembly",
+      "path": "book-editing-tools/docx_assemble",
+      "entrypoint": "tool.py",
+      "transport": "stdin_json",
+      "status": "experimental",
+      "operations": ["docx_assemble"],
+      "interfaces": [
+        {"name": "stdin_json", "entrypoint": "tool.py", "transport": "stdin_json"},
+        {"name": "python_api", "entrypoint": "tool.py", "callables": ["run"]}
+      ]
+    },
+    {
       "name": "ebook_preflight",
       "capability": "docx_ebook_preflight",
       "path": "book-editing-tools/ebook_preflight",
@@ -605,6 +631,32 @@
             "run"
           ]
         }
+      ]
+    },
+    {
+      "name": "contract_validator",
+      "capability": "tool_contract_validation",
+      "path": "meta-tools/contract_validator",
+      "entrypoint": "tool.py",
+      "transport": "stdin_json",
+      "status": "experimental",
+      "operations": ["validate"],
+      "interfaces": [
+        {"name": "stdin_json", "entrypoint": "tool.py", "transport": "stdin_json"},
+        {"name": "python_api", "entrypoint": "tool.py", "callables": ["validate", "run"]}
+      ]
+    },
+    {
+      "name": "registry_sync",
+      "capability": "registry_consistency",
+      "path": "meta-tools/registry_sync",
+      "entrypoint": "tool.py",
+      "transport": "stdin_json",
+      "status": "experimental",
+      "operations": ["check", "plan", "apply"],
+      "interfaces": [
+        {"name": "stdin_json", "entrypoint": "tool.py", "transport": "stdin_json"},
+        {"name": "python_api", "entrypoint": "tool.py", "callables": ["plan", "sync", "run"]}
       ]
     }
   ]

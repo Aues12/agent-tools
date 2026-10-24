@@ -1,0 +1,68 @@
+name: docx_assemble
+type: tool
+capability: safe_docx_chapter_assembly
+purpose: Apply a validated chapter plan to a new DOCX without changing source article text.
+status: experimental
+deterministic: true
+interfaces:
+  - name: stdin_json
+    entrypoint: tool.py
+    transport: stdin_json
+  - name: python_api
+    entrypoint: tool.py
+    callables:
+      - run
+operations:
+  - name: docx_assemble
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      path:
+        type: string
+        required: true
+      parts:
+        type: array[object]
+        required: false
+        description: Grouped layout; supply parts or articles, not both.
+      articles:
+        type: array[integer|string]
+        required: false
+        description: Flat layout; supply articles or parts, not both.
+      output_path:
+        type: string
+        required: false
+        description: Required when dry_run is false; must not already exist.
+      expected_preview_sha256:
+        type: string
+        required: false
+        description: Required when dry_run is false; binds source, resolved plan, destination, and options to a prior dry-run.
+      article_level:
+        type: integer
+        required: false
+        default: 1
+      dry_run:
+        type: boolean
+        required: false
+        default: true
+      toc_mode:
+        type: string
+        required: false
+        default: static_unpaged
+      contents_title:
+        type: string
+        required: false
+        default: Contents
+        description: Localizable heading for the static contents list.
+    returns:
+      type: object
+      description: Preflight dry-run or output report including preview digest, counts, and warnings.
+side_effects:
+  reads:
+    - reads the source DOCX and validates the plan.
+  writes:
+    - only with dry_run false, creates a new output DOCX; never overwrites an existing path.
+dependencies:
+  optional_extra: book-editing
+validation:
+  - python3 -m unittest discover -s book-editing-tools/docx_assemble/tests
