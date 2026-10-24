@@ -26,9 +26,21 @@ Example from repository root:
 printf '%s' '{"operation":"manuscript_inventory","params":{"path":"/absolute/path/book.docx"}}' | python3 book-editing-tools/manuscript_inventory/tool.py
 ```
 
-Use the matching `operation` and `tool.py` path for each sub-tool. The full parameter and output contract is in each `SKILL.yaml`; runnable request shapes are in each `examples/request.json`. For Python callers, import each sub-tool's `tool.py` and call `run(payload)`, or import the functions in `common.py` from this directory.
+Use the matching `operation` and `tool.py` path for each sub-tool. The full parameter and output contract is in each `SKILL.yaml`; runnable request shapes are in each `examples/request.json`. For Python callers, import each sub-tool's `tool.py` and call `run(payload)`, or import the public read-only functions in `common.py` from this directory.
 
-For code navigation: `common.py` extracts manuscripts and powers the read-only audits; `book_model.py` defines article and optional-part plan types; `chapter_plan_core.py` resolves and checks plans; `docx_assemble_core.py` performs DOCX preflight and guarded output. Each sub-tool's `tool.py` is only its JSON/Python adapter.
+## Code map
+
+| If you need to change… | Start here |
+| --- | --- |
+| DOCX/Markdown parsing, heading or date recognition | `manuscript_sources.py` |
+| Article inventory, pagination, duplicate-title reporting | `inventory_core.py` |
+| Index, chronology, overlap, edition, or EPUB audits | `audit_core.py` |
+| Read-only JSON dispatch or legacy Python imports | `common.py` (thin compatibility entrypoint) |
+| Flat/parted plan types and request validation | `book_model.py`, then `chapter_plan_core.py` |
+| DOCX preflight, rearrangement, or output verification | `docx_assemble_core.py`: `_preflight_document`, `_apply_plan`, `_write_verified` |
+| One tool's request/response adapter | Its `tool.py`, `SKILL.yaml`, and `tests/` |
+
+Read path: source → inventory → audit/plan → DOCX preflight → plan application → output verification. Public tool names and request/response envelopes are unchanged by the internal split.
 
 ## Scope and limits
 

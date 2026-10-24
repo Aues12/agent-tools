@@ -16,11 +16,7 @@ def assemble(path: str, parts: list[dict] | None = None, *,
              expected_preview_sha256: str | None = None, article_level: int = 1,
              dry_run: bool = True, toc_mode: str = "static_unpaged",
              contents_title: str = "Contents") -> dict:
-    """Return a dry-run report or write a new file using exclusive creation.
-
-    `toc_mode=static_unpaged` makes a contents list without misleading page numbers.
-    `toc_mode=none` removes an existing automatic TOC and adds no replacement.
-    """
+    """Preview or create a new DOCX after validating the source and plan."""
     if not isinstance(dry_run, bool):
         raise ValueError("dry_run must be a boolean")
     if toc_mode not in {"none", "static_unpaged"}:
@@ -35,27 +31,57 @@ def assemble(path: str, parts: list[dict] | None = None, *,
     source = require_path(path)
     if source.suffix.lower() != ".docx":
         raise ValueError("docx_assemble requires a DOCX source")
-    destination = None
-    if output_path is not None:
-        destination = Path(output_path).expanduser().resolve()
-        if destination.suffix.lower() != ".docx":
-            raise ValueError("output_path must end in .docx")
-        if destination == source:
-            raise ValueError("output_path must differ from source")
-        if not destination.parent.is_dir():
-            raise ValueError("output parent directory does not exist")
-        if destination.exists():
-            raise ValueError("output_path already exists; overwriting is not supported")
+    destination = _destination(source, output_path)
+    doc, groups, old_part_heads, toc_blocks, source_items = _preflight_document(
+        source, plan, article_level)
+    preview_sha256 = _preview_digest(plan, destination, toc_mode, contents_title.strip())
+    preflight_warnings = ["Source automatic TOC will be replaced"] if toc_blocks else []
+    if dry_run:
+        return {"dry_run": True, "source": str(source), "source_sha256": plan["source_sha256"],
+                "preview_sha256": preview_sha256, "output_path": str(destination) if destination else None,
+                "layout": plan["layout"], "article_count": plan["planned_count"],
+                "part_count": len(plan["parts"]), "toc_mode": toc_mode,
+                "warnings": plan["warnings"] + preflight_warnings}
+    if destination is None:
+        raise ValueError("output_path is required when dry_run is false")
+    if expected_preview_sha256 != preview_sha256:
+        raise ValueError("expected_preview_sha256 does not match source, plan, destination, or options; rerun dry-run")
+
+    target_article_level = _apply_plan(doc, groups, old_part_heads, toc_blocks, plan,
+                                       article_level, toc_mode, contents_title.strip())
+    article_count, output_sha256 = _write_verified(doc, destination, source_items,
+                                                    plan, target_article_level)
+    return {"dry_run": False, "source": str(source), "source_sha256": plan["source_sha256"],
+            "preview_sha256": preview_sha256, "layout": plan["layout"],
+            "output_path": str(destination), "output_sha256": output_sha256,
+            "article_count": article_count, "part_count": len(plan["parts"]), "toc_mode": toc_mode,
+            "warnings": plan["warnings"] + (["Replaced source automatic TOC"] if toc_blocks else [])
+            + ["Render the DOCX for visual and pagination review"]}
+
+
+def _destination(source: Path, output_path: str | None) -> Path | None:
+    if output_path is None:
+        return None
+    destination = Path(output_path).expanduser().resolve()
+    if destination.suffix.lower() != ".docx":
+        raise ValueError("output_path must end in .docx")
+    if destination == source:
+        raise ValueError("output_path must differ from source")
+    if not destination.parent.is_dir():
+        raise ValueError("output parent directory does not exist")
+    if destination.exists():
+        raise ValueError("output_path already exists; overwriting is not supported")
+    return destination
+
+
+def _preflight_document(source: Path, plan: dict, article_level: int):
+    """Locate article blocks and reject structures we cannot safely rearrange."""
     try:
         from docx import Document
-        from docx.enum.style import WD_STYLE_TYPE
-        from docx.oxml import OxmlElement
         from docx.oxml.ns import qn
-        from docx.shared import Pt, RGBColor
         from docx.text.paragraph import Paragraph
     except ImportError as exc:
         raise ValueError("python-docx is required; install the book-editing extra") from exc
-
     doc = Document(source)
     body = doc.element.body
     paragraph_tag = qn("w:p")
@@ -64,10 +90,7 @@ def assemble(path: str, parts: list[dict] | None = None, *,
     if len(doc.sections) != 1 or len(sections) != 1 or body[-1] is not sections[0]:
         raise ValueError("Only a single final DOCX section is supported")
 
-    # Identify top-level article blocks; paragraph order must match the inventory.
-    groups = []
-    current = None
-    old_part_heads = []
+    groups, current, old_part_heads = [], None, []
     for element in list(body):
         if element.tag == section_tag:
             continue
@@ -103,19 +126,20 @@ def assemble(path: str, parts: list[dict] | None = None, *,
             raise ValueError(f"DOCX article order changed near {item['title']}")
     if sha256(source.read_bytes()).hexdigest() != plan["source_sha256"]:
         raise ValueError("Source changed during preflight; rerun preview")
-    preview_sha256 = _preview_digest(plan, destination, toc_mode, contents_title.strip())
-    preflight_warnings = (["Source automatic TOC will be replaced"] if toc_blocks else [])
-    if dry_run:
-        return {"dry_run": True, "source": str(source), "source_sha256": plan["source_sha256"],
-                "preview_sha256": preview_sha256, "output_path": str(destination) if destination else None,
-                "layout": plan["layout"], "article_count": plan["planned_count"],
-                "part_count": len(plan["parts"]), "toc_mode": toc_mode,
-                "warnings": plan["warnings"] + preflight_warnings}
-    if destination is None:
-        raise ValueError("output_path is required when dry_run is false")
-    if expected_preview_sha256 != preview_sha256:
-        raise ValueError("expected_preview_sha256 does not match source, plan, destination, or options; rerun dry-run")
+    return doc, groups, old_part_heads, toc_blocks, source_items
 
+
+def _apply_plan(doc, groups, old_part_heads, toc_blocks, plan: dict,
+                article_level: int, toc_mode: str, contents_title: str) -> int:
+    """Rewrite heading styles and move whole article XML blocks into plan order."""
+    from docx.enum.style import WD_STYLE_TYPE
+    from docx.oxml import OxmlElement
+    from docx.oxml.ns import qn
+    from docx.shared import Pt, RGBColor
+    from docx.text.paragraph import Paragraph
+
+    body = doc.element.body
+    paragraph_tag = qn("w:p")
     _ensure_heading_styles(doc, WD_STYLE_TYPE, Pt, RGBColor)
     target_article_level = 2 if plan["layout"] == "parts" else 1
     for group in groups:
@@ -133,9 +157,8 @@ def assemble(path: str, parts: list[dict] | None = None, *,
             body.remove(element)
     for element in toc_blocks:
         body.remove(element)
-
     if toc_mode == "static_unpaged":
-        _add_contents(doc, body, plan, contents_title.strip(),
+        _add_contents(doc, body, plan, contents_title,
                       OxmlElement, Paragraph, WD_STYLE_TYPE, Pt, RGBColor)
 
     insertion = len(body) - 1
@@ -158,11 +181,14 @@ def assemble(path: str, parts: list[dict] | None = None, *,
             for element in groups[article["ordinal"] - 1]:
                 body.insert(insertion, element)
                 insertion += 1
-
-    # An empty final paragraph can become an otherwise blank last page.
     if body[-2].tag == paragraph_tag and not Paragraph(body[-2], doc._body).text.strip():
         body.remove(body[-2])
+    return target_article_level
 
+
+def _write_verified(doc, destination: Path, source_items: list[dict],
+                    plan: dict, target_article_level: int) -> tuple[int, str]:
+    """Save, compare article bodies, then atomically create the destination."""
     temporary = None
     try:
         with tempfile.NamedTemporaryFile(prefix=".docx-assemble-", suffix=".docx",
@@ -175,18 +201,11 @@ def assemble(path: str, parts: list[dict] | None = None, *,
                 actual["title"] != original["title"] or actual["body_sha256"] != original["body_sha256"]
                 for actual, original in zip(after, expected)):
             raise ValueError("Output verification failed: an article body changed")
-        os.link(temporary, destination)  # atomic, fails if the destination appeared meanwhile
+        os.link(temporary, destination)
     finally:
         if temporary is not None:
             temporary.unlink(missing_ok=True)
-
-    return {"dry_run": False, "source": str(source), "source_sha256": plan["source_sha256"],
-            "preview_sha256": preview_sha256, "layout": plan["layout"],
-            "output_path": str(destination), "output_sha256": sha256(destination.read_bytes()).hexdigest(),
-            "article_count": len(after), "part_count": len(plan["parts"]), "toc_mode": toc_mode,
-            "warnings": plan["warnings"] + (["Replaced source automatic TOC"] if toc_blocks else [])
-            + ["Render the DOCX for visual and pagination review"]}
-
+    return len(after), sha256(destination.read_bytes()).hexdigest()
 
 def _preview_digest(plan: dict, destination: Path | None, toc_mode: str,
                     contents_title: str) -> str:
