@@ -25,13 +25,18 @@ The system is designed to support both:
 
 # Quick Navigation
 
-Read in this order when onboarding:
+Read only the context needed for the current task:
 
-1. `AGENTS.md` (this file): architecture and contracts
-2. `USE_TOOL.md`: standard tool usage contract
-3. `registry/tool_registry.json`: discoverable tool map
-4. `FUTURE_IMPROVEMENTS.md`: roadmap and deferred work
-5. `standards/`: formal specs (`TOOL_SPEC.md`, `SKILL_SPEC.md`, `AGENT_SPEC.md`, `SCHEMA_SPEC.md`)
+1. To **find a capability**, scan the tool table in `README.md` or search
+   `registry/tool_registry.json` for a task keyword. Do not read the whole
+   registry unless auditing it.
+2. To **use one tool**, read its local `SKILL.yaml` or README and an example
+   request. Follow its local `AGENTS.md` if present. Do not load unrelated
+   tool descriptions.
+3. To **change a tool**, read its local `AGENTS.md`, implementation, and
+   tests. Consult `USE_TOOL.md` for the shared invocation envelope.
+4. Read `standards/` when changing contracts or adding capabilities, and
+   `FUTURE_IMPROVEMENTS.md` only for roadmap work.
 
 ---
 
@@ -93,8 +98,9 @@ agent-tools/
 ├── standards/          # specs and naming rules
 ├── templates/          # starter templates for tools/skills
 ├── meta-skills/        # skills that create/maintain ecosystem assets
+├── meta-tools/         # contract validation and registry synchronization
 ├── file-tools/         # deterministic tool implementations
-├── book-editing-tools/ # deterministic manuscript audits
+├── book-editing-tools/ # manuscript audits, plan validation, safe DOCX assembly
 ├── visual-tools/       # current artifact visualization apps
 ├── experiments/        # legacy apps with separate input contracts
 ├── runtime/            # notes on possible runtime integration; no implementation

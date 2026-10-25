@@ -1,0 +1,9 @@
+{
+  "operation": "docx_assemble",
+  "params": {
+    "path": "/absolute/path/book.docx",
+    "output_path": "/absolute/path/book-flat-copy.docx",
+    "articles": [1, 2, 3],
+    "dry_run": true
+  }
+}

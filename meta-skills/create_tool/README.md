@@ -9,4 +9,6 @@ Generated tool metadata should follow the current tool contract:
 
 - `interfaces` describe access surfaces such as `stdin_json` and `python_api`.
 - `operations` describe bounded actions with params, returns, and `available_via`.
-- `registry/tool_registry.json` should use the same separation.
+- Run `contract_validator` before registration. Use `registry_sync` to
+  review and apply the matching `registry/tool_registry.json` update; it
+  preserves registry-only fields and does not remove old entries automatically.

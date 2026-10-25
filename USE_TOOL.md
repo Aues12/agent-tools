@@ -1,8 +1,9 @@
 # Using tools
 
 The registry lists actual entrypoints, operations, and interfaces:
-[tool_registry.json](registry/tool_registry.json). Check a tool's local README
-before invoking it. Most tools accept a JSON request on stdin and return a JSON
+[tool_registry.json](registry/tool_registry.json). Use the selected tool's
+local contract and example for its parameters; no need to read every tool
+description. Most tools accept a JSON request on stdin and return a JSON
 response on stdout:
 
 ```json

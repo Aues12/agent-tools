@@ -21,6 +21,10 @@ operations:
       path:
         type: string
         required: true
+      article_level:
+        type: integer
+        required: false
+        default: 1
       recursive:
         type: boolean
         required: false

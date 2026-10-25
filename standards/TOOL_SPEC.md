@@ -5,7 +5,7 @@
 A tool is a narrow, reusable capability. It should perform one bounded job with
 predictable inputs, outputs, errors, and side effects.
 
-## Required Layout
+## Tool Layout
 
 Each tool directory should contain:
 
@@ -13,10 +13,15 @@ Each tool directory should contain:
 tool_name/
 ├── AGENTS.md
 ├── SKILL.yaml
-├── tool.py
+├── tool.py             # default entrypoint name
 ├── tests/
 └── examples/
 ```
+
+`tool.py` is the default for new tools, not a required filename. An existing
+tool may use another entrypoint (including a parent dispatcher) when each
+interface declares that path in `SKILL.yaml` and the file exists. Do not add a
+second wrapper solely to satisfy the default layout.
 
 ## Required Metadata
 

@@ -7,12 +7,21 @@ result. Skills describe workflows worth repeating. The tools also remain usable
 on their own, across agent frameworks and model sizes.
 
 Current tools cover text and file operations, Python code analysis, graph
-authoring, and read-only manuscript audits. The repository also includes a
-graph viewer, specifications, examples, and research notes. These are separate
-capabilities, not one finished application.
+authoring, manuscript audits, plan validation, and guarded DOCX assembly. The
+repository also includes a graph viewer, specifications, examples, and research
+notes. These are separate capabilities, not one finished application.
 
 The repository root is a development workspace, not an installable aggregate
 Python package. Use each tool through its documented interface.
+
+## Agent fast path
+
+If asked to use this repository, start with the [tool table](#tools-at-a-glance)
+or search the [registry](registry/tool_registry.json) for the task keyword.
+Then read only the selected tool's local contract and example. For
+implementation work, follow that tool's `AGENTS.md` and tests. The root
+architecture, standards, roadmap, and other tools are not prerequisites for
+ordinary use.
 
 ## How the system fits together
 
@@ -25,8 +34,8 @@ Python package. Use each tool through its documented interface.
   discoverable. An agent or external runtime can use these interfaces; this
   repository does not provide an execution runtime.
 
-See [AGENTS.md](AGENTS.md) for the architecture and [USE_TOOL.md](USE_TOOL.md)
-for the invocation contract.
+See [AGENTS.md](AGENTS.md) for architecture and selective navigation, and
+[USE_TOOL.md](USE_TOOL.md) when the shared invocation contract is needed.
 
 ## A first tool call
 
@@ -64,20 +73,25 @@ called through `semantic_ast`; the manuscript tools share the
 | [semantic_dfg](file-tools/semantic_dfg/README.md) | Builds local data-flow graphs. |
 | [semantic_cpg](file-tools/semantic_cpg/README.md) | Merges AST, control, data, and call graphs. |
 | [semantic_observatory_pipeline](file-tools/semantic_observatory_pipeline/README.md) | Prepares analysis artifacts and UI data. |
-| [book-editing-tools](book-editing-tools/README.md) | Groups six read-only manuscript audits. |
+| [contract_validator](meta-tools/contract_validator/README.md) | Statically checks a tool's local contract and examples. |
+| [registry_sync](meta-tools/registry_sync/README.md) | Checks and updates tool discovery metadata with a reviewed plan. |
+| [book-editing-tools](book-editing-tools/README.md) | Groups manuscript audits, plan validation, and guarded DOCX assembly. |
 | ↳ [manuscript_inventory](book-editing-tools/manuscript_inventory/SKILL.yaml) | Inventories articles, dates, and order. |
 | ↳ [index_audit](book-editing-tools/index_audit/SKILL.yaml) | Checks article coverage in an index. |
 | ↳ [chronology_audit](book-editing-tools/chronology_audit/SKILL.yaml) | Finds out-of-order and undated articles. |
 | ↳ [overlap_audit](book-editing-tools/overlap_audit/SKILL.yaml) | Finds matching titles across manuscripts. |
 | ↳ [edition_diff](book-editing-tools/edition_diff/SKILL.yaml) | Flags added, removed, moved, and changed articles. |
 | ↳ [ebook_preflight](book-editing-tools/ebook_preflight/SKILL.yaml) | Flags DOCX layout and image candidates for review. |
+| ↳ [chapter_plan](book-editing-tools/chapter_plan/SKILL.yaml) | Validates complete chronological plans, with or without parts. |
+| ↳ [docx_assemble](book-editing-tools/docx_assemble/SKILL.yaml) | Previews and creates a new DOCX from a validated plan. |
 
 ## Where to go next
 
-- **Use or extend a tool:** Follow its README, then the relevant
-  [tool](standards/TOOL_SPEC.md) or [skill](standards/SKILL_SPEC.md) contract and
-  [templates](templates/). [Future improvements](FUTURE_IMPROVEMENTS.md)
-  records planned work.
+- **Use a tool:** Read its local contract and example. **Extend one:** Read
+  its local instructions and tests; consult the
+  [tool](standards/TOOL_SPEC.md) or [skill](standards/SKILL_SPEC.md) contract
+  and [templates](templates/) only when changing the interface or adding a
+  capability. [Future improvements](FUTURE_IMPROVEMENTS.md) is for roadmap work.
 - **Work with code or graphs:** See [semantic AST](file-tools/semantic_ast/README.md),
   [semantic cards](file-tools/semantic_cards/README.md), and the distinct
   [CFG](file-tools/semantic_cfg/README.md), [DFG](file-tools/semantic_dfg/README.md),
