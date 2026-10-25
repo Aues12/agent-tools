@@ -1,0 +1,60 @@
+name: tool_discovery
+type: tool
+capability: localization
+purpose: List, search, and inspect registered tools using their local contracts.
+status: experimental
+deterministic: true
+interfaces:
+  - name: stdin_json
+    entrypoint: tool_discovery.py
+    transport: stdin_json
+  - name: python_api
+    entrypoint: tool.py
+    callables:
+      - list_tools
+      - search_tools
+      - inspect_tool
+      - run
+operations:
+  - name: list_tools
+    available_via:
+      - stdin_json
+      - python_api
+    params: {}
+    returns:
+      type: object
+      description: Registered tool summaries and metadata issues.
+  - name: search_tools
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      query:
+        type: string
+        required: false
+      capability:
+        type: string
+        required: false
+    returns:
+      type: object
+      description: All eligible tools ordered by lexical match ratio, including zero matches.
+  - name: inspect_tool
+    available_via:
+      - stdin_json
+      - python_api
+    params:
+      name:
+        type: string
+        required: true
+    returns:
+      type: object
+      description: Entrypoints, interfaces, operation contracts, side effects, and metadata issues.
+side_effects:
+  reads:
+    - reads registry/tool_registry.json and registered local SKILL.yaml files.
+  writes: []
+failure_modes:
+  - malformed registry or YAML returns a structured error envelope.
+  - missing local metadata is reported in the affected tool's issues.
+validation:
+  - python3 -m unittest discover -s file-tools/tool_discovery/tests

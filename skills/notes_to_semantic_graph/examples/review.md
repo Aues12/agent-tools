@@ -1,14 +1,20 @@
 # Review report for example graph
 
-Source: `lecture_notes.md`, a synthetic demonstration note. Its claims are
-illustrative and have not been checked against an external publication.
+**Scope and strategy:** This synthetic example uses `lecture_notes.md` only and
+illustrates `post_hoc_validation`. No external publication was consulted, so
+its subject-matter claims have not been independently verified.
 
-Included: three entities supported by lines 5–7 and two `coordinates`
-relations supported by line 5. The edge direction means coordinator →
-coordinated subsystem.
+**Checks:** The saved graph was reopened as `semantic_graph` v0.1.0. Its node
+and edge IDs, endpoints, counters, and source references are structurally
+consistent. The three component descriptions and two `coordinates` relations
+match the supplied note. The edge direction means coordinator → coordinated
+subsystem.
 
-Excluded: a `controls` relation from phonological loop to visuospatial
-sketchpad. Line 11 explicitly leaves this question unresolved.
+**Agent interpretation:** The `contrasts_by_information_type` edge compares
+the note's verbal/acoustic and visual/spatial descriptions. It is labeled with
+the `agent_interpretation` provenance category and should not be read as a
+separately sourced scientific claim.
 
-Human review: confirm whether the chosen `coordinates` predicate and the
-card summaries match the intended interpretation of the notes.
+**Unresolved:** The note does not establish whether the phonological loop
+controls the visuospatial sketchpad. No such edge was added. A domain expert
+or external publication would be needed to assess broader scientific validity.

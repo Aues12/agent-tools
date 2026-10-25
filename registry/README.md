@@ -5,6 +5,9 @@ Executor metadata is a possible future extension.
 
 `registry/` is the canonical home for registry data in this repository.
 
+Use [`tool_discovery`](../file-tools/tool_discovery/README.md) to list, search,
+or inspect registered tools together with their local `SKILL.yaml` contracts.
+
 For now these files are simple JSON documents.
 
 ## Tool Registry Shape

@@ -9,5 +9,6 @@ task workflows live here. Skills guide an agent but are not an execution
 runtime. The agent reads the contract, performs the steps with the listed
 tools, and checks the outputs.
 
-- [`notes_to_semantic_graph`](notes_to_semantic_graph/README.md): create a
-  source-grounded study graph from supplied notes.
+- [`notes_to_semantic_graph`](notes_to_semantic_graph/README.md): construct and
+  review a semantic graph from readable sources, research, and identified
+  interpretations.

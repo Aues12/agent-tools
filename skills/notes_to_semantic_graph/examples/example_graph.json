@@ -10,12 +10,17 @@
         "type": "file",
         "label": "Example lecture notes",
         "path": "lecture_notes.md"
+      },
+      {
+        "id": "interpretation_1",
+        "type": "agent_interpretation",
+        "label": "Agent comparison of the two subsystem descriptions"
       }
     ]
   },
-  "revision": 5,
+  "revision": 6,
   "next_node_id": 4,
-  "next_edge_id": 3,
+  "next_edge_id": 4,
   "nodes": [
     {
       "unique_id": 1,
@@ -24,13 +29,7 @@
       "attributes": {
         "source_refs": [
           {
-            "source_id": "note_1",
-            "locator": {
-              "heading": "Model",
-              "line_start": 5,
-              "line_end": 5
-            },
-            "excerpt": "The central executive coordinates the phonological loop and visuospatial sketchpad."
+            "source_id": "note_1"
           }
         ],
         "card": {
@@ -47,13 +46,7 @@
       "attributes": {
         "source_refs": [
           {
-            "source_id": "note_1",
-            "locator": {
-              "heading": "Model",
-              "line_start": 6,
-              "line_end": 6
-            },
-            "excerpt": "The phonological loop holds verbal and acoustic information briefly."
+            "source_id": "note_1"
           }
         ],
         "card": {
@@ -70,13 +63,7 @@
       "attributes": {
         "source_refs": [
           {
-            "source_id": "note_1",
-            "locator": {
-              "heading": "Model",
-              "line_start": 7,
-              "line_end": 7
-            },
-            "excerpt": "The visuospatial sketchpad holds visual and spatial information briefly."
+            "source_id": "note_1"
           }
         ],
         "card": {
@@ -96,13 +83,7 @@
       "attributes": {
         "source_refs": [
           {
-            "source_id": "note_1",
-            "locator": {
-              "heading": "Model",
-              "line_start": 5,
-              "line_end": 5
-            },
-            "excerpt": "The central executive coordinates the phonological loop and visuospatial sketchpad."
+            "source_id": "note_1"
           }
         ]
       }
@@ -115,13 +96,23 @@
       "attributes": {
         "source_refs": [
           {
-            "source_id": "note_1",
-            "locator": {
-              "heading": "Model",
-              "line_start": 5,
-              "line_end": 5
-            },
-            "excerpt": "The central executive coordinates the phonological loop and visuospatial sketchpad."
+            "source_id": "note_1"
+          }
+        ]
+      }
+    },
+    {
+      "unique_id": 3,
+      "source": 2,
+      "target": 3,
+      "kind": "contrasts_by_information_type",
+      "attributes": {
+        "source_refs": [
+          {
+            "source_id": "note_1"
+          },
+          {
+            "source_id": "interpretation_1"
           }
         ]
       }

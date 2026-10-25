@@ -6,6 +6,13 @@ local contract and example for its parameters; no need to read every tool
 description. Most tools accept a JSON request on stdin and return a JSON
 response on stdout:
 
+To find or inspect a registered tool, use
+[`tool_discovery`](file-tools/tool_discovery/README.md):
+
+```bash
+printf '%s' '{"operation":"search_tools","params":{"query":"call graph"}}' | python3 file-tools/tool_discovery/tool_discovery.py
+```
+
 ```json
 {"operation":"read_file","params":{"path":"README.md"}}
 ```

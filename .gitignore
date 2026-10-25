@@ -9,3 +9,6 @@ __pycache__/
 .venv
 venv
 test-data
+
+# Local, user-specific skill settings
+skills/**/preferences.md

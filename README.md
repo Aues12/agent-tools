@@ -75,6 +75,7 @@ called through `semantic_ast`; the manuscript tools share the
 | [semantic_observatory_pipeline](file-tools/semantic_observatory_pipeline/README.md) | Prepares analysis artifacts and UI data. |
 | [contract_validator](meta-tools/contract_validator/README.md) | Statically checks a tool's local contract and examples. |
 | [registry_sync](meta-tools/registry_sync/README.md) | Checks and updates tool discovery metadata with a reviewed plan. |
+| [repo_sync](meta-tools/repo_sync/README.md) | Plans and applies a one-way copy of selected shared files between local workspaces. |
 | [book-editing-tools](book-editing-tools/README.md) | Groups manuscript audits, plan validation, and guarded DOCX assembly. |
 | ↳ [manuscript_inventory](book-editing-tools/manuscript_inventory/SKILL.yaml) | Inventories articles, dates, and order. |
 | ↳ [index_audit](book-editing-tools/index_audit/SKILL.yaml) | Checks article coverage in an index. |

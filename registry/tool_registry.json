@@ -2,6 +2,19 @@
   "version": "0.1.0",
   "tools": [
     {
+      "name": "tool_discovery",
+      "capability": "localization",
+      "path": "file-tools/tool_discovery",
+      "entrypoint": "tool_discovery.py",
+      "transport": "stdin_json",
+      "status": "experimental",
+      "operations": ["list_tools", "search_tools", "inspect_tool"],
+      "interfaces": [
+        {"name": "stdin_json", "entrypoint": "tool_discovery.py", "transport": "stdin_json"},
+        {"name": "python_api", "entrypoint": "tool.py", "callables": ["list_tools", "search_tools", "inspect_tool", "run"]}
+      ]
+    },
+    {
       "name": "copy_paste",
       "capability": "transfer",
       "path": "file-tools/copy_paste",
@@ -650,6 +663,19 @@
       "name": "registry_sync",
       "capability": "registry_consistency",
       "path": "meta-tools/registry_sync",
+      "entrypoint": "tool.py",
+      "transport": "stdin_json",
+      "status": "experimental",
+      "operations": ["check", "plan", "apply"],
+      "interfaces": [
+        {"name": "stdin_json", "entrypoint": "tool.py", "transport": "stdin_json"},
+        {"name": "python_api", "entrypoint": "tool.py", "callables": ["plan", "sync", "run"]}
+      ]
+    },
+    {
+      "name": "repo_sync",
+      "capability": "repository_file_sync",
+      "path": "meta-tools/repo_sync",
       "entrypoint": "tool.py",
       "transport": "stdin_json",
       "status": "experimental",

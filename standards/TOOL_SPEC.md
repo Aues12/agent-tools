@@ -37,6 +37,10 @@ primary source of truth. It should include:
 * `side_effects`: explicit description of reads and writes.
 * `status`: `draft`, `experimental`, or `stable`.
 
+An optional `search_terms` list may contain short, factual aliases or common
+task vocabulary to improve lexical discovery. It does not declare that a tool
+is suitable for every task containing those words.
+
 ## Interface and Operation Model
 
 Tools should distinguish access surfaces from executable actions.

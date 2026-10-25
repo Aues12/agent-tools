@@ -1,0 +1,31 @@
+{
+  "version": "0.1.0",
+  "include": [
+    ".github",
+    "BookBarcode_trial_analysis.md",
+    "FUTURE_IMPROVEMENTS.md",
+    "LICENSE",
+    "Mission.md",
+    "USE_TOOL.md",
+    "Vision.md",
+    "agent-playground",
+    "book-editing-tools",
+    "experiments",
+    "file-tools",
+    "meta-skills",
+    "meta-tools",
+    "pyproject.toml",
+    "registry",
+    "runtime",
+    "skills",
+    "standards",
+    "templates",
+    "test_all.py",
+    "uv.lock",
+    "visual-tools"
+  ],
+  "exclude": [
+    "skills/**/preferences.md",
+    "registry/executor_registry.json"
+  ]
+}

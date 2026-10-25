@@ -7,6 +7,7 @@ They require Python 3.11+ and PyYAML (`pip install -e '.[meta-tools]'`).
 | --- | --- |
 | Check one tool's metadata, entrypoints, and examples without executing it | [contract_validator](contract_validator/README.md) |
 | Compare local metadata with the tool registry, then apply a reviewed plan | [registry_sync](registry_sync/README.md) |
+| Copy reviewed shared files between local workspaces while preserving private areas | [repo_sync](repo_sync/README.md) |
 
 For a new tool, validate its package first, then run registry_sync `plan`.
 Only `apply` writes; it requires the matching `plan_sha256`. Neither tool

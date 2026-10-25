@@ -2,6 +2,10 @@ name: call_graph
 type: tool
 capability: semantic_code_analysis
 purpose: Extract deterministic local function call relationships from semantic AST trees.
+search_terms:
+  - Python function calls
+  - code invocation relations
+  - Python fonksiyon çağrı ilişkileri
 status: experimental
 deterministic: true
 interfaces:

@@ -2,12 +2,12 @@ import { useEffect, useMemo, useRef, useState, type ChangeEvent, type KeyboardEv
 import exampleData from "../public/graphs/bookbarcode_workflow_dag_en.json";
 import studyExampleData from "../public/graphs/working_memory_study_demo.json";
 import { adaptGraph, colorForKind, matchingNodeIds, parseSemanticGraph, type GraphEdge, type SemanticGraph } from "./data/graph.ts";
+import { browserStorage, graphFingerprint, restoreSession, saveGraph, saveView, type SavedViewport, type ViewProfile } from "./data/session.ts";
 import { GraphCanvas } from "./components/GraphCanvas";
 import { StudyCardDialog } from "./components/StudyCardDialog";
 
 const example = parseSemanticGraph(exampleData);
 const studyExample = parseSemanticGraph(studyExampleData);
-type ViewProfile = "classic" | "study";
 
 function moveInList(event: KeyboardEvent<HTMLDivElement>) {
   const step = event.key === "ArrowDown" || event.key === "ArrowRight" ? 1
@@ -40,27 +40,38 @@ function Attributes({ value }: { value: Record<string, unknown> }) {
 }
 
 export function App() {
-  const [graph, setGraph] = useState<SemanticGraph>(example);
-  const [fileName, setFileName] = useState("BookBarcode English example");
+  const [restored] = useState(() => restoreSession(browserStorage(), example, "BookBarcode English example"));
+  const [graph, setGraph] = useState<SemanticGraph>(restored.graph);
+  const [fileName, setFileName] = useState(restored.fileName);
   const [error, setError] = useState<string | null>(null);
-  const [query, setQuery] = useState("");
-  const [kind, setKind] = useState<string | null>(null);
-  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [storageWarning, setStorageWarning] = useState<string | null>(null);
+  const [query, setQuery] = useState(restored.query);
+  const [kind, setKind] = useState<string | null>(restored.kind);
+  const [selectedId, setSelectedId] = useState<number | null>(restored.selectedId);
   const [focus, setFocus] = useState<{ id: number; serial: number } | null>(null);
-  const [indexOpen, setIndexOpen] = useState(true);
-  const [inspectorOpen, setInspectorOpen] = useState(true);
+  const [indexOpen, setIndexOpen] = useState(restored.indexOpen);
+  const [inspectorOpen, setInspectorOpen] = useState(restored.inspectorOpen);
   const [optionsOpen, setOptionsOpen] = useState(false);
-  const [profile, setProfile] = useState<ViewProfile>("classic");
-  const [studyCardId, setStudyCardId] = useState<number | null>(null);
+  const [profile, setProfile] = useState<ViewProfile>(restored.profile);
+  const [studyCardId, setStudyCardId] = useState<number | null>(restored.studyCardId);
+  const [viewport, setViewport] = useState<SavedViewport | null>(restored.viewport);
+  const [initialViewport, setInitialViewport] = useState<SavedViewport | null>(restored.viewport);
+  const [graphSerial, setGraphSerial] = useState(0);
   const fileInput = useRef<HTMLInputElement>(null);
   const kindList = useRef<HTMLDivElement>(null);
   const nodeList = useRef<HTMLDivElement>(null);
   const optionsAnchor = useRef<HTMLDivElement>(null);
   const optionsButton = useRef<HTMLButtonElement>(null);
   const view = useMemo(() => adaptGraph(graph), [graph]);
+  const fingerprint = useMemo(() => graphFingerprint(graph), [graph]);
   const matchedIds = useMemo(() => matchingNodeIds(graph, query, kind), [graph, query, kind]);
   const selected = selectedId === null ? null : view.byId.get(selectedId) ?? null;
   const studyCard = studyCardId === null ? null : view.byId.get(studyCardId) ?? null;
+
+  useEffect(() => {
+    const saved = saveView(browserStorage(), fingerprint, { profile, indexOpen, inspectorOpen, query, kind, selectedId, studyCardId, viewport });
+    if (!saved) setStorageWarning("Browser storage is unavailable or full. This session may not survive a refresh.");
+  }, [fingerprint, profile, indexOpen, inspectorOpen, query, kind, selectedId, studyCardId, viewport]);
 
   useEffect(() => {
     if (!optionsOpen) return;
@@ -81,20 +92,40 @@ export function App() {
   }, [optionsOpen]);
 
   function navigate(id: number) {
+    if (profile === "study" && selectedId === id) {
+      setStudyCardId(id);
+      return;
+    }
     setSelectedId(id);
     setFocus((previous) => ({ id, serial: (previous?.serial ?? 0) + 1 }));
-    if (profile === "study") setStudyCardId(id);
   }
 
-  function showGraph(loaded: SemanticGraph, name: string) {
+  function navigateInStudyCard(id: number) {
+    setSelectedId(id);
+    setFocus((previous) => ({ id, serial: (previous?.serial ?? 0) + 1 }));
+    setStudyCardId(id);
+  }
+
+  function showGraph(loaded: SemanticGraph, name: string, nextProfile: ViewProfile = profile) {
+    const storage = browserStorage();
+    const graphSaved = saveGraph(storage, loaded, name);
+    const viewSaved = saveView(storage, graphFingerprint(loaded), {
+      profile: nextProfile, indexOpen, inspectorOpen, query: "", kind: null,
+      selectedId: null, studyCardId: null, viewport: null,
+    });
+    setStorageWarning(graphSaved && viewSaved ? null : "Browser storage is unavailable or full. This graph may not survive a refresh.");
     setGraph(loaded);
     setFileName(name);
+    setProfile(nextProfile);
     setError(null);
     setQuery("");
     setKind(null);
     setSelectedId(null);
     setStudyCardId(null);
     setFocus(null);
+    setViewport(null);
+    setInitialViewport(null);
+    setGraphSerial((current) => current + 1);
   }
 
   function closeStudyCard() {
@@ -142,7 +173,8 @@ export function App() {
           <div className="options-section"><h3>View profile</h3>
             <label className={`profile-card ${profile === "classic" ? "active" : ""}`}><input type="radio" name="view-profile" value="classic" checked={profile === "classic"} onChange={() => { setProfile("classic"); setStudyCardId(null); }} /><span><strong>Classic</strong><small>Original graph view</small></span></label>
             <label className={`profile-card ${profile === "study" ? "active" : ""}`}><input type="radio" name="view-profile" value="study" checked={profile === "study"} onChange={() => setProfile("study")} /><span><strong>Study</strong><small>Preview and open information cards</small></span></label>
-            <button className="study-example-button" onClick={() => { showGraph(studyExample, "Working memory study example"); setProfile("study"); setOptionsOpen(false); }}>Open study example ↗</button>
+            <button className="study-example-button" onClick={() => { showGraph(studyExample, "Working memory study example", "study"); setOptionsOpen(false); }}>Open study example ↗</button>
+            <button className="study-example-button" onClick={() => { showGraph(example, "BookBarcode English example", "classic"); setOptionsOpen(false); }}>Open default example ↗</button>
           </div>
           <div className="options-section"><h3>Panels</h3><label className="options-row"><span>Show index</span><input type="checkbox" checked={indexOpen} onChange={(event) => setIndexOpen(event.target.checked)} /></label><label className="options-row"><span>Show inspector</span><input type="checkbox" checked={inspectorOpen} onChange={(event) => setInspectorOpen(event.target.checked)} /></label></div>
         </div>}
@@ -158,6 +190,7 @@ export function App() {
       <button className="load-button" onClick={() => fileInput.current?.click()}>Load JSON graph</button>
       <input ref={fileInput} type="file" accept=".json,application/json" onChange={loadFile} className="visually-hidden" aria-label="Choose semantic graph JSON file" />
       {error && <div className="load-error" role="alert"><strong>Could not load graph</strong><p>{error}</p></div>}
+      {storageWarning && <div className="load-error" role="status"><strong>Session not saved</strong><p>{storageWarning}</p></div>}
       <div className="section-rule" />
       <label className="panel-kicker" htmlFor="node-search">SEARCH NODES</label>
       <input id="node-search" className="search-input" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Label, kind, or ID…" />
@@ -173,7 +206,7 @@ export function App() {
       <div ref={nodeList} className="node-list" role="group" aria-label="Node index" aria-keyshortcuts="ArrowUp ArrowDown ArrowLeft ArrowRight" tabIndex={-1} onClick={focusListOnClick} onKeyDown={moveInList}>{graph.nodes.filter((node) => matchedIds.has(node.unique_id)).map((node) => <button key={node.unique_id} className={`node-list-item ${selectedId === node.unique_id ? "active" : ""}`} onClick={() => navigate(node.unique_id)}><span className="node-list-id">#{node.unique_id}</span><span>{node.label}</span></button>)}</div>
     </aside>
 
-    <main className="main-panel"><GraphCanvas graph={graph} selectedId={selectedId} matchedIds={matchedIds} onSelect={setSelectedId} onOpenCard={setStudyCardId} profile={profile} focus={focus} key={graph.graph_id + fileName} /></main>
+    <main className="main-panel"><GraphCanvas graph={graph} selectedId={selectedId} matchedIds={matchedIds} onSelect={setSelectedId} onOpenCard={setStudyCardId} profile={profile} focus={focus} initialViewport={initialViewport} onViewportChange={setViewport} key={`${fingerprint}:${graphSerial}`} /></main>
 
     <aside id="semantic-inspector" className="inspector-panel" aria-label="Semantic inspector" hidden={!inspectorOpen}>
       {selected ? <>
@@ -189,6 +222,6 @@ export function App() {
         {(view.outgoing.get(selected.unique_id) ?? []).length ? view.outgoing.get(selected.unique_id)!.map((edge) => relationship(edge, edge.target)) : <p className="empty-copy">No outgoing relationships.</p>}
       </> : <div className="inspector-empty"><div className="empty-icon">◇</div><div className="panel-kicker">SEMANTIC INSPECTOR</div><h2>Select a node to explore its relationships</h2><p>Choose a node in the graph or index to see its original ID, attributes, incoming links, and outgoing links.</p></div>}
     </aside>
-    {profile === "study" && studyCard && <StudyCardDialog node={studyCard} view={view} onClose={closeStudyCard} onNavigate={navigate} />}
+    {profile === "study" && studyCard && <StudyCardDialog node={studyCard} graph={graph} view={view} onClose={closeStudyCard} onNavigate={navigateInStudyCard} />}
   </div>;
 }

@@ -2,6 +2,9 @@ name: semantic_ast
 type: tool
 capability: semantic_code_analysis
 purpose: Dispatch semantic AST parsing, compression, and call graph sub-tools through one interface.
+search_terms:
+  - Python function call graph
+  - code function relations
 status: experimental
 deterministic: true
 interfaces:

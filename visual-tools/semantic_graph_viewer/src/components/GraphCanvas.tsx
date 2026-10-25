@@ -4,6 +4,8 @@ import { colorForKind } from "../data/graph.ts";
 import { cardForNode } from "../data/card.ts";
 import { layoutGraph, NODE_HEIGHT, NODE_WIDTH } from "../data/layout.ts";
 import { nextNodeId, type ArrowDirection } from "../data/navigation.ts";
+import type { SavedViewport } from "../data/session.ts";
+import { wheelZoomFactor } from "../data/zoom.ts";
 
 interface Viewport { x: number; y: number; width: number; height: number }
 interface Props {
@@ -14,6 +16,8 @@ interface Props {
   onOpenCard: (id: number) => void;
   profile: "classic" | "study";
   focus: { id: number; serial: number } | null;
+  initialViewport: SavedViewport | null;
+  onViewportChange: (viewport: SavedViewport) => void;
 }
 
 function lines(label: string): string[] {
@@ -27,7 +31,7 @@ function lines(label: string): string[] {
   return result.slice(0, 2).map((part, index) => index === 1 && result.length > 2 ? `${part.slice(0, 29)}…` : part);
 }
 
-export function GraphCanvas({ graph, selectedId, matchedIds, onSelect, onOpenCard, profile, focus }: Props) {
+export function GraphCanvas({ graph, selectedId, matchedIds, onSelect, onOpenCard, profile, focus, initialViewport, onViewportChange }: Props) {
   const layout = useMemo(() => layoutGraph(graph), [graph]);
   const container = useRef<HTMLDivElement>(null);
   const drag = useRef<{ x: number; y: number; view: Viewport } | null>(null);
@@ -36,6 +40,7 @@ export function GraphCanvas({ graph, selectedId, matchedIds, onSelect, onOpenCar
   const previousSize = useRef<{ width: number; height: number } | null>(null);
   const previousLayout = useRef<typeof layout | null>(null);
   const [view, setView] = useState<Viewport>({ x: 0, y: 0, width: layout.width, height: layout.height });
+  const [viewReady, setViewReady] = useState(false);
   const [hoveredId, setHoveredId] = useState<number | null>(null);
   const positions = layout.positions;
   const activeEdges = useMemo(() => new Set(graph.edges.filter((edge) => edge.source === selectedId || edge.target === selectedId).map((edge) => edge.unique_id)), [graph, selectedId]);
@@ -71,7 +76,14 @@ export function GraphCanvas({ graph, selectedId, matchedIds, onSelect, onOpenCar
     if (size.width <= 0 || size.height <= 0) return;
     const oldSize = previousSize.current;
     if (previousLayout.current !== layout || !oldSize) {
-      fit();
+      if (!oldSize && initialViewport) {
+        const scale = initialViewport.width / initialViewport.canvasWidth;
+        const width = Math.max(280, Math.min(40000, size.width * scale));
+        const height = size.height * width / size.width;
+        const centerX = initialViewport.x + initialViewport.width / 2;
+        const centerY = initialViewport.y + initialViewport.height / 2;
+        setView({ x: centerX - width / 2, y: centerY - height / 2, width, height });
+      } else fit();
     } else if (oldSize.width !== size.width || oldSize.height !== size.height) {
       setView((current) => {
         const scale = current.width / oldSize.width;
@@ -87,7 +99,12 @@ export function GraphCanvas({ graph, selectedId, matchedIds, onSelect, onOpenCar
     }
     previousSize.current = size;
     previousLayout.current = layout;
-  }, [fit, layout, size]);
+    setViewReady(true);
+  }, [fit, initialViewport, layout, size]);
+  useEffect(() => {
+    if (!viewReady || size.width <= 0 || size.height <= 0) return;
+    onViewportChange({ ...view, canvasWidth: size.width, canvasHeight: size.height });
+  }, [onViewportChange, size, view, viewReady]);
   useEffect(() => {
     if (focus === null) return;
     const point = positions.get(focus.id);
@@ -138,7 +155,10 @@ export function GraphCanvas({ graph, selectedId, matchedIds, onSelect, onOpenCar
       return { x: previous.x + (previous.width - width) * fx, y: previous.y + (previous.height - height) * fy, width, height };
     });
   }
-  function wheel(event: WheelEvent<HTMLDivElement>) { event.preventDefault(); zoom(event.deltaY > 0 ? 1.12 : .89, event.clientX, event.clientY); }
+  function wheel(event: WheelEvent<HTMLDivElement>) {
+    event.preventDefault();
+    zoom(wheelZoomFactor(event.deltaY, event.deltaMode, size.height), event.clientX, event.clientY);
+  }
   function down(event: PointerEvent<HTMLDivElement>) {
     if (event.button !== 0) return;
     drag.current = { x: event.clientX, y: event.clientY, view };
@@ -153,11 +173,13 @@ export function GraphCanvas({ graph, selectedId, matchedIds, onSelect, onOpenCar
   function end() { drag.current = null; }
 
   function activateNode(id: number) {
-    onSelect(id);
-    if (profile === "study") {
+    if (profile === "study" && selectedId === id) {
       setHoveredId(null);
       onOpenCard(id);
-    } else container.current?.focus({ preventScroll: true });
+      return;
+    }
+    onSelect(id);
+    container.current?.focus({ preventScroll: true });
   }
 
   return <section className="canvas-section" aria-label="Directed graph canvas">
@@ -209,9 +231,9 @@ export function GraphCanvas({ graph, selectedId, matchedIds, onSelect, onOpenCar
         <span className="study-preview-kind" style={{ color: colorForKind(hovered.kind) }}>{hovered.kind} · #{hovered.unique_id}</span>
         <strong>{hovered.label}</strong>
         <p>{hoveredCard?.summary ?? "Open this card to inspect its details and connections."}</p>
-        <span className="study-preview-hint">Click to open card ↗</span>
+        <span className="study-preview-hint">{selectedId === hovered.unique_id ? "Click to open card ↗" : "Click to select · Click again to open"}</span>
       </div>}
-      <div className="canvas-hint">Drag to pan · Scroll to zoom · {profile === "study" ? "Hover to preview · Click to open a card" : "Arrow keys to move between nodes"}</div>
+      <div className="canvas-hint">Drag to pan · Scroll to zoom · {profile === "study" ? "Click to select · Click again to open" : "Arrow keys to move between nodes"}</div>
     </div>
   </section>;
 }
