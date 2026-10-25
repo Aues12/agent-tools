@@ -29,7 +29,8 @@ ordinary use.
   `operation` and `params` as JSON and return a structured result. They are
   designed for agents to call and remain usable from a terminal.
 - **Skills** describe procedures: inputs, steps, tools, outputs, and validation.
-  The current [meta-skills](meta-skills/) are drafts.
+  [notes_to_semantic_graph](skills/notes_to_semantic_graph/README.md) is an
+  experimental research-to-graph workflow; the [meta-skills](meta-skills/) are drafts.
 - **Standards** define contracts; [registries](registry/) make capabilities
   discoverable. An agent or external runtime can use these interfaces; this
   repository does not provide an execution runtime.
@@ -59,6 +60,7 @@ called through `semantic_ast`; the manuscript tools share the
 
 | Tool | What it does |
 | --- | --- |
+| [tool_discovery](file-tools/tool_discovery/README.md) | Searches and inspects registered tool contracts. |
 | [copy_paste](file-tools/copy_paste/README.md) | Reads, finds, extracts, and inserts text. |
 | [rename_files](file-tools/rename_files/README.md) | Plans or applies filename changes. |
 | [ast_dump](file-tools/ast_dump/README.md) | Produces Python's native AST dump. |
@@ -99,6 +101,9 @@ called through `semantic_ast`; the manuscript tools share the
   and [CPG](file-tools/semantic_cpg/README.md) analyses. The
   [semantic graph viewer](visual-tools/semantic_graph_viewer/README.md) opens
   v0.1.0 graphs from [semantic_graph](file-tools/semantic_graph/README.md).
+- **Turn research into a graph:** Follow the experimental
+  [notes_to_semantic_graph workflow](skills/notes_to_semantic_graph/README.md)
+  to construct and review a source-grounded graph.
 - **Audit a manuscript:** Start with the [book-editing guide](book-editing-tools/README.md).
   Its tools report evidence and uncertainty; editorial decisions remain with
   the user or agent.

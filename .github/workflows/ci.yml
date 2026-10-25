@@ -19,11 +19,13 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Install tool test dependencies
+        run: python -m pip install "PyYAML>=6.0.2,<7" "python-docx>=1.2,<2"
       - name: Run all Python tool suites
         run: python test_all.py
 
   bookbarcode-package:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
@@ -35,3 +37,20 @@ jobs:
         run: |
           python -m pip install build
           python -m build file-tools/isbn_barcode
+
+  graph-viewer:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: visual-tools/semantic_graph_viewer
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: visual-tools/semantic_graph_viewer/package-lock.json
+      - run: npm ci
+      - run: npm test
+      - run: npm run typecheck
+      - run: npm run build
