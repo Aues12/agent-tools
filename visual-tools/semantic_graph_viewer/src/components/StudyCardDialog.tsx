@@ -44,10 +44,10 @@ export function StudyCardDialog({ node, graph, view, onClose, onNavigate }: Prop
     </button>;
   }
 
-  return <dialog ref={dialog} className="study-dialog" aria-labelledby="study-card-title" onCancel={(event) => { event.preventDefault(); onClose(); }} onClick={(event) => { if (event.target === event.currentTarget) onClose(); }}>
+  return <dialog ref={dialog} className="study-dialog" aria-labelledby="study-card-title" aria-keyshortcuts="Escape" onKeyDownCapture={(event) => { if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); onClose(); } }} onCancel={(event) => { event.preventDefault(); onClose(); }} onClick={(event) => { if (event.target === event.currentTarget) onClose(); }}>
     <div className="study-dialog-header">
       <span className="study-dialog-eyebrow">STUDY CARD · NODE #{node.unique_id}</span>
-      <button ref={closeButton} className="study-dialog-close" onClick={onClose} aria-label="Close study card">×</button>
+      <button ref={closeButton} className="study-dialog-close" onClick={onClose} aria-label="Close study card" title="Close (Esc)">×</button>
     </div>
     <div className="study-dialog-body" ref={body}>
       <span className="study-dialog-kind" style={{ color: colorForKind(node.kind), borderColor: colorForKind(node.kind) }}>{node.kind}</span>
@@ -55,11 +55,11 @@ export function StudyCardDialog({ node, graph, view, onClose, onNavigate }: Prop
       {card?.summary && <p className="study-dialog-summary">{card.summary}</p>}
       {card?.sections.map((section, index) => <section className="study-dialog-section" key={`${index}-${section.heading}`}><h3>{section.heading}</h3><p>{section.body}</p></section>)}
       {!card?.summary && !card?.sections.length && <p className="study-dialog-empty">No extended notes are included for this node.</p>}
-      {otherAttributes.length > 0 && <section className="study-dialog-section"><h3>Other attributes</h3><dl className="study-attributes">{otherAttributes.map(([key, value]) => <div key={key}><dt>{key}</dt><dd>{typeof value === "string" ? value : JSON.stringify(value)}</dd></div>)}</dl></section>}
       <StudySources sources={sources} />
       <section className="study-dialog-section"><h3>Connections</h3>
         <div className="study-connections"><div><h4>Incoming <span>{view.incoming.get(node.unique_id)?.length ?? 0}</span></h4>{view.incoming.get(node.unique_id)?.map((edge) => relation(edge, edge.source))}</div><div><h4>Outgoing <span>{view.outgoing.get(node.unique_id)?.length ?? 0}</span></h4>{view.outgoing.get(node.unique_id)?.map((edge) => relation(edge, edge.target))}</div></div>
       </section>
+      {otherAttributes.length > 0 && <section className="study-dialog-section"><h3>Other attributes</h3><dl className="study-attributes">{otherAttributes.map(([key, value]) => <div key={key}><dt>{key}</dt><dd>{typeof value === "string" ? value : JSON.stringify(value)}</dd></div>)}</dl></section>}
     </div>
   </dialog>;
 }
