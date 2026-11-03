@@ -1,6 +1,10 @@
 {
   "version": "0.2.0",
-  "include": ["REPLACE_WITH_SHARED_PATH"],
+  "include": [
+    "REPLACE_WITH_SHARED_PATH"
+  ],
   "exclude": [],
-  "verify_commands": []
+  "verify_commands": [],
+  "source_root": "../../..",
+  "target_root": "../../../../REPLACE_WITH_OTHER_CHECKOUT"
 }

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import argparse
 from fnmatch import fnmatch
 from hashlib import sha256
 import json
@@ -230,6 +231,72 @@ def verify(*, source_root: str | Path, target_root: str | Path,
     return {"results": results, "valid": all(item["returncode"] == 0 for item in results)}
 
 
+def _manifest_roots(manifest_path: str | Path, source_root: str | Path | None,
+                    target_root: str | Path | None) -> tuple[str | Path, str | Path]:
+    """Resolve optional checkout roots relative to the manifest directory."""
+    path = Path(manifest_path).expanduser().resolve()
+    data = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(data, dict):
+        raise ValueError("Manifest must be a JSON object")
+    roots = []
+    for name, explicit in (("source_root", source_root), ("target_root", target_root)):
+        value = explicit if explicit is not None else data.get(name)
+        if not isinstance(value, (str, Path)) or not str(value):
+            raise ValueError(f"{name} must be passed or defined in the manifest")
+        value = Path(value).expanduser()
+        roots.append(value if value.is_absolute() or explicit is not None else path.parent / value)
+    return roots[0], roots[1]
+
+
+def _format_report(operation: str, response: dict) -> str:
+    if not response["success"]:
+        return f"Error: {response['message']}"
+    result = response["result"]
+    if operation == "verify":
+        lines = [f"Verification: {'passed' if result['valid'] else 'failed'}"]
+        for entry in result["results"]:
+            lines.append(f"  {entry['root']}: {' '.join(entry['command'])} -> {entry['returncode']}")
+        return "\n".join(lines)
+    changes = result["changes"]
+    lines = [f"{operation}: {len(changes)} copy candidate(s), {len(result['target_only'])} target-only file(s)"]
+    for entry in changes:
+        lines.append(f"  {entry['kind']}: {entry['path']}")
+        if entry.get("diff"):
+            lines.append(entry["diff"].rstrip())
+    lines.extend(f"  target-only: {path}" for path in result["target_only"])
+    if operation == "plan":
+        lines.append(f"Plan SHA-256: {result['plan_sha256']}")
+    if operation == "apply":
+        lines.append(f"Copied: {result['applied_count']}")
+    lines.append(f"Shared files equal: {'yes' if result['valid'] else 'no'}")
+    return "\n".join(lines)
+
+
+def cli(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Compare or copy selected files between local checkouts")
+    parser.add_argument("operation", choices=["check", "plan", "apply", "verify"])
+    parser.add_argument("--manifest", required=True)
+    parser.add_argument("--source-root")
+    parser.add_argument("--target-root")
+    parser.add_argument("--expected-plan-sha256")
+    parser.add_argument("--include-diff", action="store_true")
+    parser.add_argument("--json", action="store_true", help="Print the full machine-readable result")
+    args = parser.parse_args(argv)
+    try:
+        source, target = _manifest_roots(args.manifest, args.source_root, args.target_root)
+        params = {"source_root": source, "target_root": target, "manifest_path": args.manifest}
+        if args.operation == "apply":
+            params["expected_plan_sha256"] = args.expected_plan_sha256
+        if args.operation in {"check", "plan", "apply"}:
+            params["include_diff"] = args.include_diff
+        response = run({"operation": args.operation, "params": params})
+    except (OSError, ValueError, json.JSONDecodeError) as exc:
+        response = {"success": False, "message": str(exc), "result": None}
+    print(json.dumps(response, ensure_ascii=False, indent=2) if args.json else
+          _format_report(args.operation, response))
+    return 0 if response["success"] and response["result"]["valid"] else 1
+
+
 def run(payload: dict) -> dict:
     """Execute a JSON request and return the repository's standard envelope."""
     try:
@@ -245,6 +312,10 @@ def run(payload: dict) -> dict:
     except (TypeError, ValueError, OSError, json.JSONDecodeError) as exc:
         return {"success": False, "message": str(exc), "result": None,
                 "error": {"type": type(exc).__name__, "message": str(exc)}}
+
+
+if __name__ == "__main__" and len(sys.argv) > 1:
+    raise SystemExit(cli())
 
 
 if __name__ == "__main__":

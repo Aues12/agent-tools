@@ -12,6 +12,7 @@
     "book-editing-tools",
     "experiments",
     "file-tools",
+    "memory",
     "meta-skills",
     "meta-tools",
     "pyproject.toml",
@@ -27,8 +28,9 @@
   "exclude": [
     "skills/**/preferences.md",
     "registry/executor_registry.json",
-    "memory",
     "state",
-    "study-packs"
+    "study-packs",
+    "meta-tools/repo_sync/local_manifests",
+    "meta-tools/repo_sync/examples/wordpress_manifest.json"
   ]
 }

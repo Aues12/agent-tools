@@ -7,9 +7,9 @@ deletes target-only files and never commits or pushes. The caller chooses
 
 `examples/shared_code_manifest.json` selects the current shared code and
 documentation in `agent-tools`. It deliberately omits the root `AGENTS.md`,
-`README.md`, `.gitignore`, `memory/`, `state/`, and `study-packs/`, which can have
-workspace-specific content. It also excludes the dev-only executor registry.
-The shared manifest explicitly excludes those three personal-data directories.
+`README.md`, `.gitignore`, `state/`, and `study-packs/`, which can have
+workspace-specific content. It includes the author’s `memory/` notes. It also excludes the dev-only executor registry.
+The shared manifest explicitly excludes `state/` and `study-packs/`.
 The tool itself protects Git directories, build outputs, symlinks, and local
 skill `preferences.md` files.
 
@@ -34,8 +34,8 @@ tool does not infer which repository is public.
 A v0.2.0 manifest can select the whole checkout with `"include": ["."]`.
 List project-specific private paths in `exclude`; a literal directory excludes
 its descendants. Older manifests are still accepted, but all versions use the same exclusion
-rules. `memory`, `state`, and `study-packs` are ordinary shared paths unless
-excluded. Always review exclusions before copying towards a
+rules. `memory`, `state`, and `study-packs` are ordinary paths that a project can
+include or exclude. Always review exclusions before copying towards a
 public checkout; matching paths and unknown secrets are not automatically found.
 
 `check` reports differing or source-only paths in `changes`, and destination-only
@@ -56,13 +56,32 @@ Commands are trusted project code and can modify files or use the network; revie
 and run them only when appropriate. Pass an optional timeout in seconds. A passing
 verification does not prove that all behavior is identical.
 
-See `examples/wordpress_manifest.json` for a starting point; review its private
+See the WordPress manifest in `examples/` or `local_manifests/` when present for a starting point; review its private
 paths and whether the same test command is applicable to both checkouts. Both
 checkouts may have different dependencies or test suites. Use an absolute
 manifest path when it is outside the source checkout.
 
 `examples/template.json` is a starting template. Replace
-`REPLACE_WITH_SHARED_PATH` with a real relative path before running `check` or
-`plan`; list local-only paths in `exclude`. `verify_commands` is optional; leave
+`REPLACE_WITH_SHARED_PATH` and `REPLACE_WITH_OTHER_CHECKOUT`
+with real paths before running `check` or `plan`; list local-only paths in
+`exclude`. `verify_commands` is optional; leave
 it empty if you do not use `verify`, or provide argument lists such as
 `[["python3", "-m", "unittest"]]`.
+
+## Short terminal commands
+
+A manifest may define `source_root` and `target_root`. Relative roots are
+resolved from the manifest's directory. Command-line `--source-root` and
+`--target-root` override those values. The existing JSON-on-stdin interface
+continues to work.
+
+```bash
+python3 meta-tools/repo_sync/tool.py check --manifest path/to/manifest.json
+python3 meta-tools/repo_sync/tool.py plan --manifest path/to/manifest.json
+python3 meta-tools/repo_sync/tool.py apply --manifest path/to/manifest.json --expected-plan-sha256 DIGEST
+```
+
+Terminal output lists copy candidates and target-only files. Add `--json` for
+the full structured result, or `--include-diff` for text changes. `check` exits
+with status 1 when shared files differ. The same is true of `plan` until the
+repositories match; its plan digest is still printed for `apply`.
