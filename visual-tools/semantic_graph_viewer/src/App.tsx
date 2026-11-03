@@ -128,9 +128,21 @@ export function App() {
     setGraphSerial((current) => current + 1);
   }
 
+  function clearNodeSelection() {
+    setSelectedId(null);
+    setFocus(null);
+    requestAnimationFrame(() => document.querySelector<HTMLElement>(".canvas")?.focus({ preventScroll: true }));
+  }
+
   function closeStudyCard() {
     setStudyCardId(null);
-    requestAnimationFrame(() => document.querySelector<HTMLElement>(".canvas")?.focus({ preventScroll: true }));
+    clearNodeSelection();
+  }
+
+  function handleAppKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    if (event.key !== "Escape" || selectedId === null || studyCardId !== null || optionsOpen) return;
+    event.preventDefault();
+    clearNodeSelection();
   }
 
   async function loadFile(event: ChangeEvent<HTMLInputElement>) {
@@ -156,7 +168,7 @@ export function App() {
     </button>;
   }
 
-  return <div className={`app-shell ${indexOpen ? "" : "index-collapsed"} ${inspectorOpen ? "" : "inspector-collapsed"}`}>
+  return <div className={`app-shell ${indexOpen ? "" : "index-collapsed"} ${inspectorOpen ? "" : "inspector-collapsed"}`} onKeyDown={handleAppKeyDown}>
     <header className="topbar">
       <div className="brand-mark" aria-hidden="true">◈</div>
       <div className="brand"><strong>Semantic <span>Graph Viewer</span></strong><small>Explore the structure behind an artifact</small></div>

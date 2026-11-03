@@ -679,10 +679,10 @@
       "entrypoint": "tool.py",
       "transport": "stdin_json",
       "status": "experimental",
-      "operations": ["check", "plan", "apply"],
+      "operations": ["check", "plan", "apply", "verify"],
       "interfaces": [
         {"name": "stdin_json", "entrypoint": "tool.py", "transport": "stdin_json"},
-        {"name": "python_api", "entrypoint": "tool.py", "callables": ["plan", "sync", "run"]}
+        {"name": "python_api", "entrypoint": "tool.py", "callables": ["plan", "sync", "verify", "run"]}
       ]
     }
   ]

@@ -1,0 +1,6 @@
+{
+  "version": "0.2.0",
+  "include": ["."],
+  "exclude": ["config.json", "data", "output", "AGENTS.md", "prompt-for-codex.md", ".DS_Store"],
+  "verify_commands": [["uv", "run", "pytest"]]
+}
