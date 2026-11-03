@@ -60,3 +60,9 @@ See `examples/wordpress_manifest.json` for a starting point; review its private
 paths and whether the same test command is applicable to both checkouts. Both
 checkouts may have different dependencies or test suites. Use an absolute
 manifest path when it is outside the source checkout.
+
+`examples/template.json` is a starting template. Replace
+`REPLACE_WITH_SHARED_PATH` with a real relative path before running `check` or
+`plan`; list local-only paths in `exclude`. `verify_commands` is optional; leave
+it empty if you do not use `verify`, or provide argument lists such as
+`[["python3", "-m", "unittest"]]`.

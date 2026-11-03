@@ -1,0 +1,6 @@
+{
+  "version": "0.2.0",
+  "include": ["REPLACE_WITH_SHARED_PATH"],
+  "exclude": [],
+  "verify_commands": []
+}
