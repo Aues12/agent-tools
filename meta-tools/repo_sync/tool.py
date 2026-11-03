@@ -5,6 +5,8 @@ from __future__ import annotations
 from fnmatch import fnmatch
 from hashlib import sha256
 import json
+import difflib
+import subprocess
 import os
 from pathlib import Path
 import stat
@@ -15,7 +17,7 @@ import tempfile
 PROTECTED_PARTS = frozenset({
     ".git", ".venv", "venv", "node_modules", "dist", ".pycache",
     "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache",
-    "build", "memory", "state", "study-packs",
+    "build",
 })
 
 
@@ -39,8 +41,9 @@ def _relative(value: str, label: str) -> Path:
     return path
 
 
-def _protected(rel: Path) -> bool:
-    return (any(part in PROTECTED_PARTS or part == ".DS_Store" or part.endswith(".egg-info")
+def _protected(rel: Path, legacy: bool = False) -> bool:
+    return ((legacy and any(part in {"memory", "state", "study-packs"} for part in rel.parts))
+            or any(part in PROTECTED_PARTS or part == ".DS_Store" or part.endswith(".egg-info")
                 for part in rel.parts)
             or rel.name == ".env" or rel.name.startswith(".env.")
             or ("skills" in rel.parts and rel.name == "preferences.md"))
@@ -54,26 +57,27 @@ def _manifest(path: str | Path, source: Path) -> tuple[Path, list[Path], list[st
         raise ValueError("manifest_path must name an existing, non-symlink JSON file")
     raw = file.read_bytes()
     data = json.loads(raw)
-    if not isinstance(data, dict) or data.get("version") != "0.1.0":
-        raise ValueError("Manifest version must be 0.1.0")
+    if not isinstance(data, dict) or data.get("version") not in {"0.1.0", "0.2.0"}:
+        raise ValueError("Manifest version must be 0.1.0 or 0.2.0")
     include = data.get("include")
     exclude = data.get("exclude", [])
     if not isinstance(include, list) or not include or not all(isinstance(x, str) for x in include):
         raise ValueError("Manifest include must be a non-empty list of paths")
     if not isinstance(exclude, list) or not all(isinstance(x, str) for x in exclude):
         raise ValueError("Manifest exclude must be a list of patterns")
-    paths = [_relative(item, "include item") for item in include]
+    legacy = data["version"] == "0.1.0"
+    paths = [Path(".") if item == "." and not legacy else _relative(item, "include item") for item in include]
     if len(set(paths)) != len(paths):
         raise ValueError("Manifest include paths must be unique")
-    if any(_protected(item) for item in paths):
+    if any(_protected(item, legacy) for item in paths):
         raise ValueError("Manifest includes a protected private or generated path")
     for item in exclude:
         _relative(item, "exclude pattern")
-    return file.resolve(), paths, exclude, _digest(raw)
+    return file.resolve(), paths, exclude, _digest(raw), data
 
 
-def _excluded(rel: Path, patterns: list[str]) -> bool:
-    return _protected(rel) or any(fnmatch(rel.as_posix(), pattern) for pattern in patterns)
+def _excluded(rel: Path, patterns: list[str], legacy: bool = False) -> bool:
+    return _protected(rel, legacy) or any(fnmatch(rel.as_posix(), pattern) or rel.as_posix() == pattern.rstrip("/") or rel.as_posix().startswith(pattern.rstrip("/") + "/") for pattern in patterns)
 
 
 def _check_ancestors(root: Path, path: Path) -> None:
@@ -84,7 +88,7 @@ def _check_ancestors(root: Path, path: Path) -> None:
             raise ValueError(f"Symlink in selected path: {current}")
 
 
-def _selected(root: Path, include: list[Path], exclude: list[str], *, require: bool) -> dict[str, Path]:
+def _selected(root: Path, include: list[Path], exclude: list[str], *, require: bool, legacy: bool = False) -> dict[str, Path]:
     result: dict[str, Path] = {}
     for item in include:
         _check_ancestors(root, item)
@@ -94,7 +98,7 @@ def _selected(root: Path, include: list[Path], exclude: list[str], *, require: b
                 raise ValueError(f"Included source path is missing: {item}")
             continue
         if selected.is_file():
-            if not _excluded(item, exclude):
+            if not _excluded(item, exclude, legacy):
                 result[item.as_posix()] = selected
             continue
         if not selected.is_dir():
@@ -105,27 +109,28 @@ def _selected(root: Path, include: list[Path], exclude: list[str], *, require: b
                 rel = (base / name).relative_to(root)
                 if (base / name).is_symlink():
                     raise ValueError(f"Symlink in selected tree: {rel}")
-                if _excluded(rel, exclude):
+                if _excluded(rel, exclude, legacy):
                     dirs.remove(name)
             for name in files:
                 file = base / name
                 rel = file.relative_to(root)
                 if file.is_symlink():
                     raise ValueError(f"Symlink in selected tree: {rel}")
-                if not _excluded(rel, exclude):
+                if not _excluded(rel, exclude, legacy):
                     result[rel.as_posix()] = file
     return result
 
 
-def plan(source_root: str | Path, target_root: str | Path, manifest_path: str | Path) -> dict:
+def plan(source_root: str | Path, target_root: str | Path, manifest_path: str | Path, *, include_diff: bool = False) -> dict:
     """Return all proposed copies and a digest tied to current source and target bytes."""
     source = _root(source_root, "source_root")
     target = _root(target_root, "target_root")
     if source == target or source in target.parents or target in source.parents:
         raise ValueError("Source and target directories must not overlap")
-    manifest, include, exclude, manifest_sha = _manifest(manifest_path, source)
-    sources = _selected(source, include, exclude, require=True)
-    targets = _selected(target, include, exclude, require=False)
+    manifest, include, exclude, manifest_sha, manifest_data = _manifest(manifest_path, source)
+    legacy = manifest_data["version"] == "0.1.0"
+    sources = _selected(source, include, exclude, require=True, legacy=legacy)
+    targets = _selected(target, include, exclude, require=False, legacy=legacy)
     changes = []
     for rel, file in sorted(sources.items()):
         source_sha = _digest(file.read_bytes())
@@ -139,19 +144,29 @@ def plan(source_root: str | Path, target_root: str | Path, manifest_path: str | 
                "manifest_sha256": manifest_sha, "changes": changes,
                "target_only": target_only}
     digest = _digest(json.dumps(subject, sort_keys=True, separators=(",", ":")).encode())
+    if include_diff:
+        for change in changes:
+            try:
+                before = targets[change["path"]].read_text(encoding="utf-8").splitlines(keepends=True) if change["path"] in targets else []
+                after = sources[change["path"]].read_text(encoding="utf-8").splitlines(keepends=True)
+                change["diff"] = "".join(difflib.unified_diff(before, after, fromfile="target/" + change["path"], tofile="source/" + change["path"]))
+            except UnicodeError:
+                change["diff"] = None
     return {"source_root": str(source), "target_root": str(target),
             "manifest_path": str(manifest), "changes": changes,
             "target_only": target_only, "plan_sha256": digest,
             "source_count": len(sources), "target_count": len(targets),
-            "valid": not changes}
+            "valid": not changes and (legacy or not target_only),
+            "excluded_patterns": exclude, "comparison": "byte equality; functional equivalence requires verification"}
 
 
 def sync(operation: str, *, source_root: str | Path, target_root: str | Path,
-         manifest_path: str | Path, expected_plan_sha256: str | None = None) -> dict:
+         manifest_path: str | Path, expected_plan_sha256: str | None = None,
+         include_diff: bool = False) -> dict:
     """Check, plan, or apply selected files after a fresh plan comparison."""
     if operation not in {"check", "plan", "apply"}:
         raise ValueError("operation must be check, plan, or apply")
-    report = plan(source_root, target_root, manifest_path)
+    report = plan(source_root, target_root, manifest_path, include_diff=include_diff)
     if operation == "apply":
         if not expected_plan_sha256 or expected_plan_sha256 != report["plan_sha256"]:
             raise ValueError("expected_plan_sha256 must match a fresh plan")
@@ -181,23 +196,55 @@ def sync(operation: str, *, source_root: str | Path, target_root: str | Path,
                 if temporary is not None:
                     temporary.unlink(missing_ok=True)
         report["applied_count"] = len(report["changes"])
-        report["valid"] = True
+        report["valid"] = not report["target_only"] if _manifest(manifest_path, source)[4]["version"] == "0.2.0" else True
     report["applied"] = operation == "apply"
     return report
+
+
+def verify(*, source_root: str | Path, target_root: str | Path,
+           manifest_path: str | Path, timeout: int = 120) -> dict:
+    """Explicitly run manifest-provided argv commands in both checkouts."""
+    source = _root(source_root, "source_root")
+    target = _root(target_root, "target_root")
+    if source == target or source in target.parents or target in source.parents:
+        raise ValueError("Source and target directories must not overlap")
+    _, _, _, _, manifest = _manifest(manifest_path, source)
+    commands = manifest.get("verify_commands", [])
+    if not isinstance(commands, list) or not commands or any(
+        not isinstance(command, list) or not command or
+        not all(isinstance(arg, str) and arg for arg in command) for command in commands
+    ):
+        raise ValueError("verify_commands must be a non-empty list of argument lists")
+    if not isinstance(timeout, int) or isinstance(timeout, bool) or not 1 <= timeout <= 3600:
+        raise ValueError("timeout must be an integer between 1 and 3600 seconds")
+    results = []
+    for root in (source, target):
+        for command in commands:
+            try:
+                completed = subprocess.run(command, cwd=root, capture_output=True,
+                                           text=True, errors="replace", timeout=timeout,
+                                           check=False)
+                results.append({"root": str(root), "command": command,
+                                "returncode": completed.returncode,
+                                "stdout": completed.stdout, "stderr": completed.stderr})
+            except (OSError, subprocess.TimeoutExpired) as exc:
+                results.append({"root": str(root), "command": command,
+                                "returncode": None, "error": str(exc)})
+    return {"results": results, "valid": all(item["returncode"] == 0 for item in results)}
 
 
 def run(payload: dict) -> dict:
     """Execute a JSON request and return the repository's standard envelope."""
     try:
-        if not isinstance(payload, dict) or payload.get("operation") not in {"check", "plan", "apply"}:
-            raise ValueError("Expected operation check, plan, or apply")
+        if not isinstance(payload, dict) or payload.get("operation") not in {"check", "plan", "apply", "verify"}:
+            raise ValueError("Expected operation check, plan, apply, or verify")
         params = payload.get("params", {})
         if not isinstance(params, dict):
             raise ValueError("params must be an object")
         operation = payload["operation"]
-        result = sync(operation, **params)
+        result = verify(**params) if operation == "verify" else sync(operation, **params)
         return {"success": True, "message": f"repo_sync {operation} completed",
-                "result": result, "meta": {"operation": operation, "read_only": operation != "apply"}}
+                "result": result, "meta": {"operation": operation, "read_only": operation in {"check", "plan"}}}
     except (TypeError, ValueError, OSError, json.JSONDecodeError) as exc:
         return {"success": False, "message": str(exc), "result": None,
                 "error": {"type": type(exc).__name__, "message": str(exc)}}
@@ -210,6 +257,6 @@ if __name__ == "__main__":
         request = {}
     response = run(request)
     print(json.dumps(response, ensure_ascii=False, indent=2))
-    clean_check = not isinstance(request, dict) or request.get("operation") != "check" or (
+    clean_check = not isinstance(request, dict) or request.get("operation") not in {"check", "verify"} or (
         response["success"] and response["result"]["valid"])
     raise SystemExit(0 if response["success"] and clean_check else 1)
