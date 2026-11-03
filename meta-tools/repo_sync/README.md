@@ -9,9 +9,9 @@ deletes target-only files and never commits or pushes. The caller chooses
 documentation in `agent-tools`. It deliberately omits the root `AGENTS.md`,
 `README.md`, `.gitignore`, `memory/`, `state/`, and `study-packs/`, which can have
 workspace-specific content. It also excludes the dev-only executor registry.
-With version 0.1.0 manifests, `repo_sync` refuses to traverse those three
-personal-data directories. All manifest versions protect Git directories, build
-outputs, symlinks, and local skill `preferences.md` files.
+The shared manifest explicitly excludes those three personal-data directories.
+The tool itself protects Git directories, build outputs, symlinks, and local
+skill `preferences.md` files.
 
 Run `plan`, review each proposed path, then pass the returned `plan_sha256` to
 `apply`. Both source and target state are rechecked during apply. A stale plan
@@ -33,13 +33,13 @@ tool does not infer which repository is public.
 
 A v0.2.0 manifest can select the whole checkout with `"include": ["."]`.
 List project-specific private paths in `exclude`; a literal directory excludes
-its descendants. Existing v0.1.0 manifests retain their original private-path
-rules. Version 0.2.0 treats `memory`, `state`, and `study-packs` as ordinary
-shared paths unless excluded. Always review exclusions before copying towards a
+its descendants. Older manifests are still accepted, but all versions use the same exclusion
+rules. `memory`, `state`, and `study-packs` are ordinary shared paths unless
+excluded. Always review exclusions before copying towards a
 public checkout; matching paths and unknown secrets are not automatically found.
 
 `check` reports differing or source-only paths in `changes`, and destination-only
-paths in `target_only`. In v0.2.0 either makes `valid` false. `include_diff: true`
+paths in `target_only`. Either makes `valid` false. `include_diff: true`
 adds a target-to-source unified diff for UTF-8 files (binary files return null).
 A diff can expose file contents and may be large. The plan digest covers file
 hashes and paths, independently of whether the optional diff is requested.

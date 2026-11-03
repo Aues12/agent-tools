@@ -41,9 +41,8 @@ def _relative(value: str, label: str) -> Path:
     return path
 
 
-def _protected(rel: Path, legacy: bool = False) -> bool:
-    return ((legacy and any(part in {"memory", "state", "study-packs"} for part in rel.parts))
-            or any(part in PROTECTED_PARTS or part == ".DS_Store" or part.endswith(".egg-info")
+def _protected(rel: Path) -> bool:
+    return (any(part in PROTECTED_PARTS or part == ".DS_Store" or part.endswith(".egg-info")
                 for part in rel.parts)
             or rel.name == ".env" or rel.name.startswith(".env.")
             or ("skills" in rel.parts and rel.name == "preferences.md"))
@@ -65,19 +64,18 @@ def _manifest(path: str | Path, source: Path) -> tuple[Path, list[Path], list[st
         raise ValueError("Manifest include must be a non-empty list of paths")
     if not isinstance(exclude, list) or not all(isinstance(x, str) for x in exclude):
         raise ValueError("Manifest exclude must be a list of patterns")
-    legacy = data["version"] == "0.1.0"
-    paths = [Path(".") if item == "." and not legacy else _relative(item, "include item") for item in include]
+    paths = [Path(".") if item == "." else _relative(item, "include item") for item in include]
     if len(set(paths)) != len(paths):
         raise ValueError("Manifest include paths must be unique")
-    if any(_protected(item, legacy) for item in paths):
+    if any(_protected(item) for item in paths):
         raise ValueError("Manifest includes a protected private or generated path")
     for item in exclude:
         _relative(item, "exclude pattern")
     return file.resolve(), paths, exclude, _digest(raw), data
 
 
-def _excluded(rel: Path, patterns: list[str], legacy: bool = False) -> bool:
-    return _protected(rel, legacy) or any(fnmatch(rel.as_posix(), pattern) or rel.as_posix() == pattern.rstrip("/") or rel.as_posix().startswith(pattern.rstrip("/") + "/") for pattern in patterns)
+def _excluded(rel: Path, patterns: list[str]) -> bool:
+    return _protected(rel) or any(fnmatch(rel.as_posix(), pattern) or rel.as_posix() == pattern.rstrip("/") or rel.as_posix().startswith(pattern.rstrip("/") + "/") for pattern in patterns)
 
 
 def _check_ancestors(root: Path, path: Path) -> None:
@@ -88,7 +86,7 @@ def _check_ancestors(root: Path, path: Path) -> None:
             raise ValueError(f"Symlink in selected path: {current}")
 
 
-def _selected(root: Path, include: list[Path], exclude: list[str], *, require: bool, legacy: bool = False) -> dict[str, Path]:
+def _selected(root: Path, include: list[Path], exclude: list[str], *, require: bool) -> dict[str, Path]:
     result: dict[str, Path] = {}
     for item in include:
         _check_ancestors(root, item)
@@ -98,7 +96,7 @@ def _selected(root: Path, include: list[Path], exclude: list[str], *, require: b
                 raise ValueError(f"Included source path is missing: {item}")
             continue
         if selected.is_file():
-            if not _excluded(item, exclude, legacy):
+            if not _excluded(item, exclude):
                 result[item.as_posix()] = selected
             continue
         if not selected.is_dir():
@@ -109,14 +107,14 @@ def _selected(root: Path, include: list[Path], exclude: list[str], *, require: b
                 rel = (base / name).relative_to(root)
                 if (base / name).is_symlink():
                     raise ValueError(f"Symlink in selected tree: {rel}")
-                if _excluded(rel, exclude, legacy):
+                if _excluded(rel, exclude):
                     dirs.remove(name)
             for name in files:
                 file = base / name
                 rel = file.relative_to(root)
                 if file.is_symlink():
                     raise ValueError(f"Symlink in selected tree: {rel}")
-                if not _excluded(rel, exclude, legacy):
+                if not _excluded(rel, exclude):
                     result[rel.as_posix()] = file
     return result
 
@@ -127,10 +125,9 @@ def plan(source_root: str | Path, target_root: str | Path, manifest_path: str | 
     target = _root(target_root, "target_root")
     if source == target or source in target.parents or target in source.parents:
         raise ValueError("Source and target directories must not overlap")
-    manifest, include, exclude, manifest_sha, manifest_data = _manifest(manifest_path, source)
-    legacy = manifest_data["version"] == "0.1.0"
-    sources = _selected(source, include, exclude, require=True, legacy=legacy)
-    targets = _selected(target, include, exclude, require=False, legacy=legacy)
+    manifest, include, exclude, manifest_sha, _ = _manifest(manifest_path, source)
+    sources = _selected(source, include, exclude, require=True)
+    targets = _selected(target, include, exclude, require=False)
     changes = []
     for rel, file in sorted(sources.items()):
         source_sha = _digest(file.read_bytes())
@@ -156,7 +153,7 @@ def plan(source_root: str | Path, target_root: str | Path, manifest_path: str | 
             "manifest_path": str(manifest), "changes": changes,
             "target_only": target_only, "plan_sha256": digest,
             "source_count": len(sources), "target_count": len(targets),
-            "valid": not changes and (legacy or not target_only),
+            "valid": not changes and not target_only,
             "excluded_patterns": exclude, "comparison": "byte equality; functional equivalence requires verification"}
 
 
@@ -196,7 +193,7 @@ def sync(operation: str, *, source_root: str | Path, target_root: str | Path,
                 if temporary is not None:
                     temporary.unlink(missing_ok=True)
         report["applied_count"] = len(report["changes"])
-        report["valid"] = not report["target_only"] if _manifest(manifest_path, source)[4]["version"] == "0.2.0" else True
+        report["valid"] = not report["target_only"]
     report["applied"] = operation == "apply"
     return report
 

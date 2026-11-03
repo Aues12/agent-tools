@@ -26,8 +26,8 @@ class RepoSyncTests(unittest.TestCase):
         (self.target / "study-packs").mkdir()
         (self.target / "study-packs" / "notes.pdf").write_bytes(b"private notes")
         self.manifest = base / "manifest.json"
-        self.manifest.write_text(json.dumps({"version": "0.1.0", "include": ["code"],
-                                             "exclude": ["code/**/preferences.md"]}))
+        self.manifest.write_text(json.dumps({"version": "0.2.0", "include": ["code"],
+                                             "exclude": ["code/**/preferences.md", "study-packs"]}))
 
     def params(self):
         return {"source_root": self.source, "target_root": self.target,
@@ -44,7 +44,7 @@ class RepoSyncTests(unittest.TestCase):
         self.assertEqual((self.target / "code" / "tool.py").read_text(), "new code\n")
         self.assertEqual((self.target / "code" / "dev_only.py").read_text(), "dev only\n")
         self.assertEqual((self.target / "study-packs" / "notes.pdf").read_bytes(), b"private notes")
-        self.assertTrue(sync("check", **self.params())["valid"])
+        self.assertFalse(sync("check", **self.params())["valid"])
 
     def test_stale_source_or_target_cannot_be_applied(self):
         first = plan(**self.params())
@@ -59,11 +59,11 @@ class RepoSyncTests(unittest.TestCase):
                          "expected_plan_sha256": second["plan_sha256"]}})["success"])
 
     def test_protected_paths_and_traversal_are_rejected(self):
-        self.manifest.write_text(json.dumps({"version": "0.1.0", "include": ["study-packs"]}))
+        self.manifest.write_text(json.dumps({"version": "0.2.0", "include": [".git"]}))
         self.assertFalse(run({"operation": "plan", "params": self.params()})["success"])
-        self.manifest.write_text(json.dumps({"version": "0.1.0", "include": ["../outside"]}))
+        self.manifest.write_text(json.dumps({"version": "0.2.0", "include": ["../outside"]}))
         self.assertFalse(run({"operation": "plan", "params": self.params()})["success"])
-        self.manifest.write_text(json.dumps({"version": "0.1.0", "include": ["code"]}))
+        self.manifest.write_text(json.dumps({"version": "0.2.0", "include": ["code"]}))
         self.assertFalse(run({"operation": "plan", "params": {
             "source_root": self.source, "target_root": self.source,
             "manifest_path": self.manifest}})["success"])
@@ -75,7 +75,7 @@ class RepoSyncTests(unittest.TestCase):
         (self.source / "skills" / "sample").mkdir(parents=True)
         (self.source / "skills" / "sample" / "SKILL.yaml").write_text("name: sample\n")
         (self.source / "skills" / "sample" / "preferences.md").write_text("private")
-        self.manifest.write_text(json.dumps({"version": "0.1.0", "include": ["skills"]}))
+        self.manifest.write_text(json.dumps({"version": "0.2.0", "include": ["skills"]}))
         report = plan(**self.params())
         self.assertEqual([entry["path"] for entry in report["changes"]],
                          ["skills/sample/SKILL.yaml"])
