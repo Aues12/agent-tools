@@ -3,8 +3,10 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import tool
 from tool import plan, run, sync
 
 
@@ -57,6 +59,23 @@ class RepoSyncTests(unittest.TestCase):
         (self.target / "code" / "tool.py").write_text("local edit\n")
         self.assertFalse(run({"operation": "apply", "params": {**self.params(),
                          "expected_plan_sha256": second["plan_sha256"]}})["success"])
+
+    def test_failed_second_copy_restores_first_copy(self):
+        report = plan(**self.params())
+        replace = tool.os.replace
+
+        def fail_second(source, destination):
+            if Path(destination).name == "tool.py":
+                raise OSError("simulated write failure")
+            return replace(source, destination)
+
+        with patch.object(tool.os, "replace", side_effect=fail_second):
+            result = run({"operation": "apply", "params": {**self.params(),
+                          "expected_plan_sha256": report["plan_sha256"]}})
+        self.assertFalse(result["success"])
+        self.assertFalse((self.target / "code" / "added.py").exists())
+        self.assertEqual((self.target / "code" / "tool.py").read_text(), "old code\n")
+        self.assertEqual(list(self.target.glob(".repo-sync-*")), [])
 
     def test_protected_paths_and_traversal_are_rejected(self):
         self.manifest.write_text(json.dumps({"version": "0.2.0", "include": [".git"]}))

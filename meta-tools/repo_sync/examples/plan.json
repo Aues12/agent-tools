@@ -1,1 +1,1 @@
-{"operation":"plan","params":{"source_root":"/path/to/agent-tools","target_root":"/path/to/agent-tools-dev","manifest_path":"meta-tools/repo_sync/examples/shared_code_manifest.json"}}
+{"operation":"plan","params":{"source_root":"/path/to/source-checkout","target_root":"/path/to/target-checkout","manifest_path":"/path/to/manifest.json"}}

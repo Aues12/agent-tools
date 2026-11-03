@@ -10,6 +10,7 @@ import difflib
 import subprocess
 import os
 from pathlib import Path
+import shutil
 import stat
 import sys
 import tempfile
@@ -170,29 +171,67 @@ def sync(operation: str, *, source_root: str | Path, target_root: str | Path,
             raise ValueError("expected_plan_sha256 must match a fresh plan")
         source = Path(report["source_root"])
         target = Path(report["target_root"])
-        for change in report["changes"]:
-            rel = Path(change["path"])
-            _check_ancestors(target, rel)
-            source_file = source / rel
-            destination = target / rel
-            data = source_file.read_bytes()
-            if _digest(data) != change["source_sha256"]:
-                raise ValueError(f"Source changed during apply: {rel}")
-            observed = _digest(destination.read_bytes()) if destination.is_file() else None
-            if observed != change["target_sha256"]:
-                raise ValueError(f"Target changed during apply: {rel}")
-            destination.parent.mkdir(parents=True, exist_ok=True)
-            temporary = None
+        # Stage every replacement and backup before touching a selected target.
+        with tempfile.TemporaryDirectory(prefix=".repo-sync-", dir=target) as staging_name:
+            staging = Path(staging_name)
+            prepared = []
+            for index, change in enumerate(report["changes"]):
+                rel = Path(change["path"])
+                _check_ancestors(target, rel)
+                source_file = source / rel
+                destination = target / rel
+                data = source_file.read_bytes()
+                if _digest(data) != change["source_sha256"]:
+                    raise ValueError(f"Source changed during apply: {rel}")
+                observed = _digest(destination.read_bytes()) if destination.is_file() else None
+                if observed != change["target_sha256"]:
+                    raise ValueError(f"Target changed during apply: {rel}")
+                replacement = staging / f"new-{index}"
+                replacement.write_bytes(data)
+                os.chmod(replacement, stat.S_IMODE(source_file.stat().st_mode))
+                backup = None
+                if observed is not None:
+                    backup = staging / f"old-{index}"
+                    shutil.copy2(destination, backup)
+                    if _digest(backup.read_bytes()) != observed:
+                        raise ValueError(f"Target changed during apply: {rel}")
+                prepared.append((change, rel, destination, replacement, backup))
+            applied = []
+            created_dirs = []
             try:
-                with tempfile.NamedTemporaryFile(dir=destination.parent, prefix=".repo-sync-",
-                                                 delete=False) as handle:
-                    temporary = Path(handle.name)
-                    handle.write(data)
-                os.chmod(temporary, stat.S_IMODE(source_file.stat().st_mode))
-                os.replace(temporary, destination)
-            finally:
-                if temporary is not None:
-                    temporary.unlink(missing_ok=True)
+                for change, rel, destination, replacement, backup in prepared:
+                    _check_ancestors(target, rel)
+                    observed = _digest(destination.read_bytes()) if destination.is_file() else None
+                    if observed != change["target_sha256"]:
+                        raise ValueError(f"Target changed during apply: {rel}")
+                    missing = []
+                    parent = destination.parent
+                    while parent != target and not parent.exists():
+                        missing.append(parent)
+                        parent = parent.parent
+                    for directory in reversed(missing):
+                        directory.mkdir()
+                        created_dirs.append(directory)
+                    os.replace(replacement, destination)
+                    applied.append((destination, backup))
+            except BaseException as exc:
+                rollback_errors = []
+                for destination, backup in reversed(applied):
+                    try:
+                        if backup is None:
+                            destination.unlink()
+                        else:
+                            os.replace(backup, destination)
+                    except OSError as rollback_exc:
+                        rollback_errors.append(f"{destination}: {rollback_exc}")
+                for directory in reversed(created_dirs):
+                    try:
+                        directory.rmdir()
+                    except OSError:
+                        pass
+                if rollback_errors:
+                    raise OSError("Apply failed and rollback was incomplete: " + "; ".join(rollback_errors)) from exc
+                raise
         report["applied_count"] = len(report["changes"])
         report["valid"] = not report["target_only"]
     report["applied"] = operation == "apply"
