@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "0.2.0",
   "include": [
     ".github",
     "BookBarcode_trial_analysis.md",
@@ -12,6 +12,7 @@
     "book-editing-tools",
     "experiments",
     "file-tools",
+    "memory",
     "meta-skills",
     "meta-tools",
     "pyproject.toml",
@@ -26,6 +27,10 @@
   ],
   "exclude": [
     "skills/**/preferences.md",
-    "registry/executor_registry.json"
+    "registry/executor_registry.json",
+    "state",
+    "study-packs",
+    "meta-tools/repo_sync/local_manifests",
+    "meta-tools/repo_sync/examples/wordpress_manifest.json"
   ]
 }

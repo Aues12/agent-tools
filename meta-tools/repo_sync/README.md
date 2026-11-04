@@ -1,62 +1,67 @@
 # repo_sync
 
-Copy shared files from one local checkout to another without copying private
-data. This is a one-way file tool, not a Git merge or a publisher. It never
-deletes target-only files and never commits or pushes. The caller chooses
-`source_root` and `target_root`; the included paths come from a JSON manifest.
+`repo_sync` compares selected files in two local checkouts and can copy changes
+from the source to the target. Use it when you want a reviewed, one-way file
+copy without making a Git commit. It does not merge changes or delete files
+that exist only in the target.
 
-`examples/shared_code_manifest.json` selects the current shared code and
-documentation in `agent-tools`. It deliberately omits the root `AGENTS.md`,
-`README.md`, `.gitignore`, `memory/`, `state/`, and `study-packs/`, which can have
-workspace-specific content. It also excludes the dev-only executor registry.
-With version 0.1.0 manifests, `repo_sync` refuses to traverse those three
-personal-data directories. All manifest versions protect Git directories, build
-outputs, symlinks, and local skill `preferences.md` files.
+Selection comes from a JSON manifest. The tool protects Git directories,
+common build outputs, symlinks, and skill `preferences.md` files; other private
+paths must be listed in the manifest's `exclude` array. Review the manifest
+before copying, especially towards a public checkout.
 
-Run `plan`, review each proposed path, then pass the returned `plan_sha256` to
-`apply`. Both source and target state are rechecked during apply. A stale plan
-fails before mutation; a change during copying stops the operation. The tool
-does not claim to detect every secret inside allowed files, so review the diff
-before publishing a public repository.
+## Start with a plan
+
+Copy [the manifest template](examples/template.json), replace its two path
+placeholders, and set `include` to the files or directories you want to share.
+Set `exclude` to paths that must stay local. Relative checkout roots in the
+manifest are resolved from the manifest's directory.
+
+From the repository root, run:
 
 ```bash
-python3 meta-tools/repo_sync/tool.py <<'JSON'
-{"operation":"plan","params":{"source_root":"/path/to/agent-tools","target_root":"/path/to/agent-tools-dev","manifest_path":"meta-tools/repo_sync/examples/shared_code_manifest.json"}}
-JSON
+python3 meta-tools/repo_sync/tool.py plan --manifest /path/to/manifest.json --include-diff
+python3 meta-tools/repo_sync/tool.py apply --manifest /path/to/manifest.json --expected-plan-sha256 DIGEST
 ```
 
-For `apply`, use the same parameters plus `"expected_plan_sha256":"..."`.
-Reverse the roots only after reviewing the manifest for that direction. The
-tool does not infer which repository is public.
+Read the proposed paths and diff before `apply`; replace `DIGEST` with the
+`Plan SHA-256` printed by `plan`. `apply` rechecks the plan against both
+checkouts before changing files. To inspect differences without a copy, use
+`check` in place of `plan`. The [example request](examples/plan.json) shows
+the JSON-on-stdin interface; `--json` prints the full structured result from
+the terminal interface.
 
-## General project manifests (version 0.2.0)
+## Manifest and operation details
 
-A v0.2.0 manifest can select the whole checkout with `"include": ["."]`.
-List project-specific private paths in `exclude`; a literal directory excludes
-its descendants. Existing v0.1.0 manifests retain their original private-path
-rules. Version 0.2.0 treats `memory`, `state`, and `study-packs` as ordinary
-shared paths unless excluded. Always review exclusions before copying towards a
-public checkout; matching paths and unknown secrets are not automatically found.
+A version `0.2.0` manifest may use `"include": ["."]` for the whole checkout.
+A literal directory in `exclude` also excludes its descendants. Older
+manifests use the same exclusion rules. The [template](examples/template.json)
+shows optional `source_root`, `target_root`, and `verify_commands`; CLI
+`--source-root` and `--target-root` override the roots in the manifest. Use
+an absolute manifest path when it is outside the source checkout. See the
+[WordPress example](examples/wordpress_manifest.json) for a project-specific
+selection.
 
-`check` reports differing or source-only paths in `changes`, and destination-only
-paths in `target_only`. In v0.2.0 either makes `valid` false. `include_diff: true`
-adds a target-to-source unified diff for UTF-8 files (binary files return null).
-A diff can expose file contents and may be large. The plan digest covers file
-hashes and paths, independently of whether the optional diff is requested.
+`check` and `plan` report source-only or differing files in `changes`, and
+target-only files in `target_only`. Either makes `valid` false. A text diff is
+available with `--include-diff` or `include_diff: true` in a JSON request;
+binary files have no text diff. Diffs may expose file contents. The plan
+digest covers paths and file hashes regardless of whether a diff is requested.
+In the terminal interface, `check` and `plan` exit with status 1 when the
+selected files differ; `plan` still prints its digest. JSON-on-stdin `plan`
+reports the difference in `result.valid` and exits successfully when the
+operation itself succeeds.
 
-`apply` still copies only source files, never removes destination-only files,
-and can overwrite independent edits. Review both versions and resolve conflicts
-before applying: without a common baseline the tool cannot identify which side
-changed or infer deletions. The post-apply result remains invalid if target-only
-shared files exist. Byte equality is not proof of functional equivalence.
+`apply` can overwrite edits made independently in the target. Without a
+common baseline, the tool cannot identify which side changed or infer
+deletions. It stages replacements and backups before copying; if a copy fails,
+it attempts to restore files already changed by that apply. This is not a
+fully atomic operation: other processes can observe intermediate files, and
+a crash or failed rollback can leave partial changes. Target-only files remain,
+so the post-apply result can still have `valid: false`.
 
-The optional `verify` operation explicitly runs each `verify_commands` argument
-list once in each checkout, without a shell, and reports output and exit codes.
-Commands are trusted project code and can modify files or use the network; review
-and run them only when appropriate. Pass an optional timeout in seconds. A passing
-verification does not prove that all behavior is identical.
-
-See `examples/wordpress_manifest.json` for a starting point; review its private
-paths and whether the same test command is applicable to both checkouts. Both
-checkouts may have different dependencies or test suites. Use an absolute
-manifest path when it is outside the source checkout.
+The optional `verify` operation runs each manifest `verify_commands` argument
+list once in each checkout, without a shell. It reports output and exit codes.
+These commands can change files or use the network. The JSON interface accepts
+`timeout` in seconds (default 120, range 1–3600). A passing verification and
+byte equality do not prove functional equivalence.

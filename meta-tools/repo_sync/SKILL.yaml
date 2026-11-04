@@ -7,33 +7,36 @@ interfaces:
   - name: stdin_json
     entrypoint: tool.py
     transport: stdin_json
+  - name: terminal_cli
+    entrypoint: tool.py
+    transport: argv
   - name: python_api
     entrypoint: tool.py
     callables: [plan, sync, verify, run]
 operations:
   - name: check
-    available_via: [stdin_json, python_api]
+    available_via: [stdin_json, terminal_cli, python_api]
     params:
       source_root: {type: string, required: true}
       target_root: {type: string, required: true}
       manifest_path: {type: string, required: true}
     returns: {type: object, description: Differences and target-only files; no writes.}
   - name: plan
-    available_via: [stdin_json, python_api]
+    available_via: [stdin_json, terminal_cli, python_api]
     params:
       source_root: {type: string, required: true}
       target_root: {type: string, required: true}
       manifest_path: {type: string, required: true}
     returns: {type: object, description: Proposed copies and a plan digest.}
   - name: verify
-    available_via: [stdin_json, python_api]
+    available_via: [stdin_json, terminal_cli, python_api]
     params:
       source_root: {type: string, required: true}
       target_root: {type: string, required: true}
       manifest_path: {type: string, required: true}
     returns: {type: object, description: Explicitly runs manifest test commands in each checkout.}
   - name: apply
-    available_via: [stdin_json, python_api]
+    available_via: [stdin_json, terminal_cli, python_api]
     params:
       source_root: {type: string, required: true}
       target_root: {type: string, required: true}

@@ -9,5 +9,4 @@ links to the playground copy. Both copies are intentionally kept.
 and executor runs. Their large generated JSON outputs were removed from the
 working tree because they are reproducible, stale, and carried absolute local
 paths. A separate `forex_checker` analysis and the older book-reference graph
-were removed because they derived from external source material. Their exact
-pre-cleanup state is preserved in the private `agent-tools-dev` repository.
+were removed because they derived from external source material.

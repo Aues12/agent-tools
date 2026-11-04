@@ -20,7 +20,6 @@ The default `public/graphs/book_reference_graph.json` is a small synthetic
 example. Another legacy-format graph can be opened from the sidebar. The
 original large book graph and its obsolete generator were removed from the
 working tree; the generator called a `build_graph` API that no longer exists.
-Their exact history remains in the private `agent-tools-dev` copy.
 
 ## Validate
 
