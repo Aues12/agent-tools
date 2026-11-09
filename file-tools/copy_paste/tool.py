@@ -227,7 +227,9 @@ def _run_read_file(params: dict[str, Any]) -> tuple[dict[str, Any], str]:
 
 
 def _run_find_text(params: dict[str, Any]) -> tuple[dict[str, Any], str]:
-    _validate_allowed_keys(params, {"file", "text", "encoding", "allow_overlap"}, "find_text")
+    _validate_allowed_keys(
+        params, {"file", "text", "encoding", "allow_overlap"}, "find_text"
+    )
     if "file" not in params:
         raise ValueError("find_text requires file")
     if "text" not in params:
@@ -252,7 +254,9 @@ def _run_find_text(params: dict[str, Any]) -> tuple[dict[str, Any], str]:
 
 
 def _run_extract_range(params: dict[str, Any]) -> tuple[dict[str, Any], str]:
-    _validate_allowed_keys(params, {"file", "start", "end", "encoding"}, "extract_range")
+    _validate_allowed_keys(
+        params, {"file", "start", "end", "encoding"}, "extract_range"
+    )
     if "file" not in params:
         raise ValueError("extract_range requires file")
     if "start" not in params:
@@ -278,7 +282,9 @@ def _run_extract_range(params: dict[str, Any]) -> tuple[dict[str, Any], str]:
 
 
 def _run_insert_text(params: dict[str, Any]) -> tuple[dict[str, Any], str]:
-    _validate_allowed_keys(params, {"file", "line", "content", "encoding"}, "insert_text")
+    _validate_allowed_keys(
+        params, {"file", "line", "content", "encoding"}, "insert_text"
+    )
     if "file" not in params:
         raise ValueError("insert_text requires file")
     if "line" not in params:

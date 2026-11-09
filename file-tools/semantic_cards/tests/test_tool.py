@@ -92,9 +92,7 @@ class SemanticCardsToolTests(unittest.TestCase):
             include_statements=False,
         )
 
-        self.assertFalse(
-            any(card["kind"] == "statement" for card in result["cards"])
-        )
+        self.assertFalse(any(card["kind"] == "statement" for card in result["cards"]))
         self.assertTrue(any(card["kind"] == "block" for card in result["cards"]))
 
     def test_block_cards_can_be_disabled(self) -> None:
@@ -108,7 +106,9 @@ class SemanticCardsToolTests(unittest.TestCase):
         kinds = {card["kind"] for card in result["cards"]}
         self.assertNotIn("statement", kinds)
         self.assertNotIn("block", kinds)
-        self.assertIn("function:sample.Worker.run", {card["id"] for card in result["cards"]})
+        self.assertIn(
+            "function:sample.Worker.run", {card["id"] for card in result["cards"]}
+        )
 
     def test_cards_from_file_reads_file(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

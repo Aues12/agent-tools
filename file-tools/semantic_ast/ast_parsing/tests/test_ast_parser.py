@@ -17,8 +17,9 @@ from ast_parser import parse_file, parse_source, run  # noqa: E402
 
 class SemanticAstToolTests(unittest.TestCase):
     def test_parse_source_normalizes_structure(self) -> None:
-        source = dedent(
-            '''
+        source = (
+            dedent(
+                '''
             """Module doc"""
 
             import ast
@@ -33,7 +34,9 @@ class SemanticAstToolTests(unittest.TestCase):
             class Demo:
                 pass
             '''
-        ).strip() + "\n"
+            ).strip()
+            + "\n"
+        )
 
         result = parse_source(source, path="sample.py")
 
@@ -59,16 +62,21 @@ class SemanticAstToolTests(unittest.TestCase):
         self.assertEqual(result["source"], source)
         self.assertEqual(result["body"][0]["source"], "VALUE = 1 + 2")
 
-    def test_parse_source_preserves_string_expression_inside_control_block(self) -> None:
-        source = dedent(
-            '''
+    def test_parse_source_preserves_string_expression_inside_control_block(
+        self,
+    ) -> None:
+        source = (
+            dedent(
+                '''
             def run():
                 """Function doc"""
                 if True:
                     "marker"
                     return 1
             '''
-        ).strip() + "\n"
+            ).strip()
+            + "\n"
+        )
 
         result = parse_source(source)
 

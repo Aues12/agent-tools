@@ -75,7 +75,9 @@ class CompressionTests(unittest.TestCase):
 
         compressed = compress_ast(tree)
 
-        self.assertEqual(compressed, {"type": "custom", "name": "thing", "body": ["value"]})
+        self.assertEqual(
+            compressed, {"type": "custom", "name": "thing", "body": ["value"]}
+        )
 
 
 if __name__ == "__main__":

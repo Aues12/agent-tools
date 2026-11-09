@@ -66,7 +66,13 @@ class CallGraphTests(unittest.TestCase):
 
         self.assertEqual(
             graph["edges"],
-            [{"caller": "Runner.execute", "callee": "Runner.step", "call": "self.step"}],
+            [
+                {
+                    "caller": "Runner.execute",
+                    "callee": "Runner.step",
+                    "call": "self.step",
+                }
+            ],
         )
         self.assertIn("Runner.execute", graph["tree"])
         self.assertIn("Runner.step", graph["tree"])
@@ -181,11 +187,7 @@ class CallGraphTests(unittest.TestCase):
     def _levels(self, graph: dict[str, object]) -> dict[str, int]:
         nodes = graph["nodes"]
         assert isinstance(nodes, list)
-        return {
-            node["id"]: node["level"]
-            for node in nodes
-            if isinstance(node, dict)
-        }
+        return {node["id"]: node["level"] for node in nodes if isinstance(node, dict)}
 
 
 if __name__ == "__main__":

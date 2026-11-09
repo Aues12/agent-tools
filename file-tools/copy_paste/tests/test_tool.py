@@ -88,7 +88,9 @@ class CopyPasteToolTests(unittest.TestCase):
 
             self.assertEqual(path.read_text(encoding="utf-8"), "one\ntwo\n")
 
-    def test_insert_text_appends_after_newline_when_file_has_no_trailing_newline(self) -> None:
+    def test_insert_text_appends_after_newline_when_file_has_no_trailing_newline(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "sample.txt"
             path.write_text("one", encoding="utf-8")

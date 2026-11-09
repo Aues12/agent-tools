@@ -27,7 +27,9 @@ class SemanticCfgBuilderTests(unittest.TestCase):
         )
 
         function = result["functions"][0]
-        edges = {(edge["source"], edge["target"], edge["kind"]) for edge in function["edges"]}
+        edges = {
+            (edge["source"], edge["target"], edge["kind"]) for edge in function["edges"]
+        }
         labels = {node["id"]: node["label"] for node in function["nodes"]}
         by_label = {node["label"]: node["id"] for node in function["nodes"]}
 
@@ -56,13 +58,28 @@ class SemanticCfgBuilderTests(unittest.TestCase):
 
         function = result["functions"][0]
         nodes = {node["label"]: node["id"] for node in function["nodes"]}
-        edges = {(edge["source"], edge["target"], edge["kind"], edge.get("condition")) for edge in function["edges"]}
+        edges = {
+            (edge["source"], edge["target"], edge["kind"], edge.get("condition"))
+            for edge in function["edges"]
+        }
 
         self.assertIn("if flag", nodes)
         self.assertIn("if join", nodes)
-        self.assertTrue(any(edge[0] == nodes["if flag"] and edge[2] == "branch_true" for edge in edges))
-        self.assertTrue(any(edge[0] == nodes["if flag"] and edge[2] == "branch_false" for edge in edges))
-        self.assertTrue(any(edge[0] == nodes["if join"] and edge[2] == "next" for edge in edges))
+        self.assertTrue(
+            any(
+                edge[0] == nodes["if flag"] and edge[2] == "branch_true"
+                for edge in edges
+            )
+        )
+        self.assertTrue(
+            any(
+                edge[0] == nodes["if flag"] and edge[2] == "branch_false"
+                for edge in edges
+            )
+        )
+        self.assertTrue(
+            any(edge[0] == nodes["if join"] and edge[2] == "next" for edge in edges)
+        )
 
     def test_early_return_does_not_fall_through_to_following_statement(self) -> None:
         result = build_cfg_from_source(
@@ -81,13 +98,14 @@ class SemanticCfgBuilderTests(unittest.TestCase):
 
         function = result["functions"][0]
         nodes = function["nodes"]
-        branch_return = next(node for node in nodes if node["kind"] == "return" and node["line"] == 3)
+        branch_return = next(
+            node for node in nodes if node["kind"] == "return" and node["line"] == 3
+        )
         assign = next(node for node in nodes if node["label"] == "assign")
 
         self.assertFalse(
             any(
-                edge["source"] == branch_return["id"]
-                and edge["target"] == assign["id"]
+                edge["source"] == branch_return["id"] and edge["target"] == assign["id"]
                 for edge in function["edges"]
             )
         )
@@ -133,8 +151,12 @@ class SemanticCfgBuilderTests(unittest.TestCase):
 
         function = result["functions"][0]
         loop = next(node for node in function["nodes"] if node["kind"] == "loop")
-        kinds_from_loop = {edge["kind"] for edge in function["edges"] if edge["source"] == loop["id"]}
-        kinds_to_loop = {edge["kind"] for edge in function["edges"] if edge["target"] == loop["id"]}
+        kinds_from_loop = {
+            edge["kind"] for edge in function["edges"] if edge["source"] == loop["id"]
+        }
+        kinds_to_loop = {
+            edge["kind"] for edge in function["edges"] if edge["target"] == loop["id"]
+        }
 
         self.assertIn("loop_body", kinds_from_loop)
         self.assertIn("loop_exit", kinds_from_loop)

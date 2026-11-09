@@ -70,7 +70,9 @@ def run(input_data: dict[str, Any]) -> dict[str, Any]:
                 path=params.get("path"),
                 include_source=bool(params.get("include_source", False)),
             )
-            message = f"Parsed Python source with {len(result['body'])} top-level node(s)"
+            message = (
+                f"Parsed Python source with {len(result['body'])} top-level node(s)"
+            )
         elif normalized_operation == "parse_file":
             result = parse_file(
                 path=params["path"],

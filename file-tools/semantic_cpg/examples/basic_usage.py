@@ -11,8 +11,9 @@ sys.path.insert(0, str(TOOL_DIR))
 from tool import build_cpg_from_source, summarize_cpg  # noqa: E402
 
 
-source = dedent(
-    """
+source = (
+    dedent(
+        """
     def helper(value):
         return value
 
@@ -23,7 +24,9 @@ source = dedent(
             value = b
         return value
     """
-).strip() + "\n"
+    ).strip()
+    + "\n"
+)
 
 cpg = build_cpg_from_source(source, path="example.py")
 summary = summarize_cpg(cpg)

@@ -15,14 +15,17 @@ sys.path.insert(0, str(TOOL_DIR))
 from tool import build_cfg_from_file, build_cfg_from_source, run, summarize_cfg  # noqa: E402
 
 
-SOURCE = dedent(
-    """
+SOURCE = (
+    dedent(
+        """
     def choose(flag):
         if flag:
             return 1
         return 0
     """
-).strip() + "\n"
+    ).strip()
+    + "\n"
+)
 
 
 class SemanticCfgToolTests(unittest.TestCase):
@@ -39,7 +42,9 @@ class SemanticCfgToolTests(unittest.TestCase):
 
         self.assertTrue(response["success"])
         self.assertEqual(response["result"]["type"], "control_flow_graph")
-        self.assertEqual(response["meta"]["normalized_operation"], "build_cfg_from_source")
+        self.assertEqual(
+            response["meta"]["normalized_operation"], "build_cfg_from_source"
+        )
 
     def test_build_cfg_from_file_reads_file(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

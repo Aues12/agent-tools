@@ -105,7 +105,9 @@ class RenameFilesToolTests(unittest.TestCase):
 
             self.assertEqual(result["renamed_count"], 0)
             self.assertEqual(result["conflict_count"], 1)
-            self.assertIn("target path already exists", result["conflicts"][0]["reason"])
+            self.assertIn(
+                "target path already exists", result["conflicts"][0]["reason"]
+            )
 
     def test_outside_target_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

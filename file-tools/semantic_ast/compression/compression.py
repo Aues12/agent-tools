@@ -160,7 +160,6 @@ def compress_generic(node: SemanticNode) -> dict[str, Any]:
     ]
 
     for field in important_fields:
-
         if field in node:
             result[field] = compress_ast(node[field])
 
@@ -181,11 +180,7 @@ def extract_argument_names(node: SemanticNode) -> list[str]:
 
     positional = _get_list(args, "positional_or_keyword")
 
-    return [
-        _get_str(arg, "name")
-        for arg in positional
-        if isinstance(arg, Mapping)
-    ]
+    return [_get_str(arg, "name") for arg in positional if isinstance(arg, Mapping)]
 
 
 def extract_method_names(node: SemanticNode) -> list[str]:
@@ -193,7 +188,6 @@ def extract_method_names(node: SemanticNode) -> list[str]:
     methods: list[str] = []
 
     for item in _get_list(node, "body"):
-
         if isinstance(item, Mapping) and item.get("type") == "function":
             methods.append(_get_str(item, "name"))
 
@@ -202,10 +196,7 @@ def extract_method_names(node: SemanticNode) -> list[str]:
 
 def extract_base_names(node: SemanticNode) -> list[Any]:
 
-    return [
-        compress_ast(base)
-        for base in node.get("bases", [])
-    ]
+    return [compress_ast(base) for base in node.get("bases", [])]
 
 
 def extract_calls(node: Any) -> list[str]:
@@ -221,7 +212,6 @@ def extract_calls(node: Any) -> list[str]:
 def walk_for_calls(node: Any, calls: list[str]) -> None:
 
     if isinstance(node, list):
-
         for item in node:
             walk_for_calls(item, calls)
 
@@ -231,7 +221,6 @@ def walk_for_calls(node: Any, calls: list[str]) -> None:
         return
 
     if node.get("type") == "call":
-
         func = node.get("func")
 
         name = extract_callable_name(func)
@@ -255,7 +244,6 @@ def extract_callable_name(node: Any) -> str | None:
         return node_id if isinstance(node_id, str) else None
 
     if node_type == "attribute":
-
         base = extract_callable_name(node.get("value"))
 
         attr = node.get("attr")
@@ -279,7 +267,6 @@ def clean_dict(data: Mapping[str, Any]) -> dict[str, Any]:
     cleaned: dict[str, Any] = {}
 
     for key, value in data.items():
-
         if value is None:
             continue
 

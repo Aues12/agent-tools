@@ -28,3 +28,8 @@ JSON
 For read-only comparison use `check` with the plan parameters. `verify` runs
 manifest commands and can have side effects. See [README.md](README.md) for
 manifest selection, operation limits, and rollback behavior.
+
+For implementation changes, run the local tests and
+`pyright --pythonversion 3.11 meta-tools/repo_sync/tool.py` from the repository
+root. Output types are declared in `tool.py`; preserve their JSON field names
+and keep runtime validation for external inputs.

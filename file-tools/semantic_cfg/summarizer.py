@@ -47,7 +47,9 @@ def _summarize_function(function: Mapping[str, Any]) -> dict[str, Any]:
             target_label = _node_label(nodes, edge.get("target"))
             kind = edge.get("kind") or "next"
             condition = edge.get("condition")
-            suffix = f" [{condition}]" if isinstance(condition, str) and condition else ""
+            suffix = (
+                f" [{condition}]" if isinstance(condition, str) and condition else ""
+            )
             lines.append(f"{source_label} -> {target_label} via {kind}{suffix}")
 
     if len(lines) == 2:

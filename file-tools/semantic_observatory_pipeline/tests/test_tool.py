@@ -7,7 +7,9 @@ from pathlib import Path
 
 
 TOOL_PATH = Path(__file__).resolve().parents[1] / "tool.py"
-spec = importlib.util.spec_from_file_location("semantic_observatory_pipeline_tool", TOOL_PATH)
+spec = importlib.util.spec_from_file_location(
+    "semantic_observatory_pipeline_tool", TOOL_PATH
+)
 tool = importlib.util.module_from_spec(spec)
 assert spec.loader is not None
 spec.loader.exec_module(tool)
@@ -35,7 +37,9 @@ def calculate_total(price, quantity):
         self.assertGreater(result["stats"]["cpgNodes"], 0)
         self.assertGreater(result["stats"]["cpgEdges"], 0)
         cards = result["ui"]["semanticCards"]
-        function_card = next(card for card in cards if card["id"] == "function:sample.calculate_total")
+        function_card = next(
+            card for card in cards if card["id"] == "function:sample.calculate_total"
+        )
         self.assertEqual(function_card["kind"], "function")
         self.assertEqual(function_card["phase"], "Transformation")
         self.assertIn("dfg", function_card)
@@ -51,10 +55,13 @@ def calculate_total(price, quantity):
         record = card["classification"]
         self.assertEqual(record["targetId"], card["id"])
         self.assertTrue(record["role"]["ambiguous"])
-        self.assertEqual(record["role"]["candidates"], [
-            {"value": "Parser", "keywords": ["read"]},
-            {"value": "Builder", "keywords": ["build"]},
-        ])
+        self.assertEqual(
+            record["role"]["candidates"],
+            [
+                {"value": "Parser", "keywords": ["read"]},
+                {"value": "Builder", "keywords": ["build"]},
+            ],
+        )
         self.assertEqual(record["phase"]["dependsOn"], "role")
         self.assertEqual(record["phase"]["status"], "derived")
 
@@ -62,7 +69,9 @@ def calculate_total(price, quantity):
         records = []
         for name in ("mystery", "parse_value"):
             result = tool.analyze_source(f"def {name}(value):\n    return value\n")
-            card = next(c for c in result["ui"]["semanticCards"] if c["kind"] == "function")
+            card = next(
+                c for c in result["ui"]["semanticCards"] if c["kind"] == "function"
+            )
             records.append(card["classification"]["role"])
         self.assertEqual(records[0]["status"], "fallback")
         self.assertEqual(records[0]["candidates"], [])
@@ -71,16 +80,22 @@ def calculate_total(price, quantity):
         self.assertEqual(records[1]["evidence"]["title"], "parse_value")
 
     def test_adaptation_preserves_input_and_explains_structural_labels(self):
-        cards = {"type": "semantic_cards", "cards": [
-            {"id": "module:read", "kind": "module", "title": "read"},
-            {"id": "statement:import", "kind": "statement", "title": "import"},
-            {"id": "statement:return", "kind": "statement", "title": "return"},
-        ], "relations": []}
+        cards = {
+            "type": "semantic_cards",
+            "cards": [
+                {"id": "module:read", "kind": "module", "title": "read"},
+                {"id": "statement:import", "kind": "statement", "title": "import"},
+                {"id": "statement:return", "kind": "statement", "title": "return"},
+            ],
+            "relations": [],
+        }
         before = copy.deepcopy(cards)
         result = tool.adapt_for_ui(cards)
         self.assertEqual(cards, before)
-        self.assertEqual([c["role"] for c in result["semanticCards"]],
-                         ["Container", "Locator", "Statement"])
+        self.assertEqual(
+            [c["role"] for c in result["semanticCards"]],
+            ["Container", "Locator", "Statement"],
+        )
         for card in result["semanticCards"]:
             record = card["classification"]
             self.assertEqual(record["role"]["value"], card["role"])
@@ -92,17 +107,31 @@ def calculate_total(price, quantity):
         first = tool.analyze_source(source, path="original.py", display_path="shown.py")
         second = tool.analyze_source(source, path="renamed.py")
         changed = tool.analyze_source(source + "# revision\n", path="original.py")
-        self.assertEqual(first["source"]["contentHash"], hashlib.sha256(source.encode("utf-8")).hexdigest())
+        self.assertEqual(
+            first["source"]["contentHash"],
+            hashlib.sha256(source.encode("utf-8")).hexdigest(),
+        )
         self.assertEqual(first["source"]["hashBasis"], "sha256:utf8-decoded-source")
-        self.assertEqual(first["source"]["contentHash"], second["source"]["contentHash"])
-        self.assertNotEqual(first["source"]["contentHash"], changed["source"]["contentHash"])
-        self.assertEqual(first, tool.analyze_source(source, path="original.py", display_path="shown.py"))
+        self.assertEqual(
+            first["source"]["contentHash"], second["source"]["contentHash"]
+        )
+        self.assertNotEqual(
+            first["source"]["contentHash"], changed["source"]["contentHash"]
+        )
+        self.assertEqual(
+            first,
+            tool.analyze_source(source, path="original.py", display_path="shown.py"),
+        )
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "sample.py"
             path.write_text(source, encoding="utf-8")
             from_file = tool.analyze_file(path)
-        self.assertEqual(first["source"]["contentHash"], from_file["source"]["contentHash"])
-        self.assertNotIn("classification", first["artifacts"]["semantic_cards"]["cards"][0])
+        self.assertEqual(
+            first["source"]["contentHash"], from_file["source"]["contentHash"]
+        )
+        self.assertNotIn(
+            "classification", first["artifacts"]["semantic_cards"]["cards"][0]
+        )
 
     def test_file_fingerprint_uses_decoding_and_text_newline_normalization(self):
         source = "# café\ndef identity(value):\n    return value\n"
@@ -110,9 +139,13 @@ def calculate_total(price, quantity):
             path = Path(directory) / "sample.py"
             path.write_bytes(source.replace("\n", "\r\n").encode("latin-1"))
             result = tool.analyze_file(path, encoding="latin-1")
-        response = tool.run({"operation": "analyze_source", "params": {"source": source}})
+        response = tool.run(
+            {"operation": "analyze_source", "params": {"source": source}}
+        )
         self.assertTrue(response["success"])
-        self.assertEqual(result["source"]["contentHash"], response["result"]["source"]["contentHash"])
+        self.assertEqual(
+            result["source"]["contentHash"], response["result"]["source"]["contentHash"]
+        )
         self.assertIn("classification", response["result"]["ui"]["semanticCards"][0])
 
     def test_run_returns_error_envelope_for_invalid_source(self):
@@ -136,7 +169,9 @@ def choose(value):
 
         result = tool.analyze_source(source, path="branching.py")
 
-        kinds = {card["kind"] for card in result["artifacts"]["semantic_cards"]["cards"]}
+        kinds = {
+            card["kind"] for card in result["artifacts"]["semantic_cards"]["cards"]
+        }
         self.assertNotIn("statement", kinds)
         self.assertNotIn("block", kinds)
         self.assertEqual(
@@ -178,7 +213,11 @@ def choose(value):
                     "depth": 1,
                     "level": 1,
                     "qualified_name": "nested.sample.add",
-                    "trace": {"path": "/tmp/nested/sample.py", "line": 2, "end_line": 4},
+                    "trace": {
+                        "path": "/tmp/nested/sample.py",
+                        "line": 2,
+                        "end_line": 4,
+                    },
                 }
             ],
             "relations": [],

@@ -43,15 +43,18 @@ class SemanticAstDispatcherTests(unittest.TestCase):
         self.assertEqual(result["result"]["type"], "module")
 
     def test_run_dispatches_parse_and_call_graph_operation(self) -> None:
-        source = dedent(
-            """
+        source = (
+            dedent(
+                """
             def helper():
                 return 1
 
             def main():
                 return helper()
             """
-        ).strip() + "\n"
+            ).strip()
+            + "\n"
+        )
 
         result = run(
             {

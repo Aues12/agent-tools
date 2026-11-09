@@ -21,7 +21,9 @@ def build_card_index(cards: Mapping[str, Any]) -> dict[str, dict[str, Any]]:
     return result
 
 
-def build_children_index(cards: Mapping[str, Any]) -> dict[str | None, list[dict[str, Any]]]:
+def build_children_index(
+    cards: Mapping[str, Any],
+) -> dict[str | None, list[dict[str, Any]]]:
     """Return parent_id -> child card list mapping."""
     children: dict[str | None, list[dict[str, Any]]] = defaultdict(list)
     for card in _card_list(cards):
@@ -31,7 +33,9 @@ def build_children_index(cards: Mapping[str, Any]) -> dict[str | None, list[dict
     return dict(children)
 
 
-def build_relation_index(cards: Mapping[str, Any]) -> dict[str, dict[str, dict[str, list[str]]]]:
+def build_relation_index(
+    cards: Mapping[str, Any],
+) -> dict[str, dict[str, dict[str, list[str]]]]:
     """Group relations by source and target card ids."""
     index: dict[str, dict[str, dict[str, list[str]]]] = {
         "outgoing": defaultdict(lambda: defaultdict(list)),
@@ -50,10 +54,7 @@ def build_relation_index(cards: Mapping[str, Any]) -> dict[str, dict[str, dict[s
 
     return {
         direction: {
-            card_id: {
-                kind: sorted(set(targets))
-                for kind, targets in kinds.items()
-            }
+            card_id: {kind: sorted(set(targets)) for kind, targets in kinds.items()}
             for card_id, kinds in card_relations.items()
         }
         for direction, card_relations in index.items()

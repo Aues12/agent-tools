@@ -59,8 +59,12 @@ class _CFGBuilder:
 
     def build_function(self, function: SemanticNode) -> FunctionCFG:
         """Build a CFG for one normalized semantic AST function node."""
-        self.function_id = _string(function.get("id"), _string(function.get("name"), "function"))
-        self.function_name = _string(function.get("name"), self.function_id.rsplit(".", 1)[-1])
+        self.function_id = _string(
+            function.get("id"), _string(function.get("name"), "function")
+        )
+        self.function_name = _string(
+            function.get("name"), self.function_id.rsplit(".", 1)[-1]
+        )
         self.node_count = 0
         self.edge_keys = set()
         self.loop_stack = []
@@ -77,8 +81,12 @@ class _CFGBuilder:
             line=_int_or_none(function.get("line")),
             end_line=_int_or_none(function.get("end_line")),
         )
-        entry = CFGNode(id=entry_id, kind="entry", label="entry", scope=self.function_id, depth=0)
-        exit_node = CFGNode(id=exit_id, kind="exit", label="exit", scope=self.function_id, depth=0)
+        entry = CFGNode(
+            id=entry_id, kind="entry", label="entry", scope=self.function_id, depth=0
+        )
+        exit_node = CFGNode(
+            id=exit_id, kind="exit", label="exit", scope=self.function_id, depth=0
+        )
         self._graph().nodes.extend([entry, exit_node])
 
         fallthrough = self._visit_body(
@@ -135,24 +143,62 @@ class _CFGBuilder:
     ) -> list[str]:
         node_type = _string(statement.get("type"), "statement")
         if node_type == "if":
-            return self._handle_if(statement, incoming, depth, incoming_edge_kind, incoming_condition)
+            return self._handle_if(
+                statement, incoming, depth, incoming_edge_kind, incoming_condition
+            )
         if node_type in {"for", "async_for", "while"}:
-            return self._handle_loop(statement, incoming, depth, incoming_edge_kind, incoming_condition)
+            return self._handle_loop(
+                statement, incoming, depth, incoming_edge_kind, incoming_condition
+            )
         if node_type == "try":
-            return self._handle_try(statement, incoming, depth, incoming_edge_kind, incoming_condition)
+            return self._handle_try(
+                statement, incoming, depth, incoming_edge_kind, incoming_condition
+            )
         if node_type == "return":
-            return self._handle_terminal(statement, incoming, depth, incoming_edge_kind, incoming_condition, "return", "return")
+            return self._handle_terminal(
+                statement,
+                incoming,
+                depth,
+                incoming_edge_kind,
+                incoming_condition,
+                "return",
+                "return",
+            )
         if node_type == "raise":
-            return self._handle_terminal(statement, incoming, depth, incoming_edge_kind, incoming_condition, "raise", "exception")
+            return self._handle_terminal(
+                statement,
+                incoming,
+                depth,
+                incoming_edge_kind,
+                incoming_condition,
+                "raise",
+                "exception",
+            )
         if node_type == "break":
-            return self._handle_jump(statement, incoming, depth, incoming_edge_kind, incoming_condition, "break")
+            return self._handle_jump(
+                statement,
+                incoming,
+                depth,
+                incoming_edge_kind,
+                incoming_condition,
+                "break",
+            )
         if node_type == "continue":
-            return self._handle_jump(statement, incoming, depth, incoming_edge_kind, incoming_condition, "continue")
+            return self._handle_jump(
+                statement,
+                incoming,
+                depth,
+                incoming_edge_kind,
+                incoming_condition,
+                "continue",
+            )
         if node_type in {"function", "class"}:
             return incoming
 
         node = self._add_statement_node(statement, depth)
-        self._connect_many(incoming, node.id, incoming_edge_kind, incoming_condition, statement)
+        self._connect_many(
+            incoming, node.id, incoming_edge_kind, incoming_condition, statement
+        )
         return [node.id] if incoming else []
 
     def _handle_if(
@@ -175,7 +221,9 @@ class _CFGBuilder:
             depth=depth,
             statement=statement,
         )
-        self._connect_many(incoming, branch.id, incoming_edge_kind, incoming_condition, statement)
+        self._connect_many(
+            incoming, branch.id, incoming_edge_kind, incoming_condition, statement
+        )
 
         if not incoming:
             return []
@@ -225,7 +273,11 @@ class _CFGBuilder:
     ) -> list[str]:
         node_type = _string(statement.get("type"), "loop")
         if node_type == "async_for":
-            self._warn("PartialAnalysis", "async_for is modeled like for without async runtime semantics.", statement)
+            self._warn(
+                "PartialAnalysis",
+                "async_for is modeled like for without async runtime semantics.",
+                statement,
+            )
 
         loop = self._add_node(
             kind="loop",
@@ -239,11 +291,15 @@ class _CFGBuilder:
             depth=depth,
             statement=statement,
         )
-        self._connect_many(incoming, loop.id, incoming_edge_kind, incoming_condition, statement)
+        self._connect_many(
+            incoming, loop.id, incoming_edge_kind, incoming_condition, statement
+        )
         if not incoming:
             return []
 
-        self.loop_stack.append(_LoopTargets(break_target=after_loop.id, continue_target=loop.id))
+        self.loop_stack.append(
+            _LoopTargets(break_target=after_loop.id, continue_target=loop.id)
+        )
         body_fallthrough = self._visit_body(
             statement.get("body", []),
             incoming=[loop.id],
@@ -283,10 +339,20 @@ class _CFGBuilder:
         incoming_edge_kind: str,
         incoming_condition: str | None,
     ) -> list[str]:
-        self._warn("PartialAnalysis", "try is modeled with normal and handler paths only.", statement)
-        try_node = self._add_node(kind="statement", label="try", depth=depth, statement=statement)
-        after_try = self._add_node(kind="join", label="try join", depth=depth, statement=statement)
-        self._connect_many(incoming, try_node.id, incoming_edge_kind, incoming_condition, statement)
+        self._warn(
+            "PartialAnalysis",
+            "try is modeled with normal and handler paths only.",
+            statement,
+        )
+        try_node = self._add_node(
+            kind="statement", label="try", depth=depth, statement=statement
+        )
+        after_try = self._add_node(
+            kind="join", label="try join", depth=depth, statement=statement
+        )
+        self._connect_many(
+            incoming, try_node.id, incoming_edge_kind, incoming_condition, statement
+        )
         if not incoming:
             return []
 
@@ -357,7 +423,9 @@ class _CFGBuilder:
             depth=depth,
             statement=statement,
         )
-        self._connect_many(incoming, node.id, incoming_edge_kind, incoming_condition, statement)
+        self._connect_many(
+            incoming, node.id, incoming_edge_kind, incoming_condition, statement
+        )
         if incoming:
             self._add_edge(node.id, self._graph().exit, exit_edge_kind, None, statement)
         return []
@@ -371,8 +439,12 @@ class _CFGBuilder:
         incoming_condition: str | None,
         jump_kind: str,
     ) -> list[str]:
-        node = self._add_node(kind=jump_kind, label=jump_kind, depth=depth, statement=statement)
-        self._connect_many(incoming, node.id, incoming_edge_kind, incoming_condition, statement)
+        node = self._add_node(
+            kind=jump_kind, label=jump_kind, depth=depth, statement=statement
+        )
+        self._connect_many(
+            incoming, node.id, incoming_edge_kind, incoming_condition, statement
+        )
         if not incoming:
             return []
 
@@ -381,7 +453,9 @@ class _CFGBuilder:
             return []
 
         targets = self.loop_stack[-1]
-        target = targets.break_target if jump_kind == "break" else targets.continue_target
+        target = (
+            targets.break_target if jump_kind == "break" else targets.continue_target
+        )
         self._add_edge(node.id, target, jump_kind, None, statement)
         return []
 
@@ -408,8 +482,12 @@ class _CFGBuilder:
             label=label,
             scope=self.function_id,
             depth=depth,
-            line=_int_or_none(statement.get("line")) if isinstance(statement, Mapping) else None,
-            end_line=_int_or_none(statement.get("end_line")) if isinstance(statement, Mapping) else None,
+            line=_int_or_none(statement.get("line"))
+            if isinstance(statement, Mapping)
+            else None,
+            end_line=_int_or_none(statement.get("end_line"))
+            if isinstance(statement, Mapping)
+            else None,
         )
         self._graph().nodes.append(node)
         return node
@@ -433,7 +511,11 @@ class _CFGBuilder:
         condition: str | None,
         statement: SemanticNode | None,
     ) -> None:
-        lineno = _int_or_none(statement.get("line")) if isinstance(statement, Mapping) else None
+        lineno = (
+            _int_or_none(statement.get("line"))
+            if isinstance(statement, Mapping)
+            else None
+        )
         key = (source, target, kind, condition, lineno)
         if key in self.edge_keys:
             return
@@ -450,13 +532,37 @@ class _CFGBuilder:
 
     def _warn(self, kind: str, message: str, node: SemanticNode | None) -> None:
         lineno = _int_or_none(node.get("line")) if isinstance(node, Mapping) else None
-        self._graph().warnings.append(CFGWarning(kind=kind, message=message, lineno=lineno))
+        self._graph().warnings.append(
+            CFGWarning(kind=kind, message=message, lineno=lineno)
+        )
 
     def _sort_graph(self) -> None:
         graph = self._graph()
-        graph.nodes.sort(key=lambda node: (node.line is None, node.line or 0, node.depth or 0, node.id))
-        graph.edges.sort(key=lambda edge: (edge.lineno is None, edge.lineno or 0, edge.source, edge.target, edge.kind))
-        graph.warnings.sort(key=lambda warning: (warning.lineno is None, warning.lineno or 0, warning.kind, warning.message))
+        graph.nodes.sort(
+            key=lambda node: (
+                node.line is None,
+                node.line or 0,
+                node.depth or 0,
+                node.id,
+            )
+        )
+        graph.edges.sort(
+            key=lambda edge: (
+                edge.lineno is None,
+                edge.lineno or 0,
+                edge.source,
+                edge.target,
+                edge.kind,
+            )
+        )
+        graph.warnings.sort(
+            key=lambda warning: (
+                warning.lineno is None,
+                warning.lineno or 0,
+                warning.kind,
+                warning.message,
+            )
+        )
 
     def _fixed_node_id(self, kind: str) -> str:
         return f"function:{self.function_id}:{kind}"
@@ -472,13 +578,19 @@ class _CFGBuilder:
 
 def _collect_functions(tree: Any) -> list[dict[str, Any]]:
     functions: list[dict[str, Any]] = []
-    module_path = _string_or_none(tree.get("path")) if isinstance(tree, Mapping) else None
+    module_path = (
+        _string_or_none(tree.get("path")) if isinstance(tree, Mapping) else None
+    )
     module_name = _module_name(module_path)
     _walk_functions(tree, functions, scope=[module_name] if module_name else [])
-    return sorted(functions, key=lambda item: (_int_or_none(item.get("line")) or 0, item["id"]))
+    return sorted(
+        functions, key=lambda item: (_int_or_none(item.get("line")) or 0, item["id"])
+    )
 
 
-def _walk_functions(node: Any, functions: list[dict[str, Any]], scope: list[str]) -> None:
+def _walk_functions(
+    node: Any, functions: list[dict[str, Any]], scope: list[str]
+) -> None:
     if isinstance(node, list):
         for item in node:
             _walk_functions(item, functions, scope)

@@ -15,14 +15,17 @@ sys.path.insert(0, str(TOOL_DIR))
 from tool import build_dfg_from_file, build_dfg_from_source, run, summarize_dfg  # noqa: E402
 
 
-SOURCE = dedent(
-    """
+SOURCE = (
+    dedent(
+        """
     def parse_file(path):
         text = read_file(path)
         tree = ast.parse(text)
         return tree
     """
-).strip() + "\n"
+    ).strip()
+    + "\n"
+)
 
 
 class SemanticDfgToolTests(unittest.TestCase):
@@ -39,7 +42,9 @@ class SemanticDfgToolTests(unittest.TestCase):
 
         self.assertTrue(response["success"])
         self.assertEqual(response["result"]["type"], "data_flow_graph")
-        self.assertEqual(response["meta"]["normalized_operation"], "build_dfg_from_source")
+        self.assertEqual(
+            response["meta"]["normalized_operation"], "build_dfg_from_source"
+        )
 
     def test_build_dfg_from_file_reads_file(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

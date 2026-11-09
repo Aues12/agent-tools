@@ -309,7 +309,9 @@ class _CardBuilder:
             detail={
                 "docstring": node.get("docstring"),
                 "bases": bases,
-                "decorators": [_value_name(item) for item in _list(node.get("decorators"))],
+                "decorators": [
+                    _value_name(item) for item in _list(node.get("decorators"))
+                ],
             },
         )
         for base in bases:
@@ -349,7 +351,9 @@ class _CardBuilder:
                 "args": args,
                 "returns": _value_name(node.get("returns")),
                 "docstring": node.get("docstring"),
-                "decorators": [_value_name(item) for item in _list(node.get("decorators"))],
+                "decorators": [
+                    _value_name(item) for item in _list(node.get("decorators"))
+                ],
             },
         )
         local_name = self._local_name(qualified_name)
@@ -369,12 +373,16 @@ class _CardBuilder:
         qualified_name = f"{parent_qualified_name}.{node_type}@L{line}"
         if not self.include_blocks:
             for field in _BODY_FIELDS:
-                self._visit_body(node.get(field, []), parent_id, parent_qualified_name, depth)
+                self._visit_body(
+                    node.get(field, []), parent_id, parent_qualified_name, depth
+                )
             handlers = node.get("handlers")
             if isinstance(handlers, list):
                 for handler in handlers:
                     if isinstance(handler, Mapping):
-                        self._visit_node(handler, parent_id, parent_qualified_name, depth)
+                        self._visit_node(
+                            handler, parent_id, parent_qualified_name, depth
+                        )
             return
 
         card_id = self._add_card(
@@ -477,7 +485,9 @@ class _CardBuilder:
 
         if parent_id is not None and parent_id in self.card_index:
             self.card_index[parent_id]["children"].append(card_id)
-            self._add_relation("contains", source_id=parent_id, target_id=card_id, node=node)
+            self._add_relation(
+                "contains", source_id=parent_id, target_id=card_id, node=node
+            )
 
         return card_id
 
@@ -523,9 +533,7 @@ class _CardBuilder:
                 for child_id in card.get("children", [])
                 if isinstance(child_id, str) and child_id in self.card_index
             ]
-            numeric_levels = [
-                level for level in child_levels if isinstance(level, int)
-            ]
+            numeric_levels = [level for level in child_levels if isinstance(level, int)]
             card["level"] = max(numeric_levels) if numeric_levels else 1
 
     def _add_relation(
@@ -591,7 +599,7 @@ class _CardBuilder:
         """Remove the module prefix from a qualified name when present."""
         prefix = f"{self.module_qualified_name}."
         if qualified_name.startswith(prefix):
-            return qualified_name[len(prefix):]
+            return qualified_name[len(prefix) :]
         return qualified_name
 
     def _stats(self) -> dict[str, Any]:
@@ -633,7 +641,10 @@ def _parse_request(input_data: Any) -> tuple[str, dict[str, Any]]:
         raise ValueError("cards_from_source requires source")
     if operation == "cards_from_file" and "path" not in params:
         raise ValueError("cards_from_file requires path")
-    if operation in {"summary_view", "tree_view", "card_view"} and "cards" not in params:
+    if (
+        operation in {"summary_view", "tree_view", "card_view"}
+        and "cards" not in params
+    ):
         raise ValueError(f"{operation} requires cards")
     if operation == "card_view" and "card_id" not in params:
         raise ValueError("card_view requires card_id")
@@ -655,7 +666,7 @@ def _module_qualified_name(path_value: Any) -> str:
 
     parts = list(path.with_suffix("").parts)
     if "file-tools" in parts:
-        parts = parts[parts.index("file-tools") + 1:]
+        parts = parts[parts.index("file-tools") + 1 :]
     if parts and parts[-1] == "__init__":
         parts = parts[:-1]
     if not parts:

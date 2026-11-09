@@ -96,9 +96,7 @@ def verify_svg(
         errors.append("bar modules do not encode the expected ISBN")
     if guard_count != 6:
         errors.append("the six guard bars are not all present")
-    readable = root.findall(
-        ".//svg:g[@id='human-readable']/svg:text", namespace
-    )
+    readable = root.findall(".//svg:g[@id='human-readable']/svg:text", namespace)
     if "".join(item.text or "" for item in readable) != normalized_isbn:
         errors.append("human-readable digits do not match the expected ISBN")
     return VerificationResult(tuple(errors))

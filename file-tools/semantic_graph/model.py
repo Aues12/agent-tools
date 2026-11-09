@@ -213,9 +213,13 @@ class Graph:
         edge_ids = [edge.unique_id for edge in self.edges]
         _validate_ids(node_ids, "node")
         _validate_ids(edge_ids, "edge")
-        if not isinstance(self.next_node_id, int) or self.next_node_id < _next_id(self.nodes):
+        if not isinstance(self.next_node_id, int) or self.next_node_id < _next_id(
+            self.nodes
+        ):
             raise ValueError("next_node_id must be greater than every node identity")
-        if not isinstance(self.next_edge_id, int) or self.next_edge_id < _next_id(self.edges):
+        if not isinstance(self.next_edge_id, int) or self.next_edge_id < _next_id(
+            self.edges
+        ):
             raise ValueError("next_edge_id must be greater than every edge identity")
         if not isinstance(self.revision, int) or self.revision < 0:
             raise ValueError("revision must be a non-negative integer")
@@ -234,7 +238,9 @@ def _items(value: Any, field_name: str) -> Iterable[Mapping[str, Any]]:
 
     if value is None:
         return []
-    if not isinstance(value, list) or not all(isinstance(item, Mapping) for item in value):
+    if not isinstance(value, list) or not all(
+        isinstance(item, Mapping) for item in value
+    ):
         raise ValueError(f"{field_name} must be a list of objects")
     return value
 
@@ -248,7 +254,10 @@ def _next_id(items: Iterable[Any]) -> int:
 def _validate_ids(values: List[int], object_name: str) -> None:
     """Validate graph-local positive integer identities."""
 
-    if any(isinstance(value, bool) or not isinstance(value, int) or value < 1 for value in values):
+    if any(
+        isinstance(value, bool) or not isinstance(value, int) or value < 1
+        for value in values
+    ):
         raise ValueError(f"{object_name} unique_id values must be positive integers")
     if len(values) != len(set(values)):
         raise ValueError(f"{object_name} unique_id values must be unique")

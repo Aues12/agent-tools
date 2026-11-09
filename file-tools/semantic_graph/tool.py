@@ -22,7 +22,9 @@ def create_graph(
 ) -> Dict[str, Any]:
     """Create and serialize an empty general graph."""
 
-    return Graph(graph_id=graph_id, title=title, attributes=dict(attributes or {})).to_dict()
+    return Graph(
+        graph_id=graph_id, title=title, attributes=dict(attributes or {})
+    ).to_dict()
 
 
 def add_node(

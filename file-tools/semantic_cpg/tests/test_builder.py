@@ -71,7 +71,9 @@ class SemanticCpgBuilderTests(unittest.TestCase):
             path="calls.py",
         )
 
-        function_ids = {node["id"] for node in result["nodes"] if node["kind"] == "function"}
+        function_ids = {
+            node["id"] for node in result["nodes"] if node["kind"] == "function"
+        }
         call_edges = [edge for edge in result["edges"] if edge["kind"] == "calls"]
 
         self.assertEqual(len(call_edges), 1)

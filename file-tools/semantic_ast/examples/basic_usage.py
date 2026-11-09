@@ -25,8 +25,7 @@ def main():
     response = run(
         {
             "operation": "parse_and_build_call_graph",
-            "params": {"source": source, 
-                       "path": "example.py"},
+            "params": {"source": source, "path": "example.py"},
         }
     )
     print(json.dumps(response, ensure_ascii=False, indent=2))

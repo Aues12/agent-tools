@@ -38,9 +38,9 @@ def render_svg(
         f'  <title id="title">{escape(normalized_display)} barcode</title>',
         (
             f'  <desc id="desc">EAN-13 ISBN {escape(normalized_isbn)}; '
-            f'C:0 M:0 Y:0 K:100; module {_mm(resolved_layout.module_width_mm)} mm.</desc>'
+            f"C:0 M:0 Y:0 K:100; module {_mm(resolved_layout.module_width_mm)} mm.</desc>"
         ),
-        f'  <style>.ink-black {{ fill: #000000; fill: {SVG_CMYK_BLACK}; }}</style>',
+        f"  <style>.ink-black {{ fill: #000000; fill: {SVG_CMYK_BLACK}; }}</style>",
         f'  <rect width="{width}" height="{height}" fill="#ffffff"/>',
         (
             f'  <text id="isbn-title" class="ink-black" data-cmyk="{CMYK_BLACK}" '
@@ -48,7 +48,7 @@ def render_svg(
             f'y="{_mm(resolved_layout.title_baseline_mm)}" text-anchor="middle" '
             'font-family="Arial, Helvetica, sans-serif" '
             f'font-size="{_mm(resolved_layout.title_font_size_mm)}">'
-            f'{escape(normalized_display)}</text>'
+            f"{escape(normalized_display)}</text>"
         ),
         (
             f'  <g id="bars" class="ink-black" data-cmyk="{CMYK_BLACK}" '

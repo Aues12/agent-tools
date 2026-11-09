@@ -5,7 +5,9 @@ import importlib.util
 
 
 TOOL_PATH = Path(__file__).resolve().parents[1] / "tool.py"
-spec = importlib.util.spec_from_file_location("semantic_observatory_pipeline_tool", TOOL_PATH)
+spec = importlib.util.spec_from_file_location(
+    "semantic_observatory_pipeline_tool", TOOL_PATH
+)
 tool = importlib.util.module_from_spec(spec)
 assert spec.loader is not None
 spec.loader.exec_module(tool)

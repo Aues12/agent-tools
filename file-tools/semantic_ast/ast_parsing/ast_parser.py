@@ -26,7 +26,9 @@ def run(input_data: dict[str, Any]) -> dict[str, Any]:
                 path=params.get("path"),
                 include_source=bool(params.get("include_source", False)),
             )
-            message = f"Parsed Python source with {len(result['body'])} top-level node(s)"
+            message = (
+                f"Parsed Python source with {len(result['body'])} top-level node(s)"
+            )
         else:
             result = parse_file(
                 path=params["path"],
@@ -204,7 +206,8 @@ def _normalize_statement(
                 "line": _line_number(node),
                 "end_line": _end_line_number(node),
                 "targets": [
-                    _normalize_expr(target, source, include_source) for target in node.targets
+                    _normalize_expr(target, source, include_source)
+                    for target in node.targets
                 ],
                 "value": _normalize_value(node.value, source, include_source),
             },
@@ -393,12 +396,15 @@ def _normalize_function(
         "end_line": _end_line_number(node),
         "name": node.name,
         "decorators": [
-            _normalize_value(decorator, source, include_source) for decorator in node.decorator_list
+            _normalize_value(decorator, source, include_source)
+            for decorator in node.decorator_list
         ],
         "args": _normalize_arguments(node.args, source, include_source),
         "returns": _normalize_value(node.returns, source, include_source),
         "docstring": ast.get_docstring(node),
-        "body": _normalize_body(node.body, source, include_source, strip_docstring=True),
+        "body": _normalize_body(
+            node.body, source, include_source, strip_docstring=True
+        ),
     }
     return _attach_source(result, node, source, include_source)
 
@@ -414,12 +420,20 @@ def _normalize_class(
         "end_line": _end_line_number(node),
         "name": node.name,
         "decorators": [
-            _normalize_value(decorator, source, include_source) for decorator in node.decorator_list
+            _normalize_value(decorator, source, include_source)
+            for decorator in node.decorator_list
         ],
-        "bases": [_normalize_value(base, source, include_source) for base in node.bases],
-        "keywords": [_normalize_keyword(keyword, source, include_source) for keyword in node.keywords],
+        "bases": [
+            _normalize_value(base, source, include_source) for base in node.bases
+        ],
+        "keywords": [
+            _normalize_keyword(keyword, source, include_source)
+            for keyword in node.keywords
+        ],
         "docstring": ast.get_docstring(node),
-        "body": _normalize_body(node.body, source, include_source, strip_docstring=True),
+        "body": _normalize_body(
+            node.body, source, include_source, strip_docstring=True
+        ),
     }
     return _attach_source(result, node, source, include_source)
 
@@ -454,7 +468,9 @@ def _normalize_with(
         "type": with_type,
         "line": _line_number(node),
         "end_line": _end_line_number(node),
-        "items": [_normalize_withitem(item, source, include_source) for item in node.items],
+        "items": [
+            _normalize_withitem(item, source, include_source) for item in node.items
+        ],
         "body": _normalize_body(node.body, source, include_source),
     }
     return _attach_source(result, node, source, include_source)
@@ -496,15 +512,24 @@ def _normalize_arguments(
     return {
         "type": "arguments",
         "positional_only": [
-            _normalize_arg(arg, source, include_source) for arg in getattr(node, "posonlyargs", [])
+            _normalize_arg(arg, source, include_source)
+            for arg in getattr(node, "posonlyargs", [])
         ],
         "positional_or_keyword": [
             _normalize_arg(arg, source, include_source) for arg in node.args
         ],
-        "vararg": _normalize_arg(node.vararg, source, include_source) if node.vararg else None,
-        "keyword_only": [_normalize_arg(arg, source, include_source) for arg in node.kwonlyargs],
-        "kwarg": _normalize_arg(node.kwarg, source, include_source) if node.kwarg else None,
-        "defaults": [_normalize_value(item, source, include_source) for item in node.defaults],
+        "vararg": _normalize_arg(node.vararg, source, include_source)
+        if node.vararg
+        else None,
+        "keyword_only": [
+            _normalize_arg(arg, source, include_source) for arg in node.kwonlyargs
+        ],
+        "kwarg": _normalize_arg(node.kwarg, source, include_source)
+        if node.kwarg
+        else None,
+        "defaults": [
+            _normalize_value(item, source, include_source) for item in node.defaults
+        ],
         "kw_defaults": [
             _normalize_value(item, source, include_source) for item in node.kw_defaults
         ],
@@ -600,8 +625,13 @@ def _normalize_expr(
                 "line": _line_number(node),
                 "end_line": _end_line_number(node),
                 "func": _normalize_value(node.func, source, include_source),
-                "args": [_normalize_value(arg, source, include_source) for arg in node.args],
-                "keywords": [_normalize_keyword(keyword, source, include_source) for keyword in node.keywords],
+                "args": [
+                    _normalize_value(arg, source, include_source) for arg in node.args
+                ],
+                "keywords": [
+                    _normalize_keyword(keyword, source, include_source)
+                    for keyword in node.keywords
+                ],
             },
             node,
             source,
@@ -644,7 +674,10 @@ def _normalize_expr(
                 "line": _line_number(node),
                 "end_line": _end_line_number(node),
                 "operator": operator,
-                "values": [_normalize_value(value, source, include_source) for value in node.values],
+                "values": [
+                    _normalize_value(value, source, include_source)
+                    for value in node.values
+                ],
             },
             node,
             source,
@@ -673,7 +706,9 @@ def _normalize_expr(
                 "type": "list",
                 "line": _line_number(node),
                 "end_line": _end_line_number(node),
-                "elements": [_normalize_value(item, source, include_source) for item in node.elts],
+                "elements": [
+                    _normalize_value(item, source, include_source) for item in node.elts
+                ],
             },
             node,
             source,
@@ -685,7 +720,9 @@ def _normalize_expr(
                 "type": "tuple",
                 "line": _line_number(node),
                 "end_line": _end_line_number(node),
-                "elements": [_normalize_value(item, source, include_source) for item in node.elts],
+                "elements": [
+                    _normalize_value(item, source, include_source) for item in node.elts
+                ],
             },
             node,
             source,
@@ -697,7 +734,9 @@ def _normalize_expr(
                 "type": "set",
                 "line": _line_number(node),
                 "end_line": _end_line_number(node),
-                "elements": [_normalize_value(item, source, include_source) for item in node.elts],
+                "elements": [
+                    _normalize_value(item, source, include_source) for item in node.elts
+                ],
             },
             node,
             source,
@@ -775,7 +814,10 @@ def _normalize_expr(
                 "type": "joined_string",
                 "line": _line_number(node),
                 "end_line": _end_line_number(node),
-                "parts": [_normalize_value(part, source, include_source) for part in node.values],
+                "parts": [
+                    _normalize_value(part, source, include_source)
+                    for part in node.values
+                ],
             },
             node,
             source,
@@ -789,7 +831,9 @@ def _normalize_expr(
                 "end_line": _end_line_number(node),
                 "value": _normalize_value(node.value, source, include_source),
                 "conversion": node.conversion,
-                "format_spec": _normalize_value(node.format_spec, source, include_source),
+                "format_spec": _normalize_value(
+                    node.format_spec, source, include_source
+                ),
             },
             node,
             source,
@@ -884,7 +928,8 @@ def _comprehension_node(
         "end_line": _end_line_number(node),
         "element": _normalize_value(element, source, include_source),
         "generators": [
-            _normalize_comprehension(gen, source, include_source) for gen in node.generators
+            _normalize_comprehension(gen, source, include_source)
+            for gen in node.generators
         ],
     }
     return _attach_source(result, node, source, include_source)
@@ -981,7 +1026,9 @@ def _generic_node(
         "fields": {},
     }
     for field_name, field_value in ast.iter_fields(node):
-        payload["fields"][field_name] = _normalize_value(field_value, source, include_source)
+        payload["fields"][field_name] = _normalize_value(
+            field_value, source, include_source
+        )
     return _attach_source(payload, node, source, include_source)
 
 

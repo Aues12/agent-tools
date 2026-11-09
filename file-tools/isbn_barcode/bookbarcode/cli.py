@@ -17,7 +17,9 @@ def create_parser() -> argparse.ArgumentParser:
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument("isbn", help="Valid ISBN-13, with or without hyphens")
-    parser.add_argument("--display", help="Assigned ISBN hyphenation shown above the bars")
+    parser.add_argument(
+        "--display", help="Assigned ISBN hyphenation shown above the bars"
+    )
     parser.add_argument(
         "-o",
         "--output",
@@ -59,13 +61,23 @@ def main(argv: Sequence[str] | None = None) -> int:
         targets: list[Path] = []
         if args.format in {"svg", "both"}:
             targets.append(
-                barcode.write_svg(args.output.with_suffix(".svg"), overwrite=args.overwrite)
+                barcode.write_svg(
+                    args.output.with_suffix(".svg"), overwrite=args.overwrite
+                )
             )
         if args.format in {"pdf", "both"}:
             targets.append(
-                barcode.write_pdf(args.output.with_suffix(".pdf"), overwrite=args.overwrite)
+                barcode.write_pdf(
+                    args.output.with_suffix(".pdf"), overwrite=args.overwrite
+                )
             )
-    except (FileExistsError, FileNotFoundError, TypeError, ValueError, RuntimeError) as exc:
+    except (
+        FileExistsError,
+        FileNotFoundError,
+        TypeError,
+        ValueError,
+        RuntimeError,
+    ) as exc:
         parser.error(str(exc))
     print("Created and verified:")
     for target in targets:

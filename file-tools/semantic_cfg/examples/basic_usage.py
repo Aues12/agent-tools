@@ -11,14 +11,17 @@ sys.path.insert(0, str(TOOL_DIR))
 from tool import build_cfg_from_source, summarize_cfg  # noqa: E402
 
 
-source = dedent(
-    """
+source = (
+    dedent(
+        """
     def choose(flag):
         if flag:
             return 1
         return 0
     """
-).strip() + "\n"
+    ).strip()
+    + "\n"
+)
 
 cfg = build_cfg_from_source(source, path="example.py")
 summary = summarize_cfg(cfg)

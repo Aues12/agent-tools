@@ -30,9 +30,7 @@ def _load_module(module_name: str, path: Path) -> ModuleType:
         raise ImportError(f"could not load module from {path}")
     shadowed_names = ("builder", "schema", "summarizer")
     shadowed_modules = {
-        name: sys.modules.pop(name)
-        for name in shadowed_names
-        if name in sys.modules
+        name: sys.modules.pop(name) for name in shadowed_names if name in sys.modules
     }
     path_parent = str(path.parent)
     sys.path.insert(0, path_parent)

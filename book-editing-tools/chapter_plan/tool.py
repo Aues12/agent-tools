@@ -1,4 +1,5 @@
 """JSON and Python entrypoint for chapter_plan validation."""
+
 from pathlib import Path
 import json
 import sys
@@ -9,15 +10,27 @@ from chapter_plan_core import validate_plan
 
 def run(payload: dict) -> dict:
     try:
-        if not isinstance(payload, dict) or payload.get("operation") != "chapter_plan" or not isinstance(payload.get("params"), dict):
+        if (
+            not isinstance(payload, dict)
+            or payload.get("operation") != "chapter_plan"
+            or not isinstance(payload.get("params"), dict)
+        ):
             raise ValueError("Expected {'operation': 'chapter_plan', 'params': {...}}")
         result = validate_plan(**payload["params"])
-        return {"success": True, "message": "chapter_plan completed", "result": result,
-                "meta": {"operation": "chapter_plan", "read_only": True}}
+        return {
+            "success": True,
+            "message": "chapter_plan completed",
+            "result": result,
+            "meta": {"operation": "chapter_plan", "read_only": True},
+        }
     except (TypeError, ValueError, OSError) as exc:
-        return {"success": False, "message": str(exc), "result": None,
-                "error": {"type": type(exc).__name__, "message": str(exc)},
-                "meta": {"operation": "chapter_plan", "read_only": True}}
+        return {
+            "success": False,
+            "message": str(exc),
+            "result": None,
+            "error": {"type": type(exc).__name__, "message": str(exc)},
+            "meta": {"operation": "chapter_plan", "read_only": True},
+        }
 
 
 if __name__ == "__main__":

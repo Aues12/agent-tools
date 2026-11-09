@@ -42,11 +42,15 @@ class SemanticDfgBuilderTests(unittest.TestCase):
         self.assertEqual(levels["function:example.parse_file:parameter:path"], 0)
         self.assertEqual(levels["function:example.parse_file:binding:text"], 1)
         self.assertEqual(levels["function:example.parse_file:binding:tree"], 2)
-        self.assertEqual(levels["function:example.parse_file:return_value:return_value"], 3)
+        self.assertEqual(
+            levels["function:example.parse_file:return_value:return_value"], 3
+        )
         self.assertEqual(depths["function:example.parse_file:parameter:path"], 0)
         self.assertEqual(depths["function:example.parse_file:binding:text"], 1)
         self.assertEqual(depths["function:example.parse_file:binding:tree"], 1)
-        self.assertEqual(depths["function:example.parse_file:return_value:return_value"], 1)
+        self.assertEqual(
+            depths["function:example.parse_file:return_value:return_value"], 1
+        )
         self.assertIn(
             (
                 "function:example.parse_file:parameter:path",
@@ -65,7 +69,9 @@ class SemanticDfgBuilderTests(unittest.TestCase):
             ),
             edge_tuples,
         )
-        self.assertIn("function:example.parse_file:return_value:return_value", function["returns"])
+        self.assertIn(
+            "function:example.parse_file:return_value:return_value", function["returns"]
+        )
 
     def test_builds_expression_dependencies(self) -> None:
         result = build_dfg_from_source(
@@ -119,7 +125,8 @@ class SemanticDfgBuilderTests(unittest.TestCase):
         sources = {
             edge["source"]
             for edge in function["edges"]
-            if edge["target"] == "function:layout.Layout.available_width:binding:available"
+            if edge["target"]
+            == "function:layout.Layout.available_width:binding:available"
         }
 
         self.assertEqual(nodes["self.width_mm"]["kind"], "attribute")
@@ -151,10 +158,16 @@ class SemanticDfgBuilderTests(unittest.TestCase):
         self.assertIn("function:pairs.pair:binding:a", node_ids)
         self.assertIn("function:pairs.pair:binding:b", node_ids)
         self.assertTrue(
-            any(edge["target"] == "function:pairs.pair:binding:a" for edge in function["edges"])
+            any(
+                edge["target"] == "function:pairs.pair:binding:a"
+                for edge in function["edges"]
+            )
         )
         self.assertTrue(
-            any(edge["target"] == "function:pairs.pair:binding:b" for edge in function["edges"])
+            any(
+                edge["target"] == "function:pairs.pair:binding:b"
+                for edge in function["edges"]
+            )
         )
 
     def test_partial_control_flow_adds_warning_and_visits_body(self) -> None:
@@ -175,7 +188,10 @@ class SemanticDfgBuilderTests(unittest.TestCase):
 
         self.assertTrue(function["warnings"])
         self.assertTrue(
-            any(node["id"] == "function:choose.choose:binding:selected" for node in function["nodes"])
+            any(
+                node["id"] == "function:choose.choose:binding:selected"
+                for node in function["nodes"]
+            )
         )
         depths = {node["id"]: node["depth"] for node in function["nodes"]}
         self.assertEqual(depths["function:choose.choose:binding:selected"], 2)

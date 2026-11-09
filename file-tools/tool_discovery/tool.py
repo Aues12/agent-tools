@@ -14,8 +14,22 @@ import yaml  # pyright: ignore[reportMissingModuleSource]
 DEFAULT_ROOT = Path(__file__).resolve().parents[2]
 OPERATIONS = {"list_tools", "search_tools", "inspect_tool"}
 _STOP_WORDS = {
-    "a", "an", "and", "are", "by", "for", "from", "in", "into", "of",
-    "on", "or", "the", "their", "to", "with",
+    "a",
+    "an",
+    "and",
+    "are",
+    "by",
+    "for",
+    "from",
+    "in",
+    "into",
+    "of",
+    "on",
+    "or",
+    "the",
+    "their",
+    "to",
+    "with",
 }
 
 
@@ -28,7 +42,11 @@ def _search_terms(value: str) -> set[str]:
             continue
         if len(word) > 4 and word.endswith("ies"):
             word = word[:-3] + "y"
-        elif len(word) > 3 and word.endswith("s") and not word.endswith(("ss", "us", "is")):
+        elif (
+            len(word) > 3
+            and word.endswith("s")
+            and not word.endswith(("ss", "us", "is"))
+        ):
             word = word[:-1]
         result.add(word)
     return result
@@ -83,7 +101,9 @@ def _catalog(root: str | Path | None) -> list[dict[str, Any]]:
             aliases = local.get("search_terms")
             if aliases is not None and (
                 not isinstance(aliases, list)
-                or not all(isinstance(alias, str) and alias.strip() for alias in aliases)
+                or not all(
+                    isinstance(alias, str) and alias.strip() for alias in aliases
+                )
             ):
                 issues.append("local search_terms must be a list of non-empty strings")
             for field in ("name", "capability", "status"):
@@ -91,17 +111,36 @@ def _catalog(root: str | Path | None) -> list[dict[str, Any]]:
                     issues.append(f"registry/local {field} mismatch")
             registered_ops = entry.get("operations", [])
             local_ops = local.get("operations", [])
-            local_names = [item.get("name") for item in local_ops if isinstance(item, dict)] if isinstance(local_ops, list) else []
+            local_names = (
+                [item.get("name") for item in local_ops if isinstance(item, dict)]
+                if isinstance(local_ops, list)
+                else []
+            )
             if set(registered_ops) != set(local_names):
                 issues.append("registry/local operations mismatch")
             registered_interfaces = entry.get("interfaces", [])
             local_interfaces = local.get("interfaces", [])
-            local_by_name = {part.get("name"): part for part in local_interfaces if isinstance(part, dict)} if isinstance(local_interfaces, list) else {}
-            if not isinstance(registered_interfaces, list) or len(registered_interfaces) != len(local_by_name) or any(
-                not isinstance(part, dict)
-                or part.get("name") not in local_by_name
-                or any(local_by_name[part["name"]].get(key) != value for key, value in part.items())
-                for part in registered_interfaces
+            local_by_name = (
+                {
+                    part.get("name"): part
+                    for part in local_interfaces
+                    if isinstance(part, dict)
+                }
+                if isinstance(local_interfaces, list)
+                else {}
+            )
+            if (
+                not isinstance(registered_interfaces, list)
+                or len(registered_interfaces) != len(local_by_name)
+                or any(
+                    not isinstance(part, dict)
+                    or part.get("name") not in local_by_name
+                    or any(
+                        local_by_name[part["name"]].get(key) != value
+                        for key, value in part.items()
+                    )
+                    for part in registered_interfaces
+                )
             ):
                 issues.append("registry/local interfaces mismatch")
 
@@ -128,11 +167,17 @@ def list_tools(root: str | Path | None = None) -> dict[str, Any]:
     return {"count": len(tools), "tools": tools}
 
 
-def search_tools(query: str | None = None, capability: str | None = None, root: str | Path | None = None) -> dict[str, Any]:
+def search_tools(
+    query: str | None = None,
+    capability: str | None = None,
+    root: str | Path | None = None,
+) -> dict[str, Any]:
     """Order all eligible tools by lexical coverage, keeping registry ties stable."""
     if query is not None and (not isinstance(query, str) or not query.strip()):
         raise ValueError("query must be a non-empty string when provided")
-    if capability is not None and (not isinstance(capability, str) or not capability.strip()):
+    if capability is not None and (
+        not isinstance(capability, str) or not capability.strip()
+    ):
         raise ValueError("capability must be a non-empty string when provided")
     if query is None and capability is None:
         raise ValueError("query or capability is required")
@@ -142,24 +187,43 @@ def search_tools(query: str | None = None, capability: str | None = None, root: 
     matches = []
     for item in _catalog(root):
         summary = _summary(item)
-        if capability is not None and str(summary["capability"]).casefold() != capability.casefold():
+        if (
+            capability is not None
+            and str(summary["capability"]).casefold() != capability.casefold()
+        ):
             continue
         aliases = item["local"].get("search_terms", [])
-        if not isinstance(aliases, list) or not all(isinstance(term, str) for term in aliases):
+        if not isinstance(aliases, list) or not all(
+            isinstance(term, str) for term in aliases
+        ):
             aliases = []
-        corpus = " ".join(str(value) for value in (
-            summary["name"], summary["capability"], summary["purpose"],
-            *summary["operations"], *aliases,
-        ))
+        corpus = " ".join(
+            str(value)
+            for value in (
+                summary["name"],
+                summary["capability"],
+                summary["purpose"],
+                *summary["operations"],
+                *aliases,
+            )
+        )
         matched = words & _search_terms(corpus)
-        matches.append({
-            **summary,
-            "matched_terms": sorted(matched),
-            "match_ratio": round(len(matched) / len(words), 3) if words else None,
-        })
+        matches.append(
+            {
+                **summary,
+                "matched_terms": sorted(matched),
+                "match_ratio": round(len(matched) / len(words), 3) if words else None,
+            }
+        )
     if words:
         matches.sort(key=lambda tool: -len(tool["matched_terms"]))
-    return {"query": query, "capability": capability, "query_terms": sorted(words), "count": len(matches), "tools": matches}
+    return {
+        "query": query,
+        "capability": capability,
+        "query_terms": sorted(words),
+        "count": len(matches),
+        "tools": matches,
+    }
 
 
 def inspect_tool(name: str, root: str | Path | None = None) -> dict[str, Any]:
@@ -192,7 +256,11 @@ def run(input_data: dict[str, Any], root: str | Path | None = None) -> dict[str,
         params = input_data.get("params", {})
         if not isinstance(params, dict):
             raise TypeError("params must be an object")
-        allowed = {"list_tools": set(), "search_tools": {"query", "capability"}, "inspect_tool": {"name"}}[operation]
+        allowed = {
+            "list_tools": set(),
+            "search_tools": {"query", "capability"},
+            "inspect_tool": {"name"},
+        }[operation]
         extra = set(params) - allowed
         if extra:
             raise ValueError(f"unexpected params: {', '.join(sorted(extra))}")
@@ -205,13 +273,28 @@ def run(input_data: dict[str, Any], root: str | Path | None = None) -> dict[str,
             if not isinstance(name, str):
                 raise ValueError("name must be a non-empty string")
             result = inspect_tool(name, root)
-        return {"success": True, "message": f"Completed {operation}", "result": result, "meta": {"operation": operation}}
-    except (OSError, ValueError, TypeError, json.JSONDecodeError, yaml.YAMLError) as exc:
+        return {
+            "success": True,
+            "message": f"Completed {operation}",
+            "result": result,
+            "meta": {"operation": operation},
+        }
+    except (
+        OSError,
+        ValueError,
+        TypeError,
+        json.JSONDecodeError,
+        yaml.YAMLError,
+    ) as exc:
         return _error(exc)
 
 
 def _error(exc: Exception) -> dict[str, Any]:
-    return {"success": False, "message": str(exc), "error": {"type": type(exc).__name__, "message": str(exc)}}
+    return {
+        "success": False,
+        "message": str(exc),
+        "error": {"type": type(exc).__name__, "message": str(exc)},
+    }
 
 
 def main() -> None:
