@@ -12,3 +12,5 @@ tools, and checks the outputs.
 - [`notes_to_semantic_graph`](notes_to_semantic_graph/README.md): construct and
   review a semantic graph from readable sources, research, and identified
   interpretations.
+- [`book-edition-compare`](book-edition-compare/SKILL.md): compare a DOCX
+  manuscript with a typeset PDF and apply requested Affinity corrections.

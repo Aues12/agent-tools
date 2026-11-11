@@ -15,6 +15,11 @@
       "name": "notes_to_semantic_graph",
       "path": "skills/notes_to_semantic_graph",
       "status": "experimental"
+    },
+    {
+      "name": "book_edition_compare",
+      "path": "skills/book-edition-compare",
+      "status": "experimental"
     }
   ]
 }
