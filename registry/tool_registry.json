@@ -679,11 +679,37 @@
       "entrypoint": "tool.py",
       "transport": "stdin_json",
       "status": "experimental",
-      "operations": ["check", "plan", "apply", "verify"],
+      "operations": ["check", "plan", "verify", "apply"],
       "interfaces": [
         {"name": "stdin_json", "entrypoint": "tool.py", "transport": "stdin_json"},
         {"name": "terminal_cli", "entrypoint": "tool.py", "transport": "argv"},
         {"name": "python_api", "entrypoint": "tool.py", "callables": ["plan", "sync", "verify", "run"]}
+      ]
+    },
+    {
+      "name": "manuscript_find_replace",
+      "capability": "guarded_manuscript_text_replacement",
+      "path": "book-editing-tools/manuscript_find_replace",
+      "entrypoint": "tool.py",
+      "transport": "stdin_json",
+      "status": "experimental",
+      "operations": [
+        "search",
+        "replace"
+      ],
+      "interfaces": [
+        {
+          "name": "stdin_json",
+          "entrypoint": "tool.py",
+          "transport": "stdin_json"
+        },
+        {
+          "name": "python_api",
+          "entrypoint": "tool.py",
+          "callables": [
+            "run"
+          ]
+        }
       ]
     }
   ]

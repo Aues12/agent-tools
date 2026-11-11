@@ -87,6 +87,7 @@ called through `semantic_ast`; the manuscript tools share the
 | ↳ [ebook_preflight](book-editing-tools/ebook_preflight/SKILL.yaml) | Flags DOCX layout and image candidates for review. |
 | ↳ [chapter_plan](book-editing-tools/chapter_plan/SKILL.yaml) | Validates complete chronological plans, with or without parts. |
 | ↳ [docx_assemble](book-editing-tools/docx_assemble/SKILL.yaml) | Previews and creates a new DOCX from a validated plan. |
+| ↳ [manuscript_find_replace](book-editing-tools/manuscript_find_replace/SKILL.yaml) | Finds exact text and replaces selected matches in a new manuscript. |
 
 ## Where to go next
 

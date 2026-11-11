@@ -14,6 +14,7 @@ folders = [
     "ebook_preflight",
     "chapter_plan",
     "docx_assemble",
+    "manuscript_find_replace",
 ]
 for folder in folders:
     result = subprocess.run(
