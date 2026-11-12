@@ -12,7 +12,7 @@ npm ci
 npm run dev
 ```
 
-Open the `http://127.0.0.1:...` URL printed by Vite. Do not open `index.html` as a `file://` URL; browsers cannot run the uncompiled TypeScript entry point that way. Use **Load JSON graph** to inspect another artifact. File contents stay in the browser.
+Open the `http://127.0.0.1:...` URL printed by Vite. Do not open `index.html` as a `file://` URL; browsers cannot run the uncompiled TypeScript entry point that way. Use **Load JSON graph** or drag one JSON file anywhere onto the viewer to inspect another artifact. File contents stay in the browser.
 
 The viewer saves the loaded graph and current view in this browser's local storage. Refreshing restores the graph, selected node or open study card, search and kind filter, panel and profile choices, and canvas pan and zoom. **Options → Open default example** switches back to the bundled graph. If browser storage is blocked or full, the viewer keeps working and shows a warning that the session cannot be restored after refresh. Clearing this site's browser data also clears the saved session.
 
