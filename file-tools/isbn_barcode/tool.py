@@ -303,7 +303,14 @@ def _parse_request(input_data: Any) -> tuple[str, dict[str, Any]]:
         "generate_svg": {"isbn", "display_text", "layout"},
         "write_svg": {"isbn", "output_path", "display_text", "layout", "overwrite"},
         "write_pdf": {"isbn", "output_path", "display_text", "layout", "overwrite"},
-        "write_barcode": {"isbn", "output_base", "formats", "display_text", "layout", "overwrite"},
+        "write_barcode": {
+            "isbn",
+            "output_base",
+            "formats",
+            "display_text",
+            "layout",
+            "overwrite",
+        },
         "verify_svg": {"path", "isbn", "layout"},
         "verify_pdf": {"path", "layout"},
     }[operation]

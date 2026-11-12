@@ -23,11 +23,17 @@ def build_cpg(
         raise TypeError("tree must be a dictionary")
     if tree.get("type") != "module":
         raise ValueError("tree must be a semantic_ast module node")
-    if cfg is not None and (not isinstance(cfg, Mapping) or cfg.get("type") != "control_flow_graph"):
+    if cfg is not None and (
+        not isinstance(cfg, Mapping) or cfg.get("type") != "control_flow_graph"
+    ):
         raise ValueError("cfg must be a semantic_cfg control_flow_graph result")
-    if dfg is not None and (not isinstance(dfg, Mapping) or dfg.get("type") != "data_flow_graph"):
+    if dfg is not None and (
+        not isinstance(dfg, Mapping) or dfg.get("type") != "data_flow_graph"
+    ):
         raise ValueError("dfg must be a semantic_dfg data_flow_graph result")
-    if call_graph is not None and (not isinstance(call_graph, Mapping) or call_graph.get("type") != "call_graph"):
+    if call_graph is not None and (
+        not isinstance(call_graph, Mapping) or call_graph.get("type") != "call_graph"
+    ):
         raise ValueError("call_graph must be a semantic_ast call_graph result")
 
     builder = _CPGBuilder(path=_string_or_none(tree.get("path")))
@@ -74,7 +80,9 @@ class _CPGBuilder:
                 origin={"tool": "semantic_ast", "id": module_name, "kind": "module"},
             )
         )
-        self._walk_ast_body(tree.get("body", []), parent_id=self.module_id, scope=[module_name])
+        self._walk_ast_body(
+            tree.get("body", []), parent_id=self.module_id, scope=[module_name]
+        )
 
     def add_cfg(self, cfg: SemanticNode) -> None:
         """Add semantic_cfg nodes and control-flow edges."""
@@ -106,10 +114,20 @@ class _CPGBuilder:
                     CPGNode(
                         id=cpg_id,
                         kind=_cfg_node_kind(node.get("kind")),
-                        label=_string(node.get("label"), _string(node.get("kind"), "cfg node")),
+                        label=_string(
+                            node.get("label"), _string(node.get("kind"), "cfg node")
+                        ),
                         scope=function_id,
-                        trace=_trace(function.get("path") or self.path, node.get("line"), node.get("end_line")),
-                        origin={"tool": "semantic_cfg", "id": origin_id, "kind": node.get("kind")},
+                        trace=_trace(
+                            function.get("path") or self.path,
+                            node.get("line"),
+                            node.get("end_line"),
+                        ),
+                        origin={
+                            "tool": "semantic_cfg",
+                            "id": origin_id,
+                            "kind": node.get("kind"),
+                        },
                         properties=_clean_dict(
                             {
                                 "original_kind": node.get("kind"),
@@ -137,7 +155,11 @@ class _CPGBuilder:
                     target,
                     f"control_{_string(edge.get('kind'), 'edge')}",
                     condition=_string_or_none(edge.get("condition")),
-                    trace=_trace(function.get("path") or self.path, edge.get("lineno"), edge.get("lineno")),
+                    trace=_trace(
+                        function.get("path") or self.path,
+                        edge.get("lineno"),
+                        edge.get("lineno"),
+                    ),
                     origin={
                         "tool": "semantic_cfg",
                         "kind": edge.get("kind"),
@@ -174,10 +196,20 @@ class _CPGBuilder:
                     CPGNode(
                         id=cpg_id,
                         kind=_dfg_node_kind(node.get("kind")),
-                        label=_string(node.get("name"), _string(node.get("kind"), "dfg node")),
+                        label=_string(
+                            node.get("name"), _string(node.get("kind"), "dfg node")
+                        ),
                         scope=function_id,
-                        trace=_trace(function.get("path") or self.path, node.get("lineno"), node.get("lineno")),
-                        origin={"tool": "semantic_dfg", "id": origin_id, "kind": node.get("kind")},
+                        trace=_trace(
+                            function.get("path") or self.path,
+                            node.get("lineno"),
+                            node.get("lineno"),
+                        ),
+                        origin={
+                            "tool": "semantic_dfg",
+                            "id": origin_id,
+                            "kind": node.get("kind"),
+                        },
                         properties=_clean_dict(
                             {
                                 "original_kind": node.get("kind"),
@@ -205,7 +237,11 @@ class _CPGBuilder:
                     source,
                     target,
                     f"data_{_string(edge.get('kind'), 'edge')}",
-                    trace=_trace(function.get("path") or self.path, edge.get("lineno"), edge.get("lineno")),
+                    trace=_trace(
+                        function.get("path") or self.path,
+                        edge.get("lineno"),
+                        edge.get("lineno"),
+                    ),
                     origin={
                         "tool": "semantic_dfg",
                         "kind": edge.get("kind"),
@@ -217,7 +253,9 @@ class _CPGBuilder:
         """Add call graph local call edges between function CPG nodes."""
         for node in _list(call_graph.get("nodes")):
             if isinstance(node, Mapping):
-                function_id = _string_or_none(node.get("qualified_name")) or _string_or_none(node.get("id"))
+                function_id = _string_or_none(
+                    node.get("qualified_name")
+                ) or _string_or_none(node.get("id"))
                 if function_id:
                     self._ensure_function(self._resolve_function_id(function_id), node)
 
@@ -239,7 +277,11 @@ class _CPGBuilder:
 
     def add_correspondences(self) -> None:
         """Add cross-analysis links for nodes that share source spans."""
-        function_ids = set(self.ast_nodes_by_function) | set(self.cfg_nodes_by_function) | set(self.dfg_nodes_by_function)
+        function_ids = (
+            set(self.ast_nodes_by_function)
+            | set(self.cfg_nodes_by_function)
+            | set(self.dfg_nodes_by_function)
+        )
         for function_id in sorted(function_ids):
             ast_nodes = self.ast_nodes_by_function.get(function_id, [])
             cfg_nodes = self.cfg_nodes_by_function.get(function_id, [])
@@ -252,7 +294,10 @@ class _CPGBuilder:
                             ast_node["id"],
                             cfg_node["id"],
                             "corresponds_to",
-                            origin={"tool": "semantic_cpg", "reason": "same_source_span"},
+                            origin={
+                                "tool": "semantic_cpg",
+                                "reason": "same_source_span",
+                            },
                         )
                 for dfg_node in dfg_nodes:
                     if _spans_overlap(ast_node, dfg_node):
@@ -260,7 +305,10 @@ class _CPGBuilder:
                             ast_node["id"],
                             dfg_node["id"],
                             "corresponds_to",
-                            origin={"tool": "semantic_cpg", "reason": "same_source_span"},
+                            origin={
+                                "tool": "semantic_cpg",
+                                "reason": "same_source_span",
+                            },
                         )
 
             for cfg_node in cfg_nodes:
@@ -270,14 +318,21 @@ class _CPGBuilder:
                             cfg_node["id"],
                             dfg_node["id"],
                             "corresponds_to",
-                            origin={"tool": "semantic_cpg", "reason": "same_source_span"},
+                            origin={
+                                "tool": "semantic_cpg",
+                                "reason": "same_source_span",
+                            },
                         )
 
     def to_result(self, *, language: str) -> dict[str, Any]:
         """Return the final Semantic CPG result."""
         nodes = sorted(
             (node.to_dict() for node in self.nodes_by_id.values()),
-            key=lambda node: (node.get("trace", {}).get("line", 0), node["kind"], node["id"]),
+            key=lambda node: (
+                node.get("trace", {}).get("line", 0),
+                node["kind"],
+                node["id"],
+            ),
         )
         edges = sorted(
             (edge.to_dict() for edge in self.edges),
@@ -290,7 +345,11 @@ class _CPGBuilder:
         )
         warnings = sorted(
             (warning.to_dict() for warning in self.warnings),
-            key=lambda warning: (warning.get("source", ""), warning.get("lineno", 0), warning.get("kind", "")),
+            key=lambda warning: (
+                warning.get("source", ""),
+                warning.get("lineno", 0),
+                warning.get("kind", ""),
+            ),
         )
         return {
             "type": "semantic_code_property_graph",
@@ -334,24 +393,36 @@ class _CPGBuilder:
                         label=name,
                         scope=".".join(scope),
                         trace=_trace(self.path, item.get("line"), item.get("end_line")),
-                        origin={"tool": "semantic_ast", "id": class_id, "kind": "class"},
+                        origin={
+                            "tool": "semantic_ast",
+                            "id": class_id,
+                            "kind": "class",
+                        },
                     )
                 )
-                self._add_edge(parent_id, cpg_id, "contains", origin={"tool": "semantic_ast"})
-                self._walk_ast_body(item.get("body", []), parent_id=cpg_id, scope=[*scope, name])
+                self._add_edge(
+                    parent_id, cpg_id, "contains", origin={"tool": "semantic_ast"}
+                )
+                self._walk_ast_body(
+                    item.get("body", []), parent_id=cpg_id, scope=[*scope, name]
+                )
                 continue
             if node_type == "function":
                 name = _string(item.get("name"), "anonymous_function")
                 function_id = ".".join([*scope, name])
                 cpg_id = self._ensure_function(function_id, item)
-                self._add_edge(parent_id, cpg_id, "contains", origin={"tool": "semantic_ast"})
+                self._add_edge(
+                    parent_id, cpg_id, "contains", origin={"tool": "semantic_ast"}
+                )
                 self._walk_statement_tree(
                     item.get("body", []),
                     parent_id=cpg_id,
                     function_id=function_id,
                     depth=1,
                 )
-                self._walk_ast_body(item.get("body", []), parent_id=cpg_id, scope=[*scope, name])
+                self._walk_ast_body(
+                    item.get("body", []), parent_id=cpg_id, scope=[*scope, name]
+                )
 
     def _walk_statement_tree(
         self,
@@ -379,7 +450,9 @@ class _CPGBuilder:
                     kind="ast_statement",
                     label=_string(statement.get("type"), "statement"),
                     scope=function_id,
-                    trace=_trace(self.path, statement.get("line"), statement.get("end_line")),
+                    trace=_trace(
+                        self.path, statement.get("line"), statement.get("end_line")
+                    ),
                     origin={"tool": "semantic_ast", "kind": statement.get("type")},
                     properties={"depth": depth},
                 )
@@ -392,7 +465,9 @@ class _CPGBuilder:
                     "end_line": _int_or_none(statement.get("end_line")),
                 }
             )
-            self._add_edge(parent_id, ast_id, "contains", origin={"tool": "semantic_ast"})
+            self._add_edge(
+                parent_id, ast_id, "contains", origin={"tool": "semantic_ast"}
+            )
             self._walk_statement_tree(
                 statement.get("body", []),
                 parent_id=ast_id,
@@ -432,7 +507,11 @@ class _CPGBuilder:
                 kind="function",
                 label=_string(source.get("name"), function_id.rsplit(".", 1)[-1]),
                 scope=function_id.rsplit(".", 1)[0] if "." in function_id else None,
-                trace=_trace(source.get("path") or self.path, source.get("line"), source.get("end_line")),
+                trace=_trace(
+                    source.get("path") or self.path,
+                    source.get("line"),
+                    source.get("end_line"),
+                ),
                 origin={"tool": "semantic_ast", "id": function_id, "kind": "function"},
             )
         )

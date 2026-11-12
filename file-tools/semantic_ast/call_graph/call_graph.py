@@ -98,7 +98,9 @@ def render_call_tree(
     for index, root in enumerate(root_ids):
         if root not in node_ids:
             continue
-        _render_node(root, children, lines, prefix="", is_last=True, active=[], is_root=True)
+        _render_node(
+            root, children, lines, prefix="", is_last=True, active=[], is_root=True
+        )
     return "\n".join(lines)
 
 
@@ -238,7 +240,9 @@ def _resolve_call(
 def _dedupe_edges(edges: list[dict[str, str]]) -> list[dict[str, str]]:
     seen: set[tuple[str, str, str]] = set()
     result: list[dict[str, str]] = []
-    for edge in sorted(edges, key=lambda item: (item["caller"], item["callee"], item["call"])):
+    for edge in sorted(
+        edges, key=lambda item: (item["caller"], item["callee"], item["call"])
+    ):
         key = (edge["caller"], edge["callee"], edge["call"])
         if key in seen:
             continue

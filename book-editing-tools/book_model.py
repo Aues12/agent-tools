@@ -2,6 +2,7 @@
 
 Public tool requests and results remain JSON-compatible dictionaries.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -22,8 +23,12 @@ class Article:
         return cls(item["ordinal"], item["title"], item["date"], item["date_status"])
 
     def as_dict(self) -> dict:
-        return {"ordinal": self.ordinal, "title": self.title,
-                "date": self.date, "date_status": self.date_status}
+        return {
+            "ordinal": self.ordinal,
+            "title": self.title,
+            "date": self.date,
+            "date_status": self.date_status,
+        }
 
 
 @dataclass(frozen=True)
@@ -38,8 +43,12 @@ class BookPlan:
     articles: tuple[ArticleReference, ...] | None = None
 
     @classmethod
-    def from_request(cls, *, parts: list[dict] | None = None,
-                     articles: list[ArticleReference] | None = None) -> BookPlan:
+    def from_request(
+        cls,
+        *,
+        parts: list[dict] | None = None,
+        articles: list[ArticleReference] | None = None,
+    ) -> BookPlan:
         if (parts is None) == (articles is None):
             raise ValueError("Provide exactly one of parts or articles")
         if articles is not None:
@@ -50,7 +59,11 @@ class BookPlan:
             raise ValueError("parts must be a non-empty list")
         parsed = []
         for index, part in enumerate(parts, 1):
-            if not isinstance(part, dict) or not isinstance(part.get("title"), str) or not part["title"].strip():
+            if (
+                not isinstance(part, dict)
+                or not isinstance(part.get("title"), str)
+                or not part["title"].strip()
+            ):
                 raise ValueError(f"part {index} requires a non-empty title")
             refs = part.get("articles")
             if not isinstance(refs, list) or not refs:

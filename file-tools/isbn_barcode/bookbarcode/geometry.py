@@ -56,9 +56,7 @@ def build_hri_positions(isbn: str, layout: BarcodeLayout) -> list[TextGeometry]:
     """Position all thirteen human-readable digits below the symbol."""
     start = layout.resolved_left_margin_mm
     module_width = layout.module_width_mm
-    positions = [
-        TextGeometry(max(start / 2, start - 4 * module_width), isbn[0])
-    ]
+    positions = [TextGeometry(max(start / 2, start - 4 * module_width), isbn[0])]
     positions.extend(
         TextGeometry(start + (6.5 + 7 * index) * module_width, digit)
         for index, digit in enumerate(isbn[1:7])

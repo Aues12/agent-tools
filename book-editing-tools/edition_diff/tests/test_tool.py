@@ -12,13 +12,19 @@ from fixtures import make_docx
 
 class ToolTests(unittest.TestCase):
     def test_invalid_request(self):
-        self.assertFalse(run_request("edition_diff", {"operation": "wrong", "params": {}})["success"])
+        self.assertFalse(
+            run_request("edition_diff", {"operation": "wrong", "params": {}})["success"]
+        )
 
     def test_changed_and_added(self):
         from common import edition_diff
+
         with tempfile.TemporaryDirectory() as tmp:
             old = make_docx(Path(tmp) / "old.docx", [("h1", "One"), ("", "old")])
-            new = make_docx(Path(tmp) / "new.docx", [("h1", "One"), ("", "new"), ("h1", "Two"), ("", "text")])
+            new = make_docx(
+                Path(tmp) / "new.docx",
+                [("h1", "One"), ("", "new"), ("h1", "Two"), ("", "text")],
+            )
             result = edition_diff(str(old), str(new))
             self.assertEqual(len(result["body_changed"]), 1)
             self.assertEqual(result["added"][0]["title"], "Two")

@@ -1,0 +1,1 @@
+{"operation":"replace","params":{"path":"/absolute/path/book.md","query":"varlıkı","replacement":"varlığı","source_sha256":"digest-from-search","search_token":"token-from-search","expected_count":2,"match_ids":[1],"output_path":"/absolute/path/book-corrected.md"}}

@@ -45,9 +45,7 @@ def _load_module(module_name: str, path: Path) -> ModuleType:
         raise ImportError(f"could not load module from {path}")
     shadowed_names = ("builder", "schema", "summarizer")
     shadowed_modules = {
-        name: sys.modules.pop(name)
-        for name in shadowed_names
-        if name in sys.modules
+        name: sys.modules.pop(name) for name in shadowed_names if name in sys.modules
     }
     module = importlib.util.module_from_spec(spec)
     sys.path.insert(0, str(path.parent))
@@ -148,19 +146,17 @@ def adapt_for_ui(
     relation_index = _relations_by_source(semantic_cards.get("relations", []))
     dfg_index = _dfg_by_function(dfg)
     source_cards = [
-        card
-        for card in _list(semantic_cards.get("cards"))
-        if isinstance(card, Mapping)
+        card for card in _list(semantic_cards.get("cards")) if isinstance(card, Mapping)
     ]
     visible_card_ids = {
-        card.get("id")
-        for card in source_cards
-        if isinstance(card.get("id"), str)
+        card.get("id") for card in source_cards if isinstance(card.get("id"), str)
     }
     cards = [
         _adapt_card(
             card,
-            _visible_relations(relation_index.get(card.get("id"), []), visible_card_ids),
+            _visible_relations(
+                relation_index.get(card.get("id"), []), visible_card_ids
+            ),
             dfg_index,
             display_path=display_path,
         )
@@ -252,7 +248,9 @@ def _analysis_payload(
     cpg: Mapping[str, Any],
 ) -> dict[str, Any]:
     ui = adapt_for_ui(cards, dfg, display_path=display_path)
-    display_name = display_path or Path(str(tree.get("path") or source_name or "uploaded.py")).name
+    display_name = (
+        display_path or Path(str(tree.get("path") or source_name or "uploaded.py")).name
+    )
     return {
         "type": "semantic_observatory_analysis",
         "language": tree.get("language", "python"),
@@ -297,7 +295,9 @@ def _adapt_card(
     phase = classification["phase"]["value"]
     trace = card.get("trace") if isinstance(card.get("trace"), Mapping) else {}
     path = _string(trace.get("path"), "")
-    qualified_name = _string(card.get("qualified_name"), _string(card.get("id"), "card"))
+    qualified_name = _string(
+        card.get("qualified_name"), _string(card.get("id"), "card")
+    )
     dfg = _adapt_dfg(
         dfg_index.get(_string(card.get("id"), ""))
         or dfg_index.get(qualified_name)
@@ -333,7 +333,9 @@ def _adapt_dfg(graph: Mapping[str, Any] | None) -> dict[str, Any] | None:
         return None
     nodes = _list(graph.get("nodes"))
     name_by_id = {
-        _string(node.get("id"), ""): _string(node.get("name"), _string(node.get("id"), "value"))
+        _string(node.get("id"), ""): _string(
+            node.get("name"), _string(node.get("id"), "value")
+        )
         for node in nodes
         if isinstance(node, Mapping)
     }
@@ -343,7 +345,9 @@ def _adapt_dfg(graph: Mapping[str, Any] | None) -> dict[str, Any] | None:
                 "id": _string(node.get("id"), ""),
                 "name": _string(node.get("name"), "value"),
                 "kind": _string(node.get("kind"), "unknown"),
-                "flowLevel": _int(node.get("flow_level"), _int(node.get("flowLevel"), 0)),
+                "flowLevel": _int(
+                    node.get("flow_level"), _int(node.get("flowLevel"), 0)
+                ),
                 "depth": _int(node.get("depth"), 0),
             }
             for node in nodes
@@ -351,9 +355,15 @@ def _adapt_dfg(graph: Mapping[str, Any] | None) -> dict[str, Any] | None:
         ],
         "edges": [
             {
-                "source": name_by_id.get(_string(edge.get("source"), ""), _string(edge.get("source"), "")),
-                "target": name_by_id.get(_string(edge.get("target"), ""), _string(edge.get("target"), "")),
-                "operation": _string(edge.get("operation"), _string(edge.get("kind"), "depends_on")),
+                "source": name_by_id.get(
+                    _string(edge.get("source"), ""), _string(edge.get("source"), "")
+                ),
+                "target": name_by_id.get(
+                    _string(edge.get("target"), ""), _string(edge.get("target"), "")
+                ),
+                "operation": _string(
+                    edge.get("operation"), _string(edge.get("kind"), "depends_on")
+                ),
             }
             for edge in _list(graph.get("edges"))
             if isinstance(edge, Mapping)
@@ -441,10 +451,26 @@ ROLE_KEYWORDS = (
     ("Explorer", ("find", "search", "scan", "locate", "list")),
     ("Parser", ("parse", "read", "load", "extract", "collect", "get")),
     ("Validator", ("validate", "check", "assert", "verify")),
-    ("Transformer", ("transform", "convert", "normalize", "compress", "map", "calculate", "compute", "process", "apply")),
+    (
+        "Transformer",
+        (
+            "transform",
+            "convert",
+            "normalize",
+            "compress",
+            "map",
+            "calculate",
+            "compute",
+            "process",
+            "apply",
+        ),
+    ),
     ("Renderer", ("render", "view", "display", "show", "summarize")),
     ("Executor", ("run", "execute", "main", "dispatch")),
-    ("Builder", ("build", "create", "generate", "make", "emit", "write", "save", "export")),
+    (
+        "Builder",
+        ("build", "create", "generate", "make", "emit", "write", "save", "export"),
+    ),
 )
 
 
@@ -464,8 +490,10 @@ def _classify_card(card: Mapping[str, Any]) -> dict[str, Any]:
             for role, words in ROLE_KEYWORDS
             if any(word in title for word in words)
         ]
-        role = candidates[0]["value"] if candidates else (
-            "Analyzer" if kind == "function" else "Container"
+        role = (
+            candidates[0]["value"]
+            if candidates
+            else ("Analyzer" if kind == "function" else "Container")
         )
         basis = "title_substring" if candidates else "fallback"
     return {

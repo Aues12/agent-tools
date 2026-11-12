@@ -67,8 +67,12 @@ class _DFGBuilder:
     def build_function(self, function: SemanticNode) -> FunctionDFG:
         """Build a DFG for one normalized semantic AST function node."""
         self.function = function
-        self.function_id = _string(function.get("id"), _string(function.get("name"), "function"))
-        self.function_name = _string(function.get("name"), self.function_id.rsplit(".", 1)[-1])
+        self.function_id = _string(
+            function.get("id"), _string(function.get("name"), "function")
+        )
+        self.function_name = _string(
+            function.get("name"), self.function_id.rsplit(".", 1)[-1]
+        )
         self.graph = FunctionDFG(
             id=f"function:{self.function_id}",
             name=self.function_name,
@@ -156,7 +160,11 @@ class _DFGBuilder:
         if node_type == "expression_statement":
             self._handle_expression_statement(statement)
             return
-        self._warn("UnsupportedNode", f"{node_type} is not analyzed by semantic_dfg v1.", statement)
+        self._warn(
+            "UnsupportedNode",
+            f"{node_type} is not analyzed by semantic_dfg v1.",
+            statement,
+        )
 
     def _visit_nested_bodies(self, statement: SemanticNode) -> None:
         for field in _BODY_FIELDS:
@@ -196,19 +204,31 @@ class _DFGBuilder:
             return
         target_name = _target_name(target)
         if not target_name:
-            self._warn("UnsupportedTarget", "Unsupported augmented assignment target.", statement)
+            self._warn(
+                "UnsupportedTarget",
+                "Unsupported augmented assignment target.",
+                statement,
+            )
             return
 
-        target_node = self._add_node(name=target_name, kind="binding", lineno=_int_or_none(statement.get("line")))
+        target_node = self._add_node(
+            name=target_name, kind="binding", lineno=_int_or_none(statement.get("line"))
+        )
         dependencies = [target_name, *self._dependencies(statement.get("value"))]
         operation = _string(statement.get("operator"), "AugAssign")
         for dependency in _dedupe(dependencies):
             source = self._node_for_dependency(dependency, statement)
-            self._add_edge(source.id, target_node.id, "depends_on", operation, statement)
+            self._add_edge(
+                source.id, target_node.id, "depends_on", operation, statement
+            )
 
     def _handle_return(self, statement: SemanticNode) -> None:
         self.return_count += 1
-        return_name = "return_value" if self.return_count == 1 else f"return_value_{self.return_count}"
+        return_name = (
+            "return_value"
+            if self.return_count == 1
+            else f"return_value_{self.return_count}"
+        )
         return_node = self._add_node(
             name=return_name,
             kind="return_value",
@@ -245,7 +265,13 @@ class _DFGBuilder:
         )
         for dependency in self._dependencies(value):
             source = self._node_for_dependency(dependency, statement)
-            self._add_edge(source.id, call_node.id, "passes_to_call", _operation_name(value), statement)
+            self._add_edge(
+                source.id,
+                call_node.id,
+                "passes_to_call",
+                _operation_name(value),
+                statement,
+            )
 
     def _add_binding_flow(
         self,
@@ -279,7 +305,11 @@ class _DFGBuilder:
         for target in targets:
             names.extend(_target_names(target))
         if not names:
-            self._warn("UnsupportedTarget", "Assignment target is not supported by semantic_dfg v1.", None)
+            self._warn(
+                "UnsupportedTarget",
+                "Assignment target is not supported by semantic_dfg v1.",
+                None,
+            )
         return _dedupe(names)
 
     def _dependencies(self, node: Any) -> list[str]:
@@ -370,14 +400,33 @@ class _DFGBuilder:
         node: SemanticNode | None,
     ) -> None:
         lineno = _int_or_none(node.get("line")) if isinstance(node, Mapping) else None
-        self._graph().warnings.append(DFGWarning(kind=kind, message=message, lineno=lineno))
+        self._graph().warnings.append(
+            DFGWarning(kind=kind, message=message, lineno=lineno)
+        )
 
     def _sort_graph(self) -> None:
         graph = self._graph()
-        graph.nodes.sort(key=lambda node: (node.lineno is None, node.lineno or 0, node.kind, node.id))
-        graph.edges.sort(key=lambda edge: (edge.lineno is None, edge.lineno or 0, edge.source, edge.target, edge.kind))
+        graph.nodes.sort(
+            key=lambda node: (node.lineno is None, node.lineno or 0, node.kind, node.id)
+        )
+        graph.edges.sort(
+            key=lambda edge: (
+                edge.lineno is None,
+                edge.lineno or 0,
+                edge.source,
+                edge.target,
+                edge.kind,
+            )
+        )
         graph.returns[:] = sorted(set(graph.returns))
-        graph.warnings.sort(key=lambda warning: (warning.lineno is None, warning.lineno or 0, warning.kind, warning.message))
+        graph.warnings.sort(
+            key=lambda warning: (
+                warning.lineno is None,
+                warning.lineno or 0,
+                warning.kind,
+                warning.message,
+            )
+        )
 
     def _assign_flow_levels(self) -> None:
         graph = self._graph()
@@ -404,10 +453,14 @@ class _DFGBuilder:
 
 def _collect_functions(tree: Any) -> list[dict[str, Any]]:
     functions: list[dict[str, Any]] = []
-    module_path = _string_or_none(tree.get("path")) if isinstance(tree, Mapping) else None
+    module_path = (
+        _string_or_none(tree.get("path")) if isinstance(tree, Mapping) else None
+    )
     module_name = _module_name(module_path)
     _walk_functions(tree, functions, scope=[module_name] if module_name else [])
-    return sorted(functions, key=lambda item: (_int_or_none(item.get("line")) or 0, item["id"]))
+    return sorted(
+        functions, key=lambda item: (_int_or_none(item.get("line")) or 0, item["id"])
+    )
 
 
 def _compute_flow_levels(nodes: list[DFGNode], edges: list[DFGEdge]) -> dict[str, int]:
@@ -417,7 +470,9 @@ def _compute_flow_levels(nodes: list[DFGNode], edges: list[DFGEdge]) -> dict[str
     relevant_edges = [
         edge
         for edge in edges
-        if edge.source in node_ids and edge.target in node_ids and edge.source != edge.target
+        if edge.source in node_ids
+        and edge.target in node_ids
+        and edge.source != edge.target
     ]
 
     for _ in range(max(len(nodes), 1)):
@@ -433,7 +488,9 @@ def _compute_flow_levels(nodes: list[DFGNode], edges: list[DFGEdge]) -> dict[str
     return levels
 
 
-def _walk_functions(node: Any, functions: list[dict[str, Any]], scope: list[str]) -> None:
+def _walk_functions(
+    node: Any, functions: list[dict[str, Any]], scope: list[str]
+) -> None:
     if isinstance(node, list):
         for item in node:
             _walk_functions(item, functions, scope)

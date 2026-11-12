@@ -57,10 +57,14 @@ class ObservatoryRequestHandler(BaseHTTPRequestHandler):
 
         content_length = int(self.headers.get("Content-Length", "0") or "0")
         if content_length <= 0:
-            self._send_json(_error("Request body is required", "ValueError"), status=400)
+            self._send_json(
+                _error("Request body is required", "ValueError"), status=400
+            )
             return
         if content_length > MAX_SOURCE_BYTES:
-            self._send_json(_error("Source file is too large", "ValueError"), status=413)
+            self._send_json(
+                _error("Source file is too large", "ValueError"), status=413
+            )
             return
 
         try:
@@ -99,7 +103,11 @@ class ObservatoryRequestHandler(BaseHTTPRequestHandler):
 
     def _send_json(self, payload: dict[str, Any], status: int = 200) -> None:
         """Send a JSON response with local-development CORS headers."""
-        body = b"" if status == 204 else json.dumps(payload, ensure_ascii=False).encode("utf-8")
+        body = (
+            b""
+            if status == 204
+            else json.dumps(payload, ensure_ascii=False).encode("utf-8")
+        )
         self.send_response(status)
         self.send_header("Access-Control-Allow-Origin", self._allowed_origin())
         self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
@@ -113,7 +121,9 @@ class ObservatoryRequestHandler(BaseHTTPRequestHandler):
     def _allowed_origin(self) -> str:
         """Allow localhost Vite origins and fall back to the default dev URL."""
         origin = self.headers.get("Origin", "")
-        if origin.startswith("http://127.0.0.1:") or origin.startswith("http://localhost:"):
+        if origin.startswith("http://127.0.0.1:") or origin.startswith(
+            "http://localhost:"
+        ):
             return origin
         return "http://127.0.0.1:5173"
 

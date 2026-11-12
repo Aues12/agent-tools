@@ -12,7 +12,9 @@ def summarize_cpg(cpg: Any) -> dict[str, Any]:
     if not isinstance(cpg, Mapping):
         raise TypeError("cpg must be a dictionary")
     if cpg.get("type") != "semantic_code_property_graph":
-        raise ValueError("cpg must be a semantic_cpg semantic_code_property_graph result")
+        raise ValueError(
+            "cpg must be a semantic_cpg semantic_code_property_graph result"
+        )
 
     nodes = [node for node in cpg.get("nodes", []) if isinstance(node, Mapping)]
     edges = [edge for edge in cpg.get("edges", []) if isinstance(edge, Mapping)]

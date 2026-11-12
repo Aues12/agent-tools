@@ -31,9 +31,7 @@ L_CODES = (
     "0110111",
     "0001011",
 )
-R_CODES = tuple(
-    "".join("1" if bit == "0" else "0" for bit in code) for code in L_CODES
-)
+R_CODES = tuple("".join("1" if bit == "0" else "0" for bit in code) for code in L_CODES)
 G_CODES = tuple(code[::-1] for code in R_CODES)
 
 

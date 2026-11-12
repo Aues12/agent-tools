@@ -18,8 +18,9 @@ from tool import parse_source  # noqa: E402
 
 
 def main() -> None:
-    source = dedent(
-        """
+    source = (
+        dedent(
+            """
         def execute_tool():
             registry = _resolve_tool()
             return _parse_response(registry)
@@ -30,7 +31,9 @@ def main() -> None:
         def _parse_response(value):
             return value
         """
-    ).strip() + "\n"
+        ).strip()
+        + "\n"
+    )
 
     graph = build_call_graph(parse_source(source, path="example.py"))
     print(graph["tree"])

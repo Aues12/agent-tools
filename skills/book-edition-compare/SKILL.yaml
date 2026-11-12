@@ -1,0 +1,30 @@
+name: book_edition_compare
+type: skill
+purpose: Compare a DOCX manuscript with a typeset PDF and apply requested corrections to its Affinity source.
+status: experimental
+inputs:
+  required:
+    - manuscript_docx
+    - edition_pdf
+  optional:
+    - affinity_source
+    - selected_corrections
+    - output_preferences
+outputs:
+  - comparison findings with verified locations and scope limitations
+  - edited Affinity source and separately named PDF when requested
+tools:
+  - document and PDF extraction or rendering tools
+  - Affinity application interface when source editing is requested
+steps:
+  - Identify the requested editions and the matching Affinity source when edits are requested.
+  - Extract and align text with PDF page references; investigate uncertain extraction and preserve meaningful punctuation and diacritics.
+  - Verify substantive differences in context and check PDF table of contents entries against actual section locations.
+  - Report differences, verified locations, intentional changes where known, and limitations without assuming either edition is authoritative.
+  - Apply only user-authorized corrections to the identified source, distinguishing occurrences by context and preserving formatting.
+  - Save changes and, when needed or requested, export a separately named PDF with appropriate publication settings; verify edits and affected layout.
+validation:
+  - Candidate differences are checked against source context and PDF page references are verified.
+  - Report distinguishes actual findings from uncertain extraction artifacts and identifies incomplete coverage.
+  - Requested edits are verified in the source or exported PDF and unrelated content is not intentionally changed.
+  - Unverified corrections and relevant layout concerns are reported.

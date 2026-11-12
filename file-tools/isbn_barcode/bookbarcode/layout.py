@@ -93,12 +93,20 @@ class BarcodeLayout:
     @property
     def effective_left_margin_mm(self) -> float | None:
         """Return the caller-supplied left margin before quiet-zone fallback."""
-        return self.left_margin_mm if self.left_margin_mm is not None else self.side_margin_mm
+        return (
+            self.left_margin_mm
+            if self.left_margin_mm is not None
+            else self.side_margin_mm
+        )
 
     @property
     def effective_right_margin_mm(self) -> float | None:
         """Return the caller-supplied right margin before quiet-zone fallback."""
-        return self.right_margin_mm if self.right_margin_mm is not None else self.side_margin_mm
+        return (
+            self.right_margin_mm
+            if self.right_margin_mm is not None
+            else self.side_margin_mm
+        )
 
     @property
     def module_width_mm(self) -> float:
@@ -127,13 +135,21 @@ class BarcodeLayout:
     def resolved_left_margin_mm(self) -> float:
         """Return the final left quiet area in millimetres."""
         explicit = self.effective_left_margin_mm
-        return explicit if explicit is not None else LEFT_QUIET_MODULES * self.module_width_mm
+        return (
+            explicit
+            if explicit is not None
+            else LEFT_QUIET_MODULES * self.module_width_mm
+        )
 
     @property
     def resolved_right_margin_mm(self) -> float:
         """Return the final right quiet area in millimetres."""
         explicit = self.effective_right_margin_mm
-        return explicit if explicit is not None else RIGHT_QUIET_MODULES * self.module_width_mm
+        return (
+            explicit
+            if explicit is not None
+            else RIGHT_QUIET_MODULES * self.module_width_mm
+        )
 
     @property
     def title_baseline_mm(self) -> float:
@@ -153,7 +169,11 @@ class BarcodeLayout:
     @property
     def bar_height(self) -> float:
         """Return the data-bar height, using a proportional default."""
-        return self.bar_height_mm if self.bar_height_mm is not None else self.height_mm * 0.62
+        return (
+            self.bar_height_mm
+            if self.bar_height_mm is not None
+            else self.height_mm * 0.62
+        )
 
     @property
     def guard_extension_mm(self) -> float:

@@ -85,3 +85,6 @@
 .study-dialog-close:focus-visible,.study-relation:focus-visible,.study-source-link:focus-visible,.study-example-button:focus-visible{outline:2px solid #8dbefa;outline-offset:2px}
 @media(max-width:600px){.study-dialog-body{padding:22px 19px 28px}.study-dialog-header{padding:12px 19px}.study-dialog h2{font-size:23px}.study-connections{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.study-preview,.study-dialog{animation:none}}
+.drop-overlay{position:fixed;inset:0;z-index:10000;display:grid;place-items:center;padding:24px;background:#08111de0;pointer-events:none}
+.drop-overlay>div{display:grid;place-items:center;width:min(680px,100%);min-height:220px;border:2px dashed #8dbefa;border-radius:20px;background:#172638;color:#e8f3ff;font-size:clamp(18px,3vw,28px);font-weight:700;text-align:center;padding:24px}
+.drop-hint{color:#91a5c0;font-size:11px;line-height:1.4;margin:8px 0 0}

@@ -1,4 +1,5 @@
 """Apply a validated chapter plan to a new DOCX without touching the source."""
+
 from __future__ import annotations
 
 from hashlib import sha256
@@ -11,11 +12,18 @@ from chapter_plan_core import validate_plan
 from common import inventory, normalize, require_path
 
 
-def assemble(path: str, parts: list[dict] | None = None, *,
-             articles: list[int | str] | None = None, output_path: str | None = None,
-             expected_preview_sha256: str | None = None, article_level: int = 1,
-             dry_run: bool = True, toc_mode: str = "static_unpaged",
-             contents_title: str = "Contents") -> dict:
+def assemble(
+    path: str,
+    parts: list[dict] | None = None,
+    *,
+    articles: list[int | str] | None = None,
+    output_path: str | None = None,
+    expected_preview_sha256: str | None = None,
+    article_level: int = 1,
+    dry_run: bool = True,
+    toc_mode: str = "static_unpaged",
+    contents_title: str = "Contents",
+) -> dict:
     """Preview or create a new DOCX after validating the source and plan."""
     if not isinstance(dry_run, bool):
         raise ValueError("dry_run must be a boolean")
@@ -33,30 +41,60 @@ def assemble(path: str, parts: list[dict] | None = None, *,
         raise ValueError("docx_assemble requires a DOCX source")
     destination = _destination(source, output_path)
     doc, groups, old_part_heads, toc_blocks, source_items = _preflight_document(
-        source, plan, article_level)
-    preview_sha256 = _preview_digest(plan, destination, toc_mode, contents_title.strip())
+        source, plan, article_level
+    )
+    preview_sha256 = _preview_digest(
+        plan, destination, toc_mode, contents_title.strip()
+    )
     preflight_warnings = ["Source automatic TOC will be replaced"] if toc_blocks else []
     if dry_run:
-        return {"dry_run": True, "source": str(source), "source_sha256": plan["source_sha256"],
-                "preview_sha256": preview_sha256, "output_path": str(destination) if destination else None,
-                "layout": plan["layout"], "article_count": plan["planned_count"],
-                "part_count": len(plan["parts"]), "toc_mode": toc_mode,
-                "warnings": plan["warnings"] + preflight_warnings}
+        return {
+            "dry_run": True,
+            "source": str(source),
+            "source_sha256": plan["source_sha256"],
+            "preview_sha256": preview_sha256,
+            "output_path": str(destination) if destination else None,
+            "layout": plan["layout"],
+            "article_count": plan["planned_count"],
+            "part_count": len(plan["parts"]),
+            "toc_mode": toc_mode,
+            "warnings": plan["warnings"] + preflight_warnings,
+        }
     if destination is None:
         raise ValueError("output_path is required when dry_run is false")
     if expected_preview_sha256 != preview_sha256:
-        raise ValueError("expected_preview_sha256 does not match source, plan, destination, or options; rerun dry-run")
+        raise ValueError(
+            "expected_preview_sha256 does not match source, plan, destination, or options; rerun dry-run"
+        )
 
-    target_article_level = _apply_plan(doc, groups, old_part_heads, toc_blocks, plan,
-                                       article_level, toc_mode, contents_title.strip())
-    article_count, output_sha256 = _write_verified(doc, destination, source_items,
-                                                    plan, target_article_level)
-    return {"dry_run": False, "source": str(source), "source_sha256": plan["source_sha256"],
-            "preview_sha256": preview_sha256, "layout": plan["layout"],
-            "output_path": str(destination), "output_sha256": output_sha256,
-            "article_count": article_count, "part_count": len(plan["parts"]), "toc_mode": toc_mode,
-            "warnings": plan["warnings"] + (["Replaced source automatic TOC"] if toc_blocks else [])
-            + ["Render the DOCX for visual and pagination review"]}
+    target_article_level = _apply_plan(
+        doc,
+        groups,
+        old_part_heads,
+        toc_blocks,
+        plan,
+        article_level,
+        toc_mode,
+        contents_title.strip(),
+    )
+    article_count, output_sha256 = _write_verified(
+        doc, destination, source_items, plan, target_article_level
+    )
+    return {
+        "dry_run": False,
+        "source": str(source),
+        "source_sha256": plan["source_sha256"],
+        "preview_sha256": preview_sha256,
+        "layout": plan["layout"],
+        "output_path": str(destination),
+        "output_sha256": output_sha256,
+        "article_count": article_count,
+        "part_count": len(plan["parts"]),
+        "toc_mode": toc_mode,
+        "warnings": plan["warnings"]
+        + (["Replaced source automatic TOC"] if toc_blocks else [])
+        + ["Render the DOCX for visual and pagination review"],
+    }
 
 
 def _destination(source: Path, output_path: str | None) -> Path | None:
@@ -81,7 +119,9 @@ def _preflight_document(source: Path, plan: dict, article_level: int):
         from docx.oxml.ns import qn
         from docx.text.paragraph import Paragraph
     except ImportError as exc:
-        raise ValueError("python-docx is required; install the book-editing extra") from exc
+        raise ValueError(
+            "python-docx is required; install the book-editing extra"
+        ) from exc
     doc = Document(source)
     body = doc.element.body
     paragraph_tag = qn("w:p")
@@ -108,16 +148,25 @@ def _preflight_document(source: Path, plan: dict, article_level: int):
             current.append(element)
     if len(groups) != plan["source_count"]:
         raise ValueError("DOCX article headings do not match the validated inventory")
-    preface = list(body)[:list(body).index(groups[0][0])] if groups else []
+    preface = list(body)[: list(body).index(groups[0][0])] if groups else []
     if groups:
         for element in preface:
-            if element.tag == paragraph_tag and normalize(Paragraph(element, doc._body).text) in {
-                    "contents", "tableofcontents", "icindekiler", "icindekilertablosu"}:
-                raise ValueError("Existing contents list requires manual review before assembly")
-    toc_blocks = [element for element in body if element.tag == qn("w:sdt")
-                  and any("TOC " in (node.text or "") for node in element.iter(qn("w:instrText")))]
+            if element.tag == paragraph_tag and normalize(
+                Paragraph(element, doc._body).text
+            ) in {"contents", "tableofcontents", "icindekiler", "icindekilertablosu"}:
+                raise ValueError(
+                    "Existing contents list requires manual review before assembly"
+                )
+    toc_blocks = [
+        element
+        for element in body
+        if element.tag == qn("w:sdt")
+        and any("TOC " in (node.text or "") for node in element.iter(qn("w:instrText")))
+    ]
     if any(element not in preface for element in toc_blocks):
-        raise ValueError("Automatic table of contents outside the preface requires manual review")
+        raise ValueError(
+            "Automatic table of contents outside the preface requires manual review"
+        )
     if len(toc_blocks) > 1:
         raise ValueError("Multiple automatic tables of contents require manual review")
     source_items = inventory(str(source), article_level=article_level)["items"]
@@ -129,8 +178,16 @@ def _preflight_document(source: Path, plan: dict, article_level: int):
     return doc, groups, old_part_heads, toc_blocks, source_items
 
 
-def _apply_plan(doc, groups, old_part_heads, toc_blocks, plan: dict,
-                article_level: int, toc_mode: str, contents_title: str) -> int:
+def _apply_plan(
+    doc,
+    groups,
+    old_part_heads,
+    toc_blocks,
+    plan: dict,
+    article_level: int,
+    toc_mode: str,
+    contents_title: str,
+) -> int:
     """Rewrite heading styles and move whole article XML blocks into plan order."""
     from docx.enum.style import WD_STYLE_TYPE
     from docx.oxml import OxmlElement
@@ -143,7 +200,9 @@ def _apply_plan(doc, groups, old_part_heads, toc_blocks, plan: dict,
     _ensure_heading_styles(doc, WD_STYLE_TYPE, Pt, RGBColor)
     target_article_level = 2 if plan["layout"] == "parts" else 1
     for group in groups:
-        Paragraph(group[0], doc._body).style = doc.styles[f"Heading {target_article_level}"]
+        Paragraph(group[0], doc._body).style = doc.styles[
+            f"Heading {target_article_level}"
+        ]
         for element in group[1:]:
             if element.tag == paragraph_tag:
                 paragraph = Paragraph(element, doc._body)
@@ -158,8 +217,17 @@ def _apply_plan(doc, groups, old_part_heads, toc_blocks, plan: dict,
     for element in toc_blocks:
         body.remove(element)
     if toc_mode == "static_unpaged":
-        _add_contents(doc, body, plan, contents_title,
-                      OxmlElement, Paragraph, WD_STYLE_TYPE, Pt, RGBColor)
+        _add_contents(
+            doc,
+            body,
+            plan,
+            contents_title,
+            OxmlElement,
+            Paragraph,
+            WD_STYLE_TYPE,
+            Pt,
+            RGBColor,
+        )
 
     insertion = len(body) - 1
     if plan["layout"] == "parts":
@@ -181,25 +249,41 @@ def _apply_plan(doc, groups, old_part_heads, toc_blocks, plan: dict,
             for element in groups[article["ordinal"] - 1]:
                 body.insert(insertion, element)
                 insertion += 1
-    if body[-2].tag == paragraph_tag and not Paragraph(body[-2], doc._body).text.strip():
+    if (
+        body[-2].tag == paragraph_tag
+        and not Paragraph(body[-2], doc._body).text.strip()
+    ):
         body.remove(body[-2])
     return target_article_level
 
 
-def _write_verified(doc, destination: Path, source_items: list[dict],
-                    plan: dict, target_article_level: int) -> tuple[int, str]:
+def _write_verified(
+    doc,
+    destination: Path,
+    source_items: list[dict],
+    plan: dict,
+    target_article_level: int,
+) -> tuple[int, str]:
     """Save, compare article bodies, then atomically create the destination."""
     temporary = None
     try:
-        with tempfile.NamedTemporaryFile(prefix=".docx-assemble-", suffix=".docx",
-                                         dir=destination.parent, delete=False) as handle:
+        with tempfile.NamedTemporaryFile(
+            prefix=".docx-assemble-",
+            suffix=".docx",
+            dir=destination.parent,
+            delete=False,
+        ) as handle:
             temporary = Path(handle.name)
         doc.save(temporary)
         after = inventory(str(temporary), article_level=target_article_level)["items"]
-        expected = [source_items[article["ordinal"] - 1] for article in plan["articles"]]
+        expected = [
+            source_items[article["ordinal"] - 1] for article in plan["articles"]
+        ]
         if len(after) != len(expected) or any(
-                actual["title"] != original["title"] or actual["body_sha256"] != original["body_sha256"]
-                for actual, original in zip(after, expected)):
+            actual["title"] != original["title"]
+            or actual["body_sha256"] != original["body_sha256"]
+            for actual, original in zip(after, expected)
+        ):
             raise ValueError("Output verification failed: an article body changed")
         os.link(temporary, destination)
     finally:
@@ -207,16 +291,29 @@ def _write_verified(doc, destination: Path, source_items: list[dict],
             temporary.unlink(missing_ok=True)
     return len(after), sha256(destination.read_bytes()).hexdigest()
 
-def _preview_digest(plan: dict, destination: Path | None, toc_mode: str,
-                    contents_title: str) -> str:
-    subject = {"source_sha256": plan["source_sha256"], "layout": plan["layout"],
-               "parts": [{"title": part["title"],
-                          "ordinals": [article["ordinal"] for article in part["articles"]]}
-                         for part in plan["parts"]],
-               "articles": [article["ordinal"] for article in plan["articles"]],
-               "article_level": plan["article_level"], "output_path": str(destination) if destination else None,
-               "toc_mode": toc_mode, "contents_title": contents_title}
-    canonical = json.dumps(subject, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+
+def _preview_digest(
+    plan: dict, destination: Path | None, toc_mode: str, contents_title: str
+) -> str:
+    subject = {
+        "source_sha256": plan["source_sha256"],
+        "layout": plan["layout"],
+        "parts": [
+            {
+                "title": part["title"],
+                "ordinals": [article["ordinal"] for article in part["articles"]],
+            }
+            for part in plan["parts"]
+        ],
+        "articles": [article["ordinal"] for article in plan["articles"]],
+        "article_level": plan["article_level"],
+        "output_path": str(destination) if destination else None,
+        "toc_mode": toc_mode,
+        "contents_title": contents_title,
+    }
+    canonical = json.dumps(
+        subject, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    )
     return sha256(canonical.encode("utf-8")).hexdigest()
 
 
@@ -241,7 +338,9 @@ def _ensure_heading_styles(doc, style_type, pt, rgb):
         style.paragraph_format.keep_with_next = True
 
 
-def _add_contents(doc, body, plan, contents_title, element_class, paragraph_class, style_type, pt, rgb):
+def _add_contents(
+    doc, body, plan, contents_title, element_class, paragraph_class, style_type, pt, rgb
+):
     heading = doc.styles.add_style("Book Contents Title", style_type.PARAGRAPH)
     heading.font.name = "Cambria"
     heading.font.size = pt(16)

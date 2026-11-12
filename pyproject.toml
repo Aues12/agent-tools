@@ -13,7 +13,17 @@ book-editing = ["python-docx>=1.2,<2"]
 meta-tools = ["PyYAML>=6,<7"]
 
 [dependency-groups]
-dev = ["pyright>=1.1.409"]
+dev = ["pyright>=1.1.409", "ruff==0.15.12"]
 
 [tool.uv]
 package = false
+
+[tool.ruff.lint.per-file-ignores]
+# Standalone tests and examples set the import path before local imports.
+"book-editing-tools/*/tests/test_tool.py" = ["E402"]
+"file-tools/rename_files/examples/basic_usage.py" = ["E402"]
+"file-tools/semantic_ast/compression/examples/basic_usage.py" = ["E402"]
+"file-tools/semantic_ast/examples/basic_usage.py" = ["E402"]
+"file-tools/semantic_cards/examples/basic_usage.py" = ["E402"]
+# This file is sample input for data-flow analysis, not an executable program.
+"file-tools/semantic_dfg/examples/parse_file.py" = ["F821"]

@@ -15,8 +15,9 @@ sys.path.insert(0, str(TOOL_DIR))
 from tool import build_cpg_from_file, build_cpg_from_source, run, summarize_cpg  # noqa: E402
 
 
-SOURCE = dedent(
-    """
+SOURCE = (
+    dedent(
+        """
     def helper(value):
         return value
 
@@ -27,7 +28,9 @@ SOURCE = dedent(
             value = b
         return value
     """
-).strip() + "\n"
+    ).strip()
+    + "\n"
+)
 
 
 class SemanticCpgToolTests(unittest.TestCase):
@@ -44,7 +47,9 @@ class SemanticCpgToolTests(unittest.TestCase):
 
         self.assertTrue(response["success"])
         self.assertEqual(response["result"]["type"], "semantic_code_property_graph")
-        self.assertEqual(response["meta"]["normalized_operation"], "build_cpg_from_source")
+        self.assertEqual(
+            response["meta"]["normalized_operation"], "build_cpg_from_source"
+        )
 
     def test_build_cpg_from_file_reads_file(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

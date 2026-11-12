@@ -245,7 +245,9 @@ def _build_candidates(
             skipped.append({"path": str(path), "reason": "extension filter mismatch"})
             continue
         if find_text not in path.name:
-            skipped.append({"path": str(path), "reason": "find_text not found in file name"})
+            skipped.append(
+                {"path": str(path), "reason": "find_text not found in file name"}
+            )
             continue
         candidates.append(path)
 
@@ -263,7 +265,9 @@ def _plan_renames(
     source_paths = {path.resolve() for path in paths}
 
     for source in paths:
-        target = source.with_name(source.name.replace(find_text, replace_text)).resolve()
+        target = source.with_name(
+            source.name.replace(find_text, replace_text)
+        ).resolve()
 
         if target == source.resolve():
             conflicts.append(

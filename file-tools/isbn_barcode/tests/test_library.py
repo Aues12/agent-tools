@@ -124,8 +124,8 @@ class BarcodeRenderingTests(unittest.TestCase):
     def test_svg_verifier_reports_tampered_modules(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "barcode.svg"
-            changed = Barcode(ISBN).to_svg().replace(
-                'data-module="0"', 'data-module="1"', 1
+            changed = (
+                Barcode(ISBN).to_svg().replace('data-module="0"', 'data-module="1"', 1)
             )
             path.write_text(changed, encoding="utf-8")
             report = verify_svg(path, ISBN)

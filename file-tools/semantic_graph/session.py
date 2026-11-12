@@ -156,7 +156,13 @@ def run_session(
             return 0
         try:
             response = session.execute(line)
-        except (KeyError, TypeError, ValueError, OSError, json.JSONDecodeError) as error:
+        except (
+            KeyError,
+            TypeError,
+            ValueError,
+            OSError,
+            json.JSONDecodeError,
+        ) as error:
             output_stream.write(f"error {error}\n")
             output_stream.flush()
             continue

@@ -14,6 +14,63 @@ import shutil
 import stat
 import sys
 import tempfile
+from typing import Any, Literal, NotRequired, TypedDict, cast
+
+
+class FileChange(TypedDict):
+    path: str
+    kind: Literal["add", "update"]
+    source_sha256: str
+    target_sha256: str | None
+    diff: NotRequired[str | None]
+
+
+class SyncPlan(TypedDict):
+    source_root: str
+    target_root: str
+    manifest_path: str
+    changes: list[FileChange]
+    target_only: list[str]
+    plan_sha256: str
+    source_count: int
+    target_count: int
+    valid: bool
+    excluded_patterns: list[str]
+    comparison: str
+    applied: NotRequired[bool]
+    applied_count: NotRequired[int]
+
+
+class CommandResult(TypedDict):
+    root: str
+    command: list[str]
+    returncode: int | None
+    stdout: NotRequired[str]
+    stderr: NotRequired[str]
+    error: NotRequired[str]
+
+
+class VerifyResult(TypedDict):
+    results: list[CommandResult]
+    valid: bool
+
+
+class ResponseMeta(TypedDict):
+    operation: str
+    read_only: bool
+
+
+class ErrorDetails(TypedDict):
+    type: str
+    message: str
+
+
+class ToolResponse(TypedDict):
+    success: bool
+    message: str
+    result: SyncPlan | VerifyResult | None
+    meta: NotRequired[ResponseMeta]
+    error: NotRequired[ErrorDetails]
 
 
 PROTECTED_PARTS = frozenset(
@@ -67,14 +124,14 @@ def _protected(rel: Path) -> bool:
 
 def _manifest(
     path: str | Path, source: Path
-) -> tuple[Path, list[Path], list[str], str]:
+) -> tuple[Path, list[Path], list[str], str, dict[str, Any]]:
     file = Path(path).expanduser()
     if not file.is_absolute():
         file = source / file
     if file.is_symlink() or not file.is_file():
         raise ValueError("manifest_path must name an existing, non-symlink JSON file")
     raw = file.read_bytes()
-    data = json.loads(raw)
+    data: Any = json.loads(raw)
     if not isinstance(data, dict) or data.get("version") not in {"0.1.0", "0.2.0"}:
         raise ValueError("Manifest version must be 0.1.0 or 0.2.0")
     include = data.get("include")
@@ -101,10 +158,11 @@ def _manifest(
 
 
 def _excluded(rel: Path, patterns: list[str]) -> bool:
+    relative_path = rel.as_posix()
     return _protected(rel) or any(
-        fnmatch(rel.as_posix(), pattern)
-        or rel.as_posix() == pattern.rstrip("/")
-        or rel.as_posix().startswith(pattern.rstrip("/") + "/")
+        fnmatch(relative_path, pattern)
+        or relative_path == pattern.rstrip("/")
+        or relative_path.startswith(pattern.rstrip("/") + "/")
         for pattern in patterns
     )
 
@@ -160,7 +218,7 @@ def plan(
     manifest_path: str | Path,
     *,
     include_diff: bool = False,
-) -> dict:
+) -> SyncPlan:
     """Return all proposed copies and a digest tied to current source and target bytes."""
     source = _root(source_root, "source_root")
     target = _root(target_root, "target_root")
@@ -169,7 +227,7 @@ def plan(
     manifest, include, exclude, manifest_sha, _ = _manifest(manifest_path, source)
     sources = _selected(source, include, exclude, require=True)
     targets = _selected(target, include, exclude, require=False)
-    changes = []
+    changes: list[FileChange] = []
     for rel, file in sorted(sources.items()):
         source_sha = _digest(file.read_bytes())
         target_file = targets.get(rel)
@@ -197,22 +255,22 @@ def plan(
     if include_diff:
         for change in changes:
             try:
-                before = (
+                before_lines = (
                     targets[change["path"]]
                     .read_text(encoding="utf-8")
                     .splitlines(keepends=True)
                     if change["path"] in targets
                     else []
                 )
-                after = (
+                after_lines = (
                     sources[change["path"]]
                     .read_text(encoding="utf-8")
                     .splitlines(keepends=True)
                 )
                 change["diff"] = "".join(
                     difflib.unified_diff(
-                        before,
-                        after,
+                        before_lines,
+                        after_lines,
                         fromfile="target/" + change["path"],
                         tofile="source/" + change["path"],
                     )
@@ -242,7 +300,7 @@ def sync(
     manifest_path: str | Path,
     expected_plan_sha256: str | None = None,
     include_diff: bool = False,
-) -> dict:
+) -> SyncPlan:
     """Check, plan, or apply selected files after a fresh plan comparison."""
     if operation not in {"check", "plan", "apply"}:
         raise ValueError("operation must be check, plan, or apply")
@@ -336,7 +394,7 @@ def verify(
     target_root: str | Path,
     manifest_path: str | Path,
     timeout: int = 120,
-) -> dict:
+) -> VerifyResult:
     """Explicitly run manifest-provided argv commands in both checkouts."""
     source = _root(source_root, "source_root")
     target = _root(target_root, "target_root")
@@ -361,7 +419,7 @@ def verify(
         or not 1 <= timeout <= 3600
     ):
         raise ValueError("timeout must be an integer between 1 and 3600 seconds")
-    results = []
+    results: list[CommandResult] = []
     for root in (source, target):
         for command in commands:
             try:
@@ -422,30 +480,33 @@ def _manifest_roots(
     return roots[0], roots[1]
 
 
-def _format_report(operation: str, response: dict) -> str:
+def _format_report(operation: str, response: ToolResponse) -> str:
     if not response["success"]:
         return f"Error: {response['message']}"
-    result = response["result"]
     if operation == "verify":
+        result = cast(VerifyResult, response["result"])
         lines = [f"Verification: {'passed' if result['valid'] else 'failed'}"]
         for entry in result["results"]:
             lines.append(
                 f"  {entry['root']}: {' '.join(entry['command'])} -> {entry['returncode']}"
             )
         return "\n".join(lines)
+    result = cast(SyncPlan, response["result"])
     changes = result["changes"]
     lines = [
         f"{operation}: {len(changes)} copy candidate(s), {len(result['target_only'])} target-only file(s)"
     ]
     for entry in changes:
         lines.append(f"  {entry['kind']}: {entry['path']}")
-        if entry.get("diff"):
-            lines.append(entry["diff"].rstrip())
+        diff = entry.get("diff")
+        if diff:
+            lines.append(diff.rstrip())
     lines.extend(f"  target-only: {path}" for path in result["target_only"])
     if operation == "plan":
         lines.append(f"Plan SHA-256: {result['plan_sha256']}")
     if operation == "apply":
-        lines.append(f"Copied: {result['applied_count']}")
+        copied_count = result.get("applied_count")
+        lines.append(f"Copied: {copied_count}")
     lines.append(f"Shared files equal: {'yes' if result['valid'] else 'no'}")
     return "\n".join(lines)
 
@@ -464,11 +525,12 @@ def cli(argv: list[str] | None = None) -> int:
         "--json", action="store_true", help="Print the full machine-readable result"
     )
     args = parser.parse_args(argv)
+    response: ToolResponse
     try:
         source, target = _manifest_roots(
             args.manifest, args.source_root, args.target_root
         )
-        params = {
+        params: dict[str, Any] = {
             "source_root": source,
             "target_root": target,
             "manifest_path": args.manifest,
@@ -485,10 +547,16 @@ def cli(argv: list[str] | None = None) -> int:
         if args.json
         else _format_report(args.operation, response)
     )
-    return 0 if response["success"] and response["result"]["valid"] else 1
+    return (
+        0
+        if response["success"]
+        and response["result"] is not None
+        and response["result"]["valid"]
+        else 1
+    )
 
 
-def run(payload: dict) -> dict:
+def run(payload: object) -> ToolResponse:
     """Execute a JSON request and return the repository's standard envelope."""
     try:
         if not isinstance(payload, dict) or payload.get("operation") not in {
@@ -537,6 +605,10 @@ if __name__ == "__main__":
     clean_check = (
         not isinstance(request, dict)
         or request.get("operation") not in {"check", "verify"}
-        or (response["success"] and response["result"]["valid"])
+        or (
+            response["success"]
+            and response["result"] is not None
+            and response["result"]["valid"]
+        )
     )
     raise SystemExit(0 if response["success"] and clean_check else 1)

@@ -44,6 +44,7 @@ export function App() {
   const [graph, setGraph] = useState<SemanticGraph>(restored.graph);
   const [fileName, setFileName] = useState(restored.fileName);
   const [error, setError] = useState<string | null>(null);
+  const [draggingFile, setDraggingFile] = useState(false);
   const [storageWarning, setStorageWarning] = useState<string | null>(null);
   const [query, setQuery] = useState(restored.query);
   const [kind, setKind] = useState<string | null>(restored.kind);
@@ -58,6 +59,7 @@ export function App() {
   const [initialViewport, setInitialViewport] = useState<SavedViewport | null>(restored.viewport);
   const [graphSerial, setGraphSerial] = useState(0);
   const fileInput = useRef<HTMLInputElement>(null);
+  const dragDepth = useRef(0);
   const kindList = useRef<HTMLDivElement>(null);
   const nodeList = useRef<HTMLDivElement>(null);
   const optionsAnchor = useRef<HTMLDivElement>(null);
@@ -145,18 +147,68 @@ export function App() {
     clearNodeSelection();
   }
 
-  async function loadFile(event: ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
-    if (!file) return;
+  async function openFile(file: File) {
     try {
       const value = JSON.parse(await file.text()) as unknown;
       const loaded = parseSemanticGraph(value);
       showGraph(loaded, file.name);
     } catch (cause) {
+      setIndexOpen(true);
       setError(`${file.name}: ${cause instanceof Error ? cause.message : "Unable to read this file."}`);
     }
-    event.target.value = "";
   }
+
+  function loadFile(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (file) void openFile(file);
+  }
+
+  useEffect(() => {
+    const hasFiles = (event: DragEvent) => Array.from(event.dataTransfer?.types ?? []).includes("Files");
+    function enter(event: DragEvent) {
+      if (!hasFiles(event)) return;
+      event.preventDefault();
+      dragDepth.current += 1;
+      setDraggingFile(true);
+    }
+    function over(event: DragEvent) {
+      if (!hasFiles(event)) return;
+      event.preventDefault();
+      if (event.dataTransfer) event.dataTransfer.dropEffect = "copy";
+    }
+    function leave(event: DragEvent) {
+      if (!hasFiles(event)) return;
+      dragDepth.current = Math.max(0, dragDepth.current - 1);
+      if (dragDepth.current === 0) setDraggingFile(false);
+    }
+    function reset() { dragDepth.current = 0; setDraggingFile(false); }
+    function drop(event: DragEvent) {
+      if (!hasFiles(event)) return;
+      event.preventDefault();
+      reset();
+      const files = event.dataTransfer?.files;
+      if (!files?.length) return;
+      if (files.length !== 1) {
+        setIndexOpen(true);
+        setError("Please drop one JSON graph at a time.");
+        return;
+      }
+      void openFile(files[0]);
+    }
+    window.addEventListener("dragenter", enter);
+    window.addEventListener("dragover", over);
+    window.addEventListener("dragleave", leave);
+    window.addEventListener("drop", drop);
+    window.addEventListener("blur", reset);
+    return () => {
+      window.removeEventListener("dragenter", enter);
+      window.removeEventListener("dragover", over);
+      window.removeEventListener("dragleave", leave);
+      window.removeEventListener("drop", drop);
+      window.removeEventListener("blur", reset);
+    };
+  });
 
   function relationship(edge: GraphEdge, otherId: number) {
     const other = view.byId.get(otherId)!;
@@ -169,6 +221,7 @@ export function App() {
   }
 
   return <div className={`app-shell ${indexOpen ? "" : "index-collapsed"} ${inspectorOpen ? "" : "inspector-collapsed"}`} onKeyDown={handleAppKeyDown}>
+    {draggingFile && <div className="drop-overlay" aria-hidden="true"><div>Drop a JSON graph to open it</div></div>}
     <header className="topbar">
       <div className="brand-mark" aria-hidden="true">◈</div>
       <div className="brand"><strong>Semantic <span>Graph Viewer</span></strong><small>Explore the structure behind an artifact</small></div>
@@ -200,6 +253,7 @@ export function App() {
       <div className="graph-id">{graph.graph_id}</div>
       <div className="source-line">{fileName}{graph.revision !== undefined ? ` · revision ${graph.revision}` : ""}</div>
       <button className="load-button" onClick={() => fileInput.current?.click()}>Load JSON graph</button>
+      <p className="drop-hint">Or drag a JSON file anywhere onto the viewer.</p>
       <input ref={fileInput} type="file" accept=".json,application/json" onChange={loadFile} className="visually-hidden" aria-label="Choose semantic graph JSON file" />
       {error && <div className="load-error" role="alert"><strong>Could not load graph</strong><p>{error}</p></div>}
       {storageWarning && <div className="load-error" role="status"><strong>Session not saved</strong><p>{storageWarning}</p></div>}

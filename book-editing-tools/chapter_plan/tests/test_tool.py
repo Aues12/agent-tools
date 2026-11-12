@@ -15,20 +15,35 @@ from fixtures import make_docx
 class ChapterPlanTests(unittest.TestCase):
     def test_valid_reorder(self):
         with tempfile.TemporaryDirectory() as tmp:
-            doc = make_docx(Path(tmp) / "book.docx", [
-                ("h1", "Later"), ("", "02.02.2024"),
-                ("h1", "Earlier"), ("", "01.02.2024"),
-            ])
-            result = validate_plan(str(doc), [{"title": "Chronological", "articles": [2, 1]}])
+            doc = make_docx(
+                Path(tmp) / "book.docx",
+                [
+                    ("h1", "Later"),
+                    ("", "02.02.2024"),
+                    ("h1", "Earlier"),
+                    ("", "01.02.2024"),
+                ],
+            )
+            result = validate_plan(
+                str(doc), [{"title": "Chronological", "articles": [2, 1]}]
+            )
             self.assertTrue(result["valid"])
-            self.assertEqual([a["title"] for a in result["parts"][0]["articles"]], ["Earlier", "Later"])
+            self.assertEqual(
+                [a["title"] for a in result["parts"][0]["articles"]],
+                ["Earlier", "Later"],
+            )
 
     def test_flat_plan_without_parts(self):
         with tempfile.TemporaryDirectory() as tmp:
-            doc = make_docx(Path(tmp) / "book.docx", [
-                ("h1", "Later"), ("", "02.02.2024"),
-                ("h1", "Earlier"), ("", "01.02.2024"),
-            ])
+            doc = make_docx(
+                Path(tmp) / "book.docx",
+                [
+                    ("h1", "Later"),
+                    ("", "02.02.2024"),
+                    ("h1", "Earlier"),
+                    ("", "01.02.2024"),
+                ],
+            )
             result = validate_plan(str(doc), articles=[2, 1])
             self.assertTrue(result["valid"])
             self.assertEqual(result["layout"], "flat")
@@ -44,12 +59,23 @@ class ChapterPlanTests(unittest.TestCase):
 
     def test_flat_stdin_json_interface(self):
         with tempfile.TemporaryDirectory() as tmp:
-            doc = make_docx(Path(tmp) / "book.docx", [
-                ("h1", "First"), ("", "01.01.2024"),
-            ])
-            request = {"operation": "chapter_plan", "params": {"path": str(doc), "articles": [1]}}
-            completed = subprocess.run([sys.executable, str(BASE / "chapter_plan" / "tool.py")],
-                                       input=json.dumps(request), text=True, capture_output=True)
+            doc = make_docx(
+                Path(tmp) / "book.docx",
+                [
+                    ("h1", "First"),
+                    ("", "01.01.2024"),
+                ],
+            )
+            request = {
+                "operation": "chapter_plan",
+                "params": {"path": str(doc), "articles": [1]},
+            }
+            completed = subprocess.run(
+                [sys.executable, str(BASE / "chapter_plan" / "tool.py")],
+                input=json.dumps(request),
+                text=True,
+                capture_output=True,
+            )
             self.assertEqual(completed.returncode, 0, completed.stderr)
             response = json.loads(completed.stdout)
             self.assertEqual(response["result"]["layout"], "flat")
@@ -57,15 +83,23 @@ class ChapterPlanTests(unittest.TestCase):
 
     def test_missing_duplicate_and_inversion(self):
         with tempfile.TemporaryDirectory() as tmp:
-            doc = make_docx(Path(tmp) / "book.docx", [
-                ("h1", "Earlier"), ("", "01.02.2024"),
-                ("h1", "Later"), ("", "02.02.2024"),
-                ("h1", "Third"), ("", "03.02.2024"),
-            ])
+            doc = make_docx(
+                Path(tmp) / "book.docx",
+                [
+                    ("h1", "Earlier"),
+                    ("", "01.02.2024"),
+                    ("h1", "Later"),
+                    ("", "02.02.2024"),
+                    ("h1", "Third"),
+                    ("", "03.02.2024"),
+                ],
+            )
             result = validate_plan(str(doc), [{"title": "One", "articles": [2, 1, 1]}])
             self.assertFalse(result["valid"])
-            self.assertEqual({e["code"] for e in result["errors"]},
-                             {"omitted_articles", "duplicate_article", "date_inversion"})
+            self.assertEqual(
+                {e["code"] for e in result["errors"]},
+                {"omitted_articles", "duplicate_article", "date_inversion"},
+            )
 
     def test_invalid_input(self):
         with self.assertRaises(ValueError):

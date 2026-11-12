@@ -32,7 +32,9 @@ side_effects: {reads: [], writes: []}
 """
 
 
-@unittest.skipUnless(importlib.util.find_spec("yaml"), "PyYAML optional dependency is not installed")
+@unittest.skipUnless(
+    importlib.util.find_spec("yaml"), "PyYAML optional dependency is not installed"
+)
 class ValidatorTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
@@ -45,7 +47,8 @@ class ValidatorTests(unittest.TestCase):
         (self.path / "tests").mkdir()
         (self.path / "examples").mkdir()
         (self.path / "examples" / "request.json").write_text(
-            json.dumps({"operation": "sample", "params": {"value": "x"}}))
+            json.dumps({"operation": "sample", "params": {"value": "x"}})
+        )
 
     def test_valid_contract(self):
         result = validate(self.path)
@@ -53,24 +56,40 @@ class ValidatorTests(unittest.TestCase):
         self.assertEqual(result["findings"], [])
 
     def test_reports_invalid_metadata_and_example(self):
-        (self.path / "SKILL.yaml").write_text(SPEC.replace("[stdin_json, python_api]", "[missing]"))
-        (self.path / "examples" / "request.json").write_text('{"operation":"wrong","params":{}}')
+        (self.path / "SKILL.yaml").write_text(
+            SPEC.replace("[stdin_json, python_api]", "[missing]")
+        )
+        (self.path / "examples" / "request.json").write_text(
+            '{"operation":"wrong","params":{}}'
+        )
         result = validate(self.path)
         self.assertFalse(result["valid"])
-        self.assertEqual({x["code"] for x in result["findings"]},
-                         {"invalid_available_via", "invalid_example_operation"})
+        self.assertEqual(
+            {x["code"] for x in result["findings"]},
+            {"invalid_available_via", "invalid_example_operation"},
+        )
 
     def test_missing_files_and_no_target_execution(self):
-        (self.path / "tool.py").write_text("raise RuntimeError('must not execute')\ndef run(x): return x\n")
+        (self.path / "tool.py").write_text(
+            "raise RuntimeError('must not execute')\ndef run(x): return x\n"
+        )
         self.assertTrue(validate(self.path)["valid"])
         (self.path / "AGENTS.md").unlink()
-        self.assertIn("missing_file", [x["code"] for x in validate(self.path)["findings"]])
-        self.assertFalse(run({"operation": "validate", "params": {"path": str(self.path)}})["result"]["valid"])
+        self.assertIn(
+            "missing_file", [x["code"] for x in validate(self.path)["findings"]]
+        )
+        self.assertFalse(
+            run({"operation": "validate", "params": {"path": str(self.path)}})[
+                "result"
+            ]["valid"]
+        )
 
     def test_malformed_types_are_findings_not_crashes(self):
         (self.path / "SKILL.yaml").write_text(
-            SPEC.replace("status: experimental", "status: [experimental]")
-                .replace("[stdin_json, python_api]", "[{bad: value}]"))
+            SPEC.replace("status: experimental", "status: [experimental]").replace(
+                "[stdin_json, python_api]", "[{bad: value}]"
+            )
+        )
         result = validate(self.path)
         self.assertFalse(result["valid"])
         self.assertIn("invalid_status", [x["code"] for x in result["findings"]])
@@ -83,7 +102,10 @@ class ValidatorTests(unittest.TestCase):
         self.assertTrue(result["valid"])
         self.assertEqual(result["warnings"], 0)
         (self.path / "sample.py").unlink()
-        self.assertIn("missing_entrypoint_file", [x["code"] for x in validate(self.path)["findings"]])
+        self.assertIn(
+            "missing_entrypoint_file",
+            [x["code"] for x in validate(self.path)["findings"]],
+        )
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 # Book editing tools
 
-Eight small tools for recurring manuscript work. Six existing audits and the new `chapter_plan` validator are read-only; `docx_assemble` writes only to a new output path. Read-only tools use Python 3.11+ and the standard library. DOCX assembly additionally needs `python-docx` (`pip install -e '.[book-editing]'`). Place a request on stdin and read a JSON envelope on stdout. Source files are never changed. For a large Markdown archive, pass `limit` and `offset` to `manuscript_inventory`; `count` remains the full count and `next_offset` tells the agent where to continue.
+Nine small tools for recurring manuscript work. Six existing audits and the new `chapter_plan` validator are read-only; `docx_assemble` writes only to a new output path. Read-only tools use Python 3.11+ and the standard library. DOCX assembly additionally needs `python-docx` (`pip install -e '.[book-editing]'`). Place a request on stdin and read a JSON envelope on stdout. Source files are never changed. `manuscript_find_replace` creates a new file only after a search and explicit selection. For a large Markdown archive, pass `limit` and `offset` to `manuscript_inventory`; `count` remains the full count and `next_offset` tells the agent where to continue.
 
 | Tool | Input | Result |
 | --- | --- | --- |
@@ -12,6 +12,7 @@ Eight small tools for recurring manuscript work. Six existing audits and the new
 | `ebook_preflight` | DOCX | Long blank runs and image format/layout candidates |
 | `chapter_plan` | Manuscript and explicit ordered part/article plan | Full-coverage, uniqueness, and chronological-order validation |
 | `docx_assemble` | DOCX, validated plan, new output path | Dry-run or new chaptered DOCX with article-body verification |
+| `manuscript_find_replace` | UTF-8 Markdown or DOCX, exact text | Search contexts, then replace selected matches in a new file |
 
 ## Fast agent workflow
 
@@ -57,3 +58,9 @@ DOCX does not contain trustworthy final page positions. Page-number checks there
 ```bash
 python3 book-editing-tools/run_tests.py
 ```
+
+## Exact text search and replacement
+
+`manuscript_find_replace` exposes `search` and `replace` operations through its own `tool.py`. Search is case-sensitive and literal, returns non-overlapping matches with 1-based IDs and contexts, the source SHA-256, and a token binding the source and query. For replacement, pass these values, the full expected match count, explicit IDs, replacement, and a new output path. Re-run search after any source change. The tool never overwrites a file. See its `examples/` and `SKILL.yaml`.
+
+Markdown is UTF-8 and retains original line endings. DOCX search covers ordinary text runs in the main body and tables only; headers, footers, footnotes, hyperlinks, text boxes, fields and other complex structures are not searched. Paragraphs containing unsupported structures are skipped entirely and reported in warnings. Text cannot match across a paragraph or unsupported structure. A replacement spanning differently formatted runs inherits the first run's formatting. The tool makes minimal changes to document XML, preserves significant text-node spaces, and preserves other ZIP members. Complex documents and the result still require visual inspection; PDF and Affinity documents are not supported.

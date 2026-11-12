@@ -1,4 +1,5 @@
 """JSON and Python entrypoint for safe DOCX assembly."""
+
 from pathlib import Path
 import json
 import sys
@@ -9,15 +10,27 @@ from docx_assemble_core import assemble
 
 def run(payload: dict) -> dict:
     try:
-        if not isinstance(payload, dict) or payload.get("operation") != "docx_assemble" or not isinstance(payload.get("params"), dict):
+        if (
+            not isinstance(payload, dict)
+            or payload.get("operation") != "docx_assemble"
+            or not isinstance(payload.get("params"), dict)
+        ):
             raise ValueError("Expected {'operation': 'docx_assemble', 'params': {...}}")
         result = assemble(**payload["params"])
-        return {"success": True, "message": "docx_assemble completed", "result": result,
-                "meta": {"operation": "docx_assemble", "read_only": result["dry_run"]}}
+        return {
+            "success": True,
+            "message": "docx_assemble completed",
+            "result": result,
+            "meta": {"operation": "docx_assemble", "read_only": result["dry_run"]},
+        }
     except (TypeError, ValueError, OSError) as exc:
-        return {"success": False, "message": str(exc), "result": None,
-                "error": {"type": type(exc).__name__, "message": str(exc)},
-                "meta": {"operation": "docx_assemble"}}
+        return {
+            "success": False,
+            "message": str(exc),
+            "result": None,
+            "error": {"type": type(exc).__name__, "message": str(exc)},
+            "meta": {"operation": "docx_assemble"},
+        }
 
 
 if __name__ == "__main__":

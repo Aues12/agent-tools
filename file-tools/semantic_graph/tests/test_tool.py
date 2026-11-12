@@ -58,7 +58,9 @@ class SemanticGraphTests(unittest.TestCase):
             )
             graph_path = directory_path / "graph.json"
 
-            self.assertEqual(session.execute("new --graph-id bookbarcode"), "ok graph bookbarcode")
+            self.assertEqual(
+                session.execute("new --graph-id bookbarcode"), "ok graph bookbarcode"
+            )
             session.execute(f"add-node @{packet_path}")
             session.execute('add-node --label "Validate ISBN" --kind step')
             session.execute("add-edge --source 1 --target 2 --kind next")

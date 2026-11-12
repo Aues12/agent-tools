@@ -1,4 +1,5 @@
 """Check and update the tool registry from local SKILL.yaml files."""
+
 from __future__ import annotations
 
 from hashlib import sha256
@@ -49,33 +50,57 @@ def plan(root: str | Path = DEFAULT_ROOT) -> dict:
         selected = dict(projected[name])
         # Older entries may intentionally advertise a different declared
         # interface as their primary transport (for example a terminal session).
-        if item.get("transport") in {iface.get("transport") for iface in selected["interfaces"]}:
+        if item.get("transport") in {
+            iface.get("transport") for iface in selected["interfaces"]
+        }:
             selected["transport"] = item["transport"]
-        if item.get("entrypoint") in {iface.get("entrypoint", "").split()[0]
-                                      for iface in selected["interfaces"]}:
+        if item.get("entrypoint") in {
+            iface.get("entrypoint", "").split()[0] for iface in selected["interfaces"]
+        }:
             selected["entrypoint"] = item["entrypoint"]
         updated = {**item, **selected}
         next_tools.append(updated)
         if updated != item:
-            changes.append({"kind": "update", "name": name,
-                            "fields": [key for key in selected if updated[key] != item.get(key)]})
+            changes.append(
+                {
+                    "kind": "update",
+                    "name": name,
+                    "fields": [
+                        key for key in selected if updated[key] != item.get(key)
+                    ],
+                }
+            )
     for name in sorted(projected.keys() - old.keys()):
         next_tools.append(projected[name])
         changes.append({"kind": "add", "name": name})
     unrepresented = sorted(old.keys() - projected.keys())
     proposed = {**current, "tools": next_tools}
     subject = {"current": current, "proposed": proposed}
-    digest = sha256(json.dumps(subject, sort_keys=True, ensure_ascii=False,
-                               separators=(",", ":")).encode("utf-8")).hexdigest()
-    return {"root": str(base), "registry": str(registry_path), "changes": changes,
-            "unrepresented": unrepresented, "plan_sha256": digest,
-            "current_count": len(old), "discovered_count": len(projected),
-            "proposed_count": len(next_tools), "_proposed": proposed,
-            "_current_sha256": sha256(current_bytes).hexdigest()}
+    digest = sha256(
+        json.dumps(
+            subject, sort_keys=True, ensure_ascii=False, separators=(",", ":")
+        ).encode("utf-8")
+    ).hexdigest()
+    return {
+        "root": str(base),
+        "registry": str(registry_path),
+        "changes": changes,
+        "unrepresented": unrepresented,
+        "plan_sha256": digest,
+        "current_count": len(old),
+        "discovered_count": len(projected),
+        "proposed_count": len(next_tools),
+        "_proposed": proposed,
+        "_current_sha256": sha256(current_bytes).hexdigest(),
+    }
 
 
-def sync(operation: str, *, root: str | Path = DEFAULT_ROOT,
-         expected_plan_sha256: str | None = None) -> dict:
+def sync(
+    operation: str,
+    *,
+    root: str | Path = DEFAULT_ROOT,
+    expected_plan_sha256: str | None = None,
+) -> dict:
     if operation not in {"check", "plan", "apply"}:
         raise ValueError("operation must be check, plan, or apply")
     report = plan(root)
@@ -88,9 +113,14 @@ def sync(operation: str, *, root: str | Path = DEFAULT_ROOT,
             destination = Path(report["registry"])
             temporary = None
             try:
-                with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", prefix=".tool-registry-",
-                                                 suffix=".json", dir=destination.parent,
-                                                 delete=False) as handle:
+                with tempfile.NamedTemporaryFile(
+                    mode="w",
+                    encoding="utf-8",
+                    prefix=".tool-registry-",
+                    suffix=".json",
+                    dir=destination.parent,
+                    delete=False,
+                ) as handle:
                     temporary = Path(handle.name)
                     json.dump(proposed, handle, ensure_ascii=False, indent=2)
                     handle.write("\n")
@@ -107,18 +137,30 @@ def sync(operation: str, *, root: str | Path = DEFAULT_ROOT,
 
 def run(payload: dict) -> dict:
     try:
-        if not isinstance(payload, dict) or payload.get("operation") not in {"check", "plan", "apply"}:
+        if not isinstance(payload, dict) or payload.get("operation") not in {
+            "check",
+            "plan",
+            "apply",
+        }:
             raise ValueError("Expected operation check, plan, or apply")
         params = payload.get("params", {})
         if not isinstance(params, dict):
             raise ValueError("params must be an object")
         operation = payload["operation"]
         result = sync(operation, **params)
-        return {"success": True, "message": f"registry_sync {operation} completed",
-                "result": result, "meta": {"operation": operation, "read_only": operation != "apply"}}
+        return {
+            "success": True,
+            "message": f"registry_sync {operation} completed",
+            "result": result,
+            "meta": {"operation": operation, "read_only": operation != "apply"},
+        }
     except (TypeError, ValueError, OSError, json.JSONDecodeError) as exc:
-        return {"success": False, "message": str(exc), "result": None,
-                "error": {"type": type(exc).__name__, "message": str(exc)}}
+        return {
+            "success": False,
+            "message": str(exc),
+            "result": None,
+            "error": {"type": type(exc).__name__, "message": str(exc)},
+        }
 
 
 if __name__ == "__main__":
@@ -128,6 +170,9 @@ if __name__ == "__main__":
         request = {}
     response = run(request)
     print(json.dumps(response, ensure_ascii=False, indent=2))
-    clean_check = not isinstance(request, dict) or request.get("operation") != "check" or (
-        response["success"] and response["result"]["valid"])
+    clean_check = (
+        not isinstance(request, dict)
+        or request.get("operation") != "check"
+        or (response["success"] and response["result"]["valid"])
+    )
     raise SystemExit(0 if response["success"] and clean_check else 1)

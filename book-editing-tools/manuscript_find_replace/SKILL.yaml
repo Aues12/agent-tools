@@ -1,0 +1,44 @@
+name: manuscript_find_replace
+type: tool
+capability: guarded_manuscript_text_replacement
+purpose: Search exact manuscript text and replace explicitly selected matches in a new file.
+status: experimental
+deterministic: true
+interfaces:
+  - name: stdin_json
+    entrypoint: tool.py
+    transport: stdin_json
+  - name: python_api
+    entrypoint: tool.py
+    callables:
+      - run
+operations:
+  - name: search
+    available_via: [stdin_json, python_api]
+    params:
+      path: {type: string, required: true}
+      query: {type: string, required: true}
+    returns:
+      type: object
+      description: Exact non-overlapping matches with contexts, locations, source digest, and scope warnings.
+  - name: replace
+    available_via: [stdin_json, python_api]
+    params:
+      path: {type: string, required: true}
+      query: {type: string, required: true}
+      replacement: {type: string, required: true}
+      source_sha256: {type: string, required: true}
+      search_token: {type: string, required: true}
+      expected_count: {type: integer, required: true}
+      match_ids: {type: 'array[integer]', required: true}
+      output_path: {type: string, required: true}
+    returns:
+      type: object
+      description: New output file digest and selected replacement count.
+side_effects:
+  reads:
+    - reads a UTF-8 Markdown or DOCX source file.
+  writes:
+    - replace creates a new file and refuses to overwrite any existing file.
+validation:
+  - python3 -m unittest discover -s book-editing-tools/manuscript_find_replace/tests
