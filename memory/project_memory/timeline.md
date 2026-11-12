@@ -9,6 +9,7 @@ Detailed notes live in:
 * [chronology/2026-08.md](./chronology/2026-08.md)
 * [chronology/2026-09.md](./chronology/2026-09.md)
 * [chronology/2026-10.md](./chronology/2026-10.md)
+* [chronology/2026-11.md](./chronology/2026-11.md)
 
 ## 2026-05-16
 
@@ -146,3 +147,29 @@ Commit-backed milestone (`50136c6`):
 * Six read-only book-editing micro-tools were added at the repository root for
   manuscript extraction and recurring editorial audits.
 * See [October notes](chronology/2026-10.md).
+
+## 2026-10-23–26
+
+Commit-backed milestones:
+
+* The graph viewer gained study cards and source inspection; an experimental
+  skill connected semantic graph construction with source-grounded review.
+* Book plan validation and preview-bound DOCX assembly extended the editorial
+  tools. Contract validation, registry synchronization, and tool discovery
+  strengthened ecosystem maintenance.
+* See [October notes](chronology/2026-10.md).
+
+## 2026-11-03–11
+
+Commit-backed milestones:
+
+* Repository synchronization became a general manifest-based, reviewed
+  one-way copy workflow.
+* Guarded manuscript search and replacement and a DOCX-to-PDF edition
+  comparison skill expanded the editorial workflows.
+* See [November notes](chronology/2026-11.md).
+
+## 2026-11-12
+
+Working-note milestone: JSON graph drag-and-drop loading was added in the
+viewer working tree; see [November notes](chronology/2026-11.md).

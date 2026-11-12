@@ -7,7 +7,6 @@ BASE = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(BASE))
 sys.path.insert(0, str(BASE / "tests"))
 from common import run_request
-from fixtures import make_docx
 
 
 class ToolTests(unittest.TestCase):

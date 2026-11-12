@@ -6,7 +6,7 @@ import json
 import sys
 from typing import Any, Dict, Mapping, Optional, Sequence
 
-from model import FORMAT_VERSION, Edge, Graph, Node
+from model import FORMAT_VERSION, Edge as Edge, Graph, Node as Node
 from session import run_session
 
 

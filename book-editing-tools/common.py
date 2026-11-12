@@ -8,7 +8,11 @@ from __future__ import annotations
 
 import json
 
-from manuscript_sources import normalize, read_docx, require_path
+from manuscript_sources import (
+    normalize as normalize,
+    read_docx as read_docx,
+    require_path as require_path,
+)
 from inventory_core import inventory
 from audit_core import (
     chronology_audit,
@@ -60,7 +64,7 @@ def cli(operation: str) -> None:
 
     try:
         payload = json.load(sys.stdin)
-    except (ValueError, OSError) as exc:
+    except (ValueError, OSError):
         payload = {}
     response = run_request(operation, payload)
     print(json.dumps(response, ensure_ascii=False, indent=2))

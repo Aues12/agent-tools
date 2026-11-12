@@ -89,6 +89,20 @@ called through `semantic_ast`; the manuscript tools share the
 | ↳ [docx_assemble](book-editing-tools/docx_assemble/SKILL.yaml) | Previews and creates a new DOCX from a validated plan. |
 | ↳ [manuscript_find_replace](book-editing-tools/manuscript_find_replace/SKILL.yaml) | Finds exact text and replaces selected matches in a new manuscript. |
 
+## Python and registry checks
+
+Install [uv](https://docs.astral.sh/uv/) and run from the repository root:
+
+```bash
+uv run --locked --extra book-editing python check.py
+```
+
+This read-only command checks Ruff lint and formatting, runs the Python tool
+test suites, and checks registry consistency. CI runs the same command on
+Python 3.11 and 3.12. To apply Ruff's safe fixes and formatting separately, run
+`uv run --locked ruff check --fix .` and `uv run --locked ruff format .`.
+The graph viewer and the ISBN package's Python 3.9 baseline have separate CI jobs.
+
 ## Where to go next
 
 - **Use a tool:** Read its local contract and example. **Extend one:** Read
